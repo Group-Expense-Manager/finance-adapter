@@ -1,4 +1,4 @@
-rootProject.name = "service-template"
+rootProject.name = "finance-adapter"
 
 dependencyResolutionManagement {
     versionCatalogs {
@@ -33,7 +33,7 @@ dependencyResolutionManagement {
 
             library("guava", "com.google.guava:guava:33.1.0-jre")
             library("kotlinlogging", "io.github.microutils:kotlin-logging:3.0.5")
-            library("lib-gem", "pl.edu.agh.gem:lib-gem:0.1.6")
+            library("lib-gem", "pl.edu.agh.gem:lib-gem:0.2.1")
 
             version("resilience4j", "2.2.0")
             library("resilience4j-kotlin", "io.github.resilience4j", "resilience4j-kotlin").versionRef("resilience4j")
@@ -67,7 +67,6 @@ dependencyResolutionManagement {
             library("kotest-wiremock", "io.kotest.extensions:kotest-extensions-wiremock:3.0.1")
             library("junit", "org.junit.jupiter:junit-jupiter-engine:5.10.2")
             library("testcontainers-core", "org.testcontainers", "testcontainers").versionRef("testcontainers")
-            library("testcontainers-mongodb", "org.testcontainers", "mongodb").versionRef("testcontainers")
 
             bundle(
                 "kotest-core",
@@ -94,7 +93,6 @@ dependencyResolutionManagement {
                 "testcontainers",
                 listOf(
                     "testcontainers-core",
-                    "testcontainers-mongodb",
                 ),
             )
         }
