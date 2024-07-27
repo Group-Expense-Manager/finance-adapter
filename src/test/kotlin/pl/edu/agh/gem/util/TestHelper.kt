@@ -1,1 +1,131 @@
 package pl.edu.agh.gem.util
+
+import pl.edu.agh.gem.external.dto.expense.ExpenseManagerActivitiesResponse
+import pl.edu.agh.gem.external.dto.expense.ExpenseManagerActivityDTO
+import pl.edu.agh.gem.external.dto.group.GroupDTO
+import pl.edu.agh.gem.external.dto.group.UserGroupsResponse
+import pl.edu.agh.gem.helper.group.DummyGroup.GROUP_ID
+import pl.edu.agh.gem.helper.group.DummyGroup.OTHER_GROUP_ID
+import pl.edu.agh.gem.helper.user.DummyUser.OTHER_USER_ID
+import pl.edu.agh.gem.helper.user.DummyUser.USER_ID
+import pl.edu.agh.gem.internal.model.expense.filter.ExpenseFilterOptions
+import pl.edu.agh.gem.internal.model.finance.Activity
+import pl.edu.agh.gem.internal.model.finance.ActivityStatus
+import pl.edu.agh.gem.internal.model.finance.ActivityStatus.PENDING
+import pl.edu.agh.gem.internal.model.finance.ActivityType
+import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
+import pl.edu.agh.gem.internal.model.finance.filter.FilterOptions
+import pl.edu.agh.gem.internal.model.finance.filter.SortOrder
+import pl.edu.agh.gem.internal.model.finance.filter.SortOrder.ASCENDING
+import pl.edu.agh.gem.internal.model.finance.filter.SortedBy
+import pl.edu.agh.gem.internal.model.finance.filter.SortedBy.DATE
+import pl.edu.agh.gem.util.DummyData.ACTIVITY_TITLE
+import pl.edu.agh.gem.util.DummyData.CURRENCY_1
+import pl.edu.agh.gem.util.DummyData.CURRENCY_2
+import pl.edu.agh.gem.util.DummyData.EXPENSE_ID
+import pl.edu.agh.gem.util.DummyData.OTHER_EXPENSE_ID
+import pl.edu.agh.gem.util.DummyData.SUM
+import java.math.BigDecimal
+import java.time.Instant
+
+fun createUserGroupsResponse(
+    vararg groups: String = arrayOf(GROUP_ID, OTHER_GROUP_ID),
+) = UserGroupsResponse(groups = groups.map { GroupDTO(it) })
+
+fun createExpenseManagerActivityDTO(
+    expenseId: String = EXPENSE_ID,
+    creatorId: String = USER_ID,
+    title: String = ACTIVITY_TITLE,
+    cost: BigDecimal = SUM,
+    baseCurrency: String = CURRENCY_1,
+    targetCurrency: String? = CURRENCY_2,
+    status: ActivityStatus = PENDING,
+    participantIds: List<String> = listOf(OTHER_USER_ID, USER_ID),
+    expenseDate: Instant = Instant.ofEpochMilli(0L),
+) = ExpenseManagerActivityDTO(
+    expenseId = expenseId,
+    creatorId = creatorId,
+    title = title,
+    cost = cost,
+    baseCurrency = baseCurrency,
+    targetCurrency = targetCurrency,
+    status = status,
+    participantIds = participantIds,
+    expenseDate = expenseDate,
+)
+
+fun createExpenseManagerActivitiesResponse(
+    groupId: String = GROUP_ID,
+    vararg expenses: ExpenseManagerActivityDTO = arrayOf(
+        createExpenseManagerActivityDTO(expenseId = EXPENSE_ID),
+        createExpenseManagerActivityDTO(expenseId = OTHER_EXPENSE_ID),
+    ),
+) = ExpenseManagerActivitiesResponse(
+    groupId = groupId,
+    expenses = expenses.toList(),
+)
+
+fun createActivity(
+    activityId: String = EXPENSE_ID,
+    type: ActivityType = EXPENSE,
+    creatorId: String = USER_ID,
+    title: String = ACTIVITY_TITLE,
+    sum: BigDecimal = SUM,
+    baseCurrency: String = CURRENCY_1,
+    targetCurrency: String? = CURRENCY_2,
+    status: ActivityStatus = PENDING,
+    participantIds: List<String> = listOf(OTHER_USER_ID, USER_ID),
+    activityDate: Instant = Instant.ofEpochMilli(0L),
+) = Activity(
+    activityId = activityId,
+    type = type,
+    creatorId = creatorId,
+    title = title,
+    sum = sum,
+    baseCurrency = baseCurrency,
+    targetCurrency = targetCurrency,
+    status = status,
+    participantIds = participantIds,
+    activityDate = activityDate,
+)
+
+fun createFilterOptions(
+    title: String? = null,
+    status: ActivityStatus? = null,
+    creatorId: String? = null,
+    type: ActivityType? = null,
+    sortedBy: SortedBy = DATE,
+    sortOrder: SortOrder = ASCENDING,
+) = FilterOptions(
+    title = title,
+    status = status,
+    creatorId = creatorId,
+    type = type,
+    sortedBy = sortedBy,
+    sortOrder = sortOrder,
+)
+
+fun createExpenseFilterOptions(
+    title: String? = null,
+    status: ActivityStatus? = null,
+    creatorId: String? = null,
+    sortedBy: SortedBy = DATE,
+    sortOrder: SortOrder = ASCENDING,
+) = ExpenseFilterOptions(
+    title = title,
+    status = status,
+    creatorId = creatorId,
+    sortedBy = sortedBy,
+    sortOrder = sortOrder,
+
+)
+
+object DummyData {
+    const val EXPENSE_ID = "expenseId"
+    const val OTHER_EXPENSE_ID = "otherExpenseId"
+
+    const val ACTIVITY_TITLE = "activityTitle"
+    val SUM = 100.toBigDecimal()
+    const val CURRENCY_1 = "PLN"
+    const val CURRENCY_2 = "EUR"
+}
