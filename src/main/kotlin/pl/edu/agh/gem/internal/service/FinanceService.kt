@@ -15,7 +15,7 @@ class FinanceService(
         return when (filterOptions.type) {
             PAYMENT -> listOf()
             EXPENSE -> expenseManagerClient.getActivities(groupId, filterOptions.toExpenseFilterOptions())
-            null -> expenseManagerClient.getActivities(groupId, filterOptions.toExpenseFilterOptions()) + listOf()
+            else -> expenseManagerClient.getActivities(groupId, filterOptions.toExpenseFilterOptions()) + listOf()
         }
     }
 }

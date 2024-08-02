@@ -13,7 +13,7 @@ import pl.edu.agh.gem.internal.model.finance.filter.SortOrder
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy
 import pl.edu.agh.gem.paths.Paths.EXTERNAL
 import pl.edu.agh.gem.security.GemUser
-import java.util.*
+import java.util.Optional
 
 @Component
 @Lazy

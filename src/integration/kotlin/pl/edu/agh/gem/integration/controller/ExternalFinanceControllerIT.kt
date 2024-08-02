@@ -4,6 +4,7 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.springframework.http.HttpStatus.FORBIDDEN
+import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.OK
 import pl.edu.agh.gem.assertion.shouldBody
 import pl.edu.agh.gem.assertion.shouldHaveErrors
@@ -95,5 +96,17 @@ class ExternalFinanceControllerIT(
             groupId shouldBe GROUP_ID
             activities.size shouldBe 0
         }
+    }
+
+    should("return  INTERNAL_SERVER_ERROR when fetching data from expenseManager or paymentManager fails") {
+        // given
+        val user = createGemUser(USER_ID)
+        stubGroupManagerUserGroups(createUserGroupsResponse(GROUP_ID), USER_ID)
+        stubExpenseManagerActivities(null, GROUP_ID, createExpenseFilterOptions(), INTERNAL_SERVER_ERROR)
+        // when
+        val response = service.getActivities(user, GROUP_ID)
+
+        // then
+        response shouldHaveHttpStatus INTERNAL_SERVER_ERROR
     }
 },)

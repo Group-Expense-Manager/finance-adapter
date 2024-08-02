@@ -11,7 +11,7 @@ import pl.edu.agh.gem.headers.HeadersTestUtils.withAppContentType
 import pl.edu.agh.gem.integration.environment.ProjectConfig.wiremock
 import pl.edu.agh.gem.internal.model.expense.filter.ExpenseFilterOptions
 import pl.edu.agh.gem.paths.Paths.INTERNAL
-import java.util.*
+import java.util.Optional
 
 private fun createActivitiesUrl(groupId: String, expenseFilterOptions: ExpenseFilterOptions) =
     UriComponentsBuilder.fromUriString("$INTERNAL/expenses/activities/groups/$groupId")
