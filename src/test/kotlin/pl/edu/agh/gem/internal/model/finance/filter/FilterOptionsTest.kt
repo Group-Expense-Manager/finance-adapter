@@ -13,15 +13,15 @@ import pl.edu.agh.gem.util.DummyData.ACTIVITY_TITLE
 import pl.edu.agh.gem.util.createFilterOptions
 
 class FilterOptionsTest : ShouldSpec({
-    should("map to ExpenseFilterOptions") {
+    should("map to ClientFilterOptions") {
         // given
         val filterOptions = createFilterOptions(title = ACTIVITY_TITLE, status = PENDING)
 
         // when
-        val expenseFilterOptions = filterOptions.toExpenseFilterOptions()
+        val clientFilterOptions = filterOptions.toClientFilterOptions()
 
         // then
-        expenseFilterOptions.also {
+        clientFilterOptions.also {
             it.title shouldBe filterOptions.title
             it.status shouldBe filterOptions.status
             it.creatorId shouldBe filterOptions.creatorId

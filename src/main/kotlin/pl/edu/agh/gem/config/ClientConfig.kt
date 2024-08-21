@@ -28,6 +28,15 @@ class ClientConfig {
             .setReadTimeout(expenseManagerProperties.readTimeout)
             .build()
     }
+
+    @Bean
+    @Qualifier("PaymentManagerRestTemplate")
+    fun paymentManagerRestTemplate(paymentManagerProperties: PaymentManagerProperties): RestTemplate {
+        return RestTemplateBuilder()
+            .setConnectTimeout(paymentManagerProperties.connectTimeout)
+            .setReadTimeout(paymentManagerProperties.readTimeout)
+            .build()
+    }
 }
 
 @ConfigurationProperties(prefix = "group-manager")
@@ -39,6 +48,13 @@ data class GroupManagerProperties(
 
 @ConfigurationProperties(prefix = "expense-manager")
 data class ExpenseManagerProperties(
+    val url: String,
+    val connectTimeout: Duration,
+    val readTimeout: Duration,
+)
+
+@ConfigurationProperties(prefix = "payment-manager")
+data class PaymentManagerProperties(
     val url: String,
     val connectTimeout: Duration,
     val readTimeout: Duration,

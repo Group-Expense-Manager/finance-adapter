@@ -8,12 +8,12 @@ import java.time.Instant
 
 data class ExpenseManagerActivitiesResponse(
     val groupId: String,
-    val expenses: List<ExpenseManagerActivityDTO>,
+    val expenses: List<ExpenseManagerActivityDto>,
 ) {
     fun toDomain() = expenses.map { it.toActivity() }
 }
 
-data class ExpenseManagerActivityDTO(
+data class ExpenseManagerActivityDto(
     val expenseId: String,
     val creatorId: String,
     val title: String,
@@ -34,6 +34,6 @@ data class ExpenseManagerActivityDTO(
         targetCurrency = targetCurrency,
         status = status,
         participantIds = participantIds,
-        activityDate = expenseDate,
+        date = expenseDate,
     )
 }

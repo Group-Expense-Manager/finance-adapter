@@ -3,10 +3,10 @@ package pl.edu.agh.gem.internal.client
 import pl.edu.agh.gem.internal.model.finance.Activity
 import pl.edu.agh.gem.internal.model.finance.filter.ClientFilterOptions
 
-interface ExpenseManagerClient {
+interface PaymentManagerClient {
     fun getActivities(groupId: String, clientFilterOptions: ClientFilterOptions): List<Activity>
 }
 
-class ExpenseManagerClientException(override val message: String?) : RuntimeException()
+class PaymentManagerClientException(override val message: String?) : RuntimeException()
 
-class RetryableExpenseManagerClientException(override val message: String?) : RuntimeException()
+class RetryablePaymentManagerClientException(override val message: String?) : RuntimeException()

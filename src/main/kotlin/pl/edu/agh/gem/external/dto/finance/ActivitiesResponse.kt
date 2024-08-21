@@ -21,7 +21,7 @@ data class ActivityDTO(
     val targetCurrency: String?,
     val status: ActivityStatus,
     val participantIds: List<String>,
-    val activityDate: Instant,
+    val date: Instant,
 )
 
 fun Activity.toDTO(): ActivityDTO {
@@ -35,7 +35,7 @@ fun Activity.toDTO(): ActivityDTO {
         targetCurrency = targetCurrency,
         status = status,
         participantIds = participantIds,
-        activityDate = activityDate,
+        date = date,
     )
 }
 
