@@ -44,10 +44,10 @@ class ClientConfig {
         gemRestTemplateFactory: GemRestTemplateFactory,
     ): RestTemplate {
         return gemRestTemplateFactory
-                .builder()
-                .withReadTimeout(paymentManagerProperties.readTimeout)
-                .withConnectTimeout(paymentManagerProperties.connectTimeout)
-                .build()
+            .builder()
+            .withReadTimeout(paymentManagerProperties.readTimeout)
+            .withConnectTimeout(paymentManagerProperties.connectTimeout)
+            .build()
     }
 }
 
