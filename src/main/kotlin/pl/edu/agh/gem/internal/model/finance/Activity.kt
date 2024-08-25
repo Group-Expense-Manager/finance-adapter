@@ -13,5 +13,5 @@ data class Activity(
     val targetCurrency: String?,
     val status: ActivityStatus,
     val participantIds: List<String>,
-    val activityDate: Instant,
+    val date: Instant,
 )

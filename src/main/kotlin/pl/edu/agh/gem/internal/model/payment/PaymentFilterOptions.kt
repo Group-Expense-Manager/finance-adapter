@@ -1,10 +1,10 @@
-package pl.edu.agh.gem.internal.model.expense.filter
+package pl.edu.agh.gem.internal.model.payment
 
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus
 import pl.edu.agh.gem.internal.model.finance.filter.SortOrder
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy
 
-data class ExpenseFilterOptions(
+data class PaymentFilterOptions(
     val title: String?,
     val status: ActivityStatus?,
     val creatorId: String?,

@@ -14,7 +14,7 @@ import pl.edu.agh.gem.paths.Paths.INTERNAL
 import java.util.Optional
 
 private fun createActivitiesUrl(groupId: String, clientFilterOptions: ClientFilterOptions) =
-    UriComponentsBuilder.fromUriString("$INTERNAL/expenses/activities/groups/$groupId")
+    UriComponentsBuilder.fromUriString("$INTERNAL/payments/activities/groups/$groupId")
         .queryParamIfPresent("title", Optional.ofNullable(clientFilterOptions.title))
         .queryParamIfPresent("status", Optional.ofNullable(clientFilterOptions.status))
         .queryParamIfPresent("isCreator", Optional.ofNullable(clientFilterOptions.creatorId))
@@ -23,7 +23,7 @@ private fun createActivitiesUrl(groupId: String, clientFilterOptions: ClientFilt
         .build()
         .toUriString()
 
-fun stubExpenseManagerActivities(body: Any?, groupId: String, clientFilterOptions: ClientFilterOptions, statusCode: HttpStatusCode = OK) {
+fun stubPaymentManagerActivities(body: Any?, groupId: String, clientFilterOptions: ClientFilterOptions, statusCode: HttpStatusCode = OK) {
     wiremock.stubFor(
         get(createActivitiesUrl(groupId, clientFilterOptions))
             .willReturn(

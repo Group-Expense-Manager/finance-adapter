@@ -8,21 +8,24 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.whenever
 import pl.edu.agh.gem.helper.group.DummyGroup.GROUP_ID
 import pl.edu.agh.gem.internal.client.ExpenseManagerClient
+import pl.edu.agh.gem.internal.client.PaymentManagerClient
 import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
 import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
 import pl.edu.agh.gem.util.createActivity
-import pl.edu.agh.gem.util.createExpenseFilterOptions
+import pl.edu.agh.gem.util.createClientFilterOptions
 import pl.edu.agh.gem.util.createFilterOptions
 
 class FinanceServiceTest : ShouldSpec({
     val expenseManagerClient = mock<ExpenseManagerClient>()
+    val paymentManagerClient = mock<PaymentManagerClient>()
     val financeService = FinanceService(
         expenseManagerClient,
+        paymentManagerClient,
     )
 
     should("get all activities when type is not specified") {
         // given
-        val expenseFilterOptions = createExpenseFilterOptions()
+        val expenseFilterOptions = createClientFilterOptions()
         val expenseManagerActivities = listOf(createActivity(type = EXPENSE))
         whenever(expenseManagerClient.getActivities(GROUP_ID, expenseFilterOptions)).thenReturn(expenseManagerActivities)
 
@@ -36,7 +39,7 @@ class FinanceServiceTest : ShouldSpec({
 
     should("get expense activities when type is EXPENSE") {
         // given
-        val expenseFilterOptions = createExpenseFilterOptions()
+        val expenseFilterOptions = createClientFilterOptions()
         val expenseManagerActivities = listOf(createActivity(type = EXPENSE))
         whenever(expenseManagerClient.getActivities(GROUP_ID, expenseFilterOptions)).thenReturn(expenseManagerActivities)
 
@@ -50,7 +53,7 @@ class FinanceServiceTest : ShouldSpec({
 
     should("get payment activities when type is PAYMENT") {
         // given
-        val expenseFilterOptions = createExpenseFilterOptions()
+        val expenseFilterOptions = createClientFilterOptions()
         val expenseManagerActivities = listOf(createActivity(type = EXPENSE))
         whenever(expenseManagerClient.getActivities(GROUP_ID, expenseFilterOptions)).thenReturn(expenseManagerActivities)
 
