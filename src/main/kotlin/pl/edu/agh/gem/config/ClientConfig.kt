@@ -39,11 +39,15 @@ class ClientConfig {
 
     @Bean
     @Qualifier("PaymentManagerRestTemplate")
-    fun paymentManagerRestTemplate(paymentManagerProperties: PaymentManagerProperties): RestTemplate {
-        return RestTemplateBuilder()
-            .setConnectTimeout(paymentManagerProperties.connectTimeout)
-            .setReadTimeout(paymentManagerProperties.readTimeout)
-            .build()
+    fun paymentManagerRestTemplate(
+        paymentManagerProperties: PaymentManagerProperties,
+        gemRestTemplateFactory: GemRestTemplateFactory,
+    ): RestTemplate {
+        return gemRestTemplateFactory
+                .builder()
+                .withReadTimeout(paymentManagerProperties.readTimeout)
+                .withConnectTimeout(paymentManagerProperties.connectTimeout)
+                .build()
     }
 }
 
