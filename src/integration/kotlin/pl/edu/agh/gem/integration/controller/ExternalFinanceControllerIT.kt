@@ -125,7 +125,7 @@ class ExternalFinanceControllerIT(
         // then
         response shouldHaveHttpStatus INTERNAL_SERVER_ERROR
     }
-    should("return  INTERNAL_SERVER_ERROR when fetching data from paymentManager fails") {
+    should("return INTERNAL_SERVER_ERROR when fetching data from paymentManager fails") {
         // given
         val user = createGemUser(USER_ID)
         val clientFilterOptions = createClientFilterOptions()
