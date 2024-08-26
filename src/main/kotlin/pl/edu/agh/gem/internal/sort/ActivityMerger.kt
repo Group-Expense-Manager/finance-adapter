@@ -25,27 +25,21 @@ class ActivityMerger(
 
     fun merge(activitiesA: List<Activity>, activitiesB: List<Activity>): List<Activity> {
         val result = mutableListOf<Activity>()
-        var index1 = 0
-        var index2 = 0
+        var indexA = 0
+        var indexB = 0
 
-        while (index1 < activitiesA.size && index2 < activitiesB.size) {
-            if (activityComparator.compare(activitiesA[index1], activitiesB[index2]) <= 0) {
-                result.add(activitiesA[index1])
-                index1++
+        while (indexA < activitiesA.size && indexB < activitiesB.size) {
+            if (activityComparator.compare(activitiesA[indexA], activitiesB[indexB]) <= 0) {
+                result.add(activitiesA[indexA])
+                indexA++
             } else {
-                result.add(activitiesB[index2])
-                index2++
+                result.add(activitiesB[indexB])
+                indexB++
             }
         }
 
-        while (index1 < activitiesA.size) {
-            result.add(activitiesA[index1])
-            index1++
-        }
-        while (index2 < activitiesB.size) {
-            result.add(activitiesB[index2])
-            index2++
-        }
+        result.addAll(activitiesA.subList(indexA, activitiesA.size))
+        result.addAll(activitiesB.subList(indexB, activitiesB.size))
 
         return result
     }

@@ -109,7 +109,7 @@ class ExternalFinanceControllerIT(
         }
     }
 
-    should("return  INTERNAL_SERVER_ERROR when fetching data from expenseManager fails") {
+    should("return INTERNAL_SERVER_ERROR when fetching data from expenseManager fails") {
         // given
         val user = createGemUser(USER_ID)
         val clientFilterOptions = createClientFilterOptions()
