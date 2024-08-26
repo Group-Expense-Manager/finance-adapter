@@ -9,14 +9,14 @@ import pl.edu.agh.gem.internal.model.finance.ActivityStatus.ACCEPTED
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus.PENDING
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus.REJECTED
 import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
-import pl.edu.agh.gem.util.createExpenseManagerActivityDTO
+import pl.edu.agh.gem.util.createExpenseManagerActivityDto
 import java.math.BigDecimal
 import java.time.Instant
 
 class ExpenseManagerActivitiesResponseTest : ShouldSpec({
     should("map ExpenseManagerActivityDTO to Activity correctly") {
         // given
-        val expenseManagerActivityDTO = createExpenseManagerActivityDTO()
+        val expenseManagerActivityDTO = createExpenseManagerActivityDto()
 
         // when
         val activity = expenseManagerActivityDTO.toActivity()
@@ -32,7 +32,7 @@ class ExpenseManagerActivitiesResponseTest : ShouldSpec({
             it.targetCurrency shouldBe expenseManagerActivityDTO.targetCurrency
             it.status shouldBe expenseManagerActivityDTO.status
             it.participantIds shouldBe expenseManagerActivityDTO.participantIds
-            it.activityDate shouldBe expenseManagerActivityDTO.expenseDate
+            it.date shouldBe expenseManagerActivityDTO.expenseDate
         }
     }
 
@@ -56,7 +56,7 @@ class ExpenseManagerActivitiesResponseTest : ShouldSpec({
             Instant.ofEpochSecond(3000),
         )
         val expenses = expenseIds.mapIndexed { index, expenseId ->
-            createExpenseManagerActivityDTO(
+            createExpenseManagerActivityDto(
                 expenseId = expenseId,
                 creatorId = creatorIds[index],
                 title = titles[index],
@@ -89,7 +89,7 @@ class ExpenseManagerActivitiesResponseTest : ShouldSpec({
             it.map { activity -> activity.targetCurrency } shouldContainExactly targetCurrencies
             it.map { activity -> activity.status } shouldContainExactly statuses
             it.map { activity -> activity.participantIds } shouldContainExactly participantIds
-            it.map { activity -> activity.activityDate } shouldContainExactly expenseDates
+            it.map { activity -> activity.date } shouldContainExactly expenseDates
         }
     }
 

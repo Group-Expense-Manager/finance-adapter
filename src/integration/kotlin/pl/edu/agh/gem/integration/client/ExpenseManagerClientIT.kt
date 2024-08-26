@@ -12,7 +12,7 @@ import pl.edu.agh.gem.internal.client.ExpenseManagerClientException
 import pl.edu.agh.gem.internal.client.RetryableExpenseManagerClientException
 import pl.edu.agh.gem.util.DummyData.EXPENSE_ID
 import pl.edu.agh.gem.util.DummyData.OTHER_EXPENSE_ID
-import pl.edu.agh.gem.util.createExpenseFilterOptions
+import pl.edu.agh.gem.util.createClientFilterOptions
 import pl.edu.agh.gem.util.createExpenseManagerActivitiesResponse
 
 class ExpenseManagerClientIT(
@@ -21,7 +21,7 @@ class ExpenseManagerClientIT(
 
     should("get activities") {
         // given
-        val expenseFilterOptions = createExpenseFilterOptions()
+        val expenseFilterOptions = createClientFilterOptions()
         val expenseManagerActivitiesResponse = createExpenseManagerActivitiesResponse()
         stubExpenseManagerActivities(expenseManagerActivitiesResponse, GROUP_ID, expenseFilterOptions)
 
@@ -34,7 +34,7 @@ class ExpenseManagerClientIT(
 
     should("throw ExpenseManagerClientException when we send bad request") {
         // given
-        val expenseFilterOptions = createExpenseFilterOptions()
+        val expenseFilterOptions = createClientFilterOptions()
         stubExpenseManagerActivities(createExpenseManagerActivitiesResponse(), GROUP_ID, expenseFilterOptions, NOT_ACCEPTABLE)
 
         // when & then
@@ -45,7 +45,7 @@ class ExpenseManagerClientIT(
 
     should("throw RetryableGroupManagerClientException when client has internal error") {
         // given
-        val expenseFilterOptions = createExpenseFilterOptions()
+        val expenseFilterOptions = createClientFilterOptions()
         stubExpenseManagerActivities(createExpenseManagerActivitiesResponse(), GROUP_ID, expenseFilterOptions, INTERNAL_SERVER_ERROR)
 
         // when & then

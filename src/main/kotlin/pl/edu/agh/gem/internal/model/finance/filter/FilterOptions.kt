@@ -1,6 +1,5 @@
 package pl.edu.agh.gem.internal.model.finance.filter
 
-import pl.edu.agh.gem.internal.model.expense.filter.ExpenseFilterOptions
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus
 import pl.edu.agh.gem.internal.model.finance.ActivityType
 import pl.edu.agh.gem.internal.model.finance.filter.SortOrder.ASCENDING
@@ -14,7 +13,7 @@ data class FilterOptions(
     val sortedBy: SortedBy,
     val sortOrder: SortOrder,
 ) {
-    fun toExpenseFilterOptions() = ExpenseFilterOptions(
+    fun toClientFilterOptions() = ClientFilterOptions(
         title = title,
         status = status,
         creatorId = creatorId,

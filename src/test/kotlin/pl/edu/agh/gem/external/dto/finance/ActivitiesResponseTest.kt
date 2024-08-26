@@ -33,7 +33,7 @@ class ActivitiesResponseTest : ShouldSpec({
             it.targetCurrency shouldBe activity.targetCurrency
             it.status shouldBe activity.status
             it.participantIds shouldBe activity.participantIds
-            it.activityDate shouldBe activity.activityDate
+            it.date shouldBe activity.date
         }
     }
 
@@ -69,7 +69,7 @@ class ActivitiesResponseTest : ShouldSpec({
                 targetCurrency = targetCurrencies[index],
                 status = statuses[index],
                 participantIds = participantsIds[index],
-                activityDate = activityDates[index],
+                date = activityDates[index],
             )
         }
 
@@ -89,7 +89,7 @@ class ActivitiesResponseTest : ShouldSpec({
             it.map { dto -> dto.targetCurrency } shouldContainExactly targetCurrencies
             it.map { dto -> dto.status } shouldContainExactly statuses
             it.map { dto -> dto.participantIds } shouldContainExactly participantsIds
-            it.map { dto -> dto.activityDate } shouldContainExactly activityDates
+            it.map { dto -> dto.date } shouldContainExactly activityDates
         }
     }
 

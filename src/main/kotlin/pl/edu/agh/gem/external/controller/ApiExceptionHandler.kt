@@ -12,8 +12,10 @@ import pl.edu.agh.gem.error.handleError
 import pl.edu.agh.gem.exception.UserWithoutGroupAccessException
 import pl.edu.agh.gem.internal.client.ExpenseManagerClientException
 import pl.edu.agh.gem.internal.client.GroupManagerClientException
+import pl.edu.agh.gem.internal.client.PaymentManagerClientException
 import pl.edu.agh.gem.internal.client.RetryableExpenseManagerClientException
 import pl.edu.agh.gem.internal.client.RetryableGroupManagerClientException
+import pl.edu.agh.gem.internal.client.RetryablePaymentManagerClientException
 
 @ControllerAdvice
 @Order(LOWEST_PRECEDENCE)
@@ -46,6 +48,18 @@ class ApiExceptionHandler {
     @ExceptionHandler(RetryableExpenseManagerClientException::class)
     fun handleRetryableExpenseManagerClientException(
         exception: RetryableExpenseManagerClientException,
+    ): ResponseEntity<SimpleErrorsHolder> {
+        return ResponseEntity(handleError(exception), INTERNAL_SERVER_ERROR)
+    }
+
+    @ExceptionHandler(PaymentManagerClientException::class)
+    fun handlePaymentManagerClientException(exception: PaymentManagerClientException): ResponseEntity<SimpleErrorsHolder> {
+        return ResponseEntity(handleError(exception), INTERNAL_SERVER_ERROR)
+    }
+
+    @ExceptionHandler(RetryablePaymentManagerClientException::class)
+    fun handleRetryablePaymentManagerClientException(
+        exception: RetryablePaymentManagerClientException,
     ): ResponseEntity<SimpleErrorsHolder> {
         return ResponseEntity(handleError(exception), INTERNAL_SERVER_ERROR)
     }

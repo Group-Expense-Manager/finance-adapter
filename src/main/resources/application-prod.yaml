@@ -7,3 +7,8 @@ expense-manager:
   url: http://${EXPENSE_MANAGER_SERVICE_SERVICE_HOST}:8080
   read-timeout: 1000ms
   connect-timeout: 1000ms
+
+payment-manager:
+  url: http://${PAYMENT_MANAGER_SERVICE_SERVICE_HOST}:8080
+  read-timeout: 1000ms
+  connect-timeout: 1000ms

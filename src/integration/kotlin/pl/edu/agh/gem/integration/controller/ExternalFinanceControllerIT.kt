@@ -19,10 +19,12 @@ import pl.edu.agh.gem.integration.BaseIntegrationSpec
 import pl.edu.agh.gem.integration.ability.ServiceTestClient
 import pl.edu.agh.gem.integration.ability.stubExpenseManagerActivities
 import pl.edu.agh.gem.integration.ability.stubGroupManagerUserGroups
+import pl.edu.agh.gem.integration.ability.stubPaymentManagerActivities
 import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
 import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
-import pl.edu.agh.gem.util.createExpenseFilterOptions
+import pl.edu.agh.gem.util.createClientFilterOptions
 import pl.edu.agh.gem.util.createExpenseManagerActivitiesResponse
+import pl.edu.agh.gem.util.createPaymentManagerActivitiesResponse
 import pl.edu.agh.gem.util.createUserGroupsResponse
 
 class ExternalFinanceControllerIT(
@@ -48,27 +50,33 @@ class ExternalFinanceControllerIT(
     should("return all activities when no filters applied") {
         // given
         val user = createGemUser(USER_ID)
+        val clientFilterOptions = createClientFilterOptions()
         stubGroupManagerUserGroups(createUserGroupsResponse(GROUP_ID), USER_ID)
         val expenseManagerActivitiesResponse = createExpenseManagerActivitiesResponse()
-        stubExpenseManagerActivities(expenseManagerActivitiesResponse, GROUP_ID, createExpenseFilterOptions())
+        stubExpenseManagerActivities(expenseManagerActivitiesResponse, GROUP_ID, clientFilterOptions)
+        val paymentManagerActivitiesResponse = createPaymentManagerActivitiesResponse()
+        stubPaymentManagerActivities(paymentManagerActivitiesResponse, GROUP_ID, clientFilterOptions)
+
         // when
         val response = service.getActivities(user, GROUP_ID)
 
         // then
         response shouldHaveHttpStatus OK
+        val ids = expenseManagerActivitiesResponse.expenses.map { it.expenseId } + paymentManagerActivitiesResponse.payments.map { it.paymentId }
         response.shouldBody<ActivitiesResponse> {
             groupId shouldBe GROUP_ID
-            activities.size shouldBe expenseManagerActivitiesResponse.expenses.size
-            activities.map { it.activityId } shouldContainExactly expenseManagerActivitiesResponse.expenses.map { it.expenseId }
+            activities.size shouldBe expenseManagerActivitiesResponse.expenses.size + paymentManagerActivitiesResponse.payments.size
+            activities.map { it.activityId } shouldContainExactly ids
         }
     }
 
     should("return expense activities when type is EXPENSE") {
+
         // given
         val user = createGemUser(USER_ID)
         stubGroupManagerUserGroups(createUserGroupsResponse(GROUP_ID), USER_ID)
         val expenseManagerActivitiesResponse = createExpenseManagerActivitiesResponse()
-        stubExpenseManagerActivities(expenseManagerActivitiesResponse, GROUP_ID, createExpenseFilterOptions())
+        stubExpenseManagerActivities(expenseManagerActivitiesResponse, GROUP_ID, createClientFilterOptions())
         // when
         val response = service.getActivities(user, GROUP_ID, type = EXPENSE)
 
@@ -84,9 +92,11 @@ class ExternalFinanceControllerIT(
     should("return payment activities when type is PAYMENT") {
         // given
         val user = createGemUser(USER_ID)
+        val clientFilterOptions = createClientFilterOptions()
         stubGroupManagerUserGroups(createUserGroupsResponse(GROUP_ID), USER_ID)
-        val expenseManagerActivitiesResponse = createExpenseManagerActivitiesResponse()
-        stubExpenseManagerActivities(expenseManagerActivitiesResponse, GROUP_ID, createExpenseFilterOptions())
+        val paymentManagerActivitiesResponse = createPaymentManagerActivitiesResponse()
+        stubPaymentManagerActivities(paymentManagerActivitiesResponse, GROUP_ID, clientFilterOptions)
+
         // when
         val response = service.getActivities(user, GROUP_ID, type = PAYMENT)
 
@@ -94,15 +104,37 @@ class ExternalFinanceControllerIT(
         response shouldHaveHttpStatus OK
         response.shouldBody<ActivitiesResponse> {
             groupId shouldBe GROUP_ID
-            activities.size shouldBe 0
+            activities.size shouldBe paymentManagerActivitiesResponse.payments.size
+            activities.map { it.activityId } shouldContainExactly paymentManagerActivitiesResponse.payments.map { it.paymentId }
         }
     }
 
-    should("return  INTERNAL_SERVER_ERROR when fetching data from expenseManager or paymentManager fails") {
+    should("return INTERNAL_SERVER_ERROR when fetching data from expenseManager fails") {
         // given
         val user = createGemUser(USER_ID)
+        val clientFilterOptions = createClientFilterOptions()
         stubGroupManagerUserGroups(createUserGroupsResponse(GROUP_ID), USER_ID)
-        stubExpenseManagerActivities(null, GROUP_ID, createExpenseFilterOptions(), INTERNAL_SERVER_ERROR)
+        val expenseManagerActivitiesResponse = createExpenseManagerActivitiesResponse()
+        stubExpenseManagerActivities(expenseManagerActivitiesResponse, GROUP_ID, clientFilterOptions, INTERNAL_SERVER_ERROR)
+        val paymentManagerActivitiesResponse = createPaymentManagerActivitiesResponse()
+        stubPaymentManagerActivities(paymentManagerActivitiesResponse, GROUP_ID, clientFilterOptions)
+
+        // when
+        val response = service.getActivities(user, GROUP_ID)
+
+        // then
+        response shouldHaveHttpStatus INTERNAL_SERVER_ERROR
+    }
+    should("return INTERNAL_SERVER_ERROR when fetching data from paymentManager fails") {
+        // given
+        val user = createGemUser(USER_ID)
+        val clientFilterOptions = createClientFilterOptions()
+        stubGroupManagerUserGroups(createUserGroupsResponse(GROUP_ID), USER_ID)
+        val expenseManagerActivitiesResponse = createExpenseManagerActivitiesResponse()
+        stubExpenseManagerActivities(expenseManagerActivitiesResponse, GROUP_ID, clientFilterOptions)
+        val paymentManagerActivitiesResponse = createPaymentManagerActivitiesResponse()
+        stubPaymentManagerActivities(paymentManagerActivitiesResponse, GROUP_ID, clientFilterOptions, INTERNAL_SERVER_ERROR)
+
         // when
         val response = service.getActivities(user, GROUP_ID)
 
