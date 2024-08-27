@@ -2,10 +2,10 @@ package pl.edu.agh.gem.config
 
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.client.RestTemplate
+import pl.edu.agh.gem.helper.http.GemRestTemplateFactory
 import java.time.Duration
 
 @Configuration
@@ -13,28 +13,40 @@ class ClientConfig {
 
     @Bean
     @Qualifier("GroupManagerRestTemplate")
-    fun groupManagerRestTemplate(groupManagerProperties: GroupManagerProperties): RestTemplate {
-        return RestTemplateBuilder()
-            .setConnectTimeout(groupManagerProperties.connectTimeout)
-            .setReadTimeout(groupManagerProperties.readTimeout)
+    fun groupManagerRestTemplate(
+        groupManagerProperties: GroupManagerProperties,
+        gemRestTemplateFactory: GemRestTemplateFactory,
+    ): RestTemplate {
+        return gemRestTemplateFactory
+            .builder()
+            .withReadTimeout(groupManagerProperties.readTimeout)
+            .withConnectTimeout(groupManagerProperties.connectTimeout)
             .build()
     }
 
     @Bean
     @Qualifier("ExpenseManagerRestTemplate")
-    fun expenseManagerRestTemplate(expenseManagerProperties: ExpenseManagerProperties): RestTemplate {
-        return RestTemplateBuilder()
-            .setConnectTimeout(expenseManagerProperties.connectTimeout)
-            .setReadTimeout(expenseManagerProperties.readTimeout)
+    fun expenseManagerRestTemplate(
+        expenseManagerProperties: ExpenseManagerProperties,
+        gemRestTemplateFactory: GemRestTemplateFactory,
+    ): RestTemplate {
+        return gemRestTemplateFactory
+            .builder()
+            .withReadTimeout(expenseManagerProperties.readTimeout)
+            .withConnectTimeout(expenseManagerProperties.connectTimeout)
             .build()
     }
 
     @Bean
     @Qualifier("PaymentManagerRestTemplate")
-    fun paymentManagerRestTemplate(paymentManagerProperties: PaymentManagerProperties): RestTemplate {
-        return RestTemplateBuilder()
-            .setConnectTimeout(paymentManagerProperties.connectTimeout)
-            .setReadTimeout(paymentManagerProperties.readTimeout)
+    fun paymentManagerRestTemplate(
+        paymentManagerProperties: PaymentManagerProperties,
+        gemRestTemplateFactory: GemRestTemplateFactory,
+    ): RestTemplate {
+        return gemRestTemplateFactory
+            .builder()
+            .withReadTimeout(paymentManagerProperties.readTimeout)
+            .withConnectTimeout(paymentManagerProperties.connectTimeout)
             .build()
     }
 }

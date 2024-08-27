@@ -1,3 +1,6 @@
+spring:
+  application:
+    name: finance-adapter
 
 resilience4j.retry:
   configs:
