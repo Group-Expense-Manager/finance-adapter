@@ -28,7 +28,7 @@ class ActivitiesResponseTest : ShouldSpec({
             it.type shouldBe activity.type
             it.creatorId shouldBe activity.creatorId
             it.title shouldBe activity.title
-            it.sum shouldBe activity.sum
+            it.value shouldBe activity.value
             it.baseCurrency shouldBe activity.baseCurrency
             it.targetCurrency shouldBe activity.targetCurrency
             it.status shouldBe activity.status
@@ -43,7 +43,7 @@ class ActivitiesResponseTest : ShouldSpec({
         val types = listOf(EXPENSE, EXPENSE, EXPENSE)
         val creatorIds = listOf("creatorId1", "creatorId2", "creatorId3")
         val titles = listOf("title1", "title2", "title3")
-        val sums = listOf(BigDecimal.ONE, BigDecimal.TWO, BigDecimal.TEN)
+        val values = listOf(BigDecimal.ONE, BigDecimal.TWO, BigDecimal.TEN)
         val baseCurrencies = listOf("PLN", "EUR", "USD")
         val targetCurrencies = listOf("EUR", null, "PLN")
         val statuses = listOf(PENDING, ACCEPTED, REJECTED)
@@ -64,7 +64,7 @@ class ActivitiesResponseTest : ShouldSpec({
                 type = types[index],
                 creatorId = creatorIds[index],
                 title = titles[index],
-                sum = sums[index],
+                value = values[index],
                 baseCurrency = baseCurrencies[index],
                 targetCurrency = targetCurrencies[index],
                 status = statuses[index],
@@ -84,7 +84,7 @@ class ActivitiesResponseTest : ShouldSpec({
             it.map { dto -> dto.type } shouldContainExactly types
             it.map { dto -> dto.creatorId } shouldContainExactly creatorIds
             it.map { dto -> dto.title } shouldContainExactly titles
-            it.map { dto -> dto.sum } shouldContainExactly sums
+            it.map { dto -> dto.value } shouldContainExactly values
             it.map { dto -> dto.baseCurrency } shouldContainExactly baseCurrencies
             it.map { dto -> dto.targetCurrency } shouldContainExactly targetCurrencies
             it.map { dto -> dto.status } shouldContainExactly statuses

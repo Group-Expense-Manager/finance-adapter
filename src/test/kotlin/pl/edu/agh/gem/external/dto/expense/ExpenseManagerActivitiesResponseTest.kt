@@ -27,7 +27,7 @@ class ExpenseManagerActivitiesResponseTest : ShouldSpec({
             it.type shouldBe EXPENSE
             it.creatorId shouldBe expenseManagerActivityDTO.creatorId
             it.title shouldBe expenseManagerActivityDTO.title
-            it.sum shouldBe expenseManagerActivityDTO.cost
+            it.value shouldBe expenseManagerActivityDTO.totalCost
             it.baseCurrency shouldBe expenseManagerActivityDTO.baseCurrency
             it.targetCurrency shouldBe expenseManagerActivityDTO.targetCurrency
             it.status shouldBe expenseManagerActivityDTO.status
@@ -41,7 +41,7 @@ class ExpenseManagerActivitiesResponseTest : ShouldSpec({
         val expenseIds = listOf("expenseId1", "expenseId2", "expenseId3")
         val creatorIds = listOf("creatorId1", "creatorId2", "creatorId3")
         val titles = listOf("title1", "title2", "title3")
-        val costs = listOf(BigDecimal.ONE, BigDecimal.TWO, BigDecimal.TEN)
+        val totalCosts = listOf(BigDecimal.ONE, BigDecimal.TWO, BigDecimal.TEN)
         val baseCurrencies = listOf("PLN", "EUR", "USD")
         val targetCurrencies = listOf("EUR", null, "PLN")
         val statuses = listOf(PENDING, ACCEPTED, REJECTED)
@@ -60,7 +60,7 @@ class ExpenseManagerActivitiesResponseTest : ShouldSpec({
                 expenseId = expenseId,
                 creatorId = creatorIds[index],
                 title = titles[index],
-                cost = costs[index],
+                totalCost = totalCosts[index],
                 baseCurrency = baseCurrencies[index],
                 targetCurrency = targetCurrencies[index],
                 status = statuses[index],
@@ -84,7 +84,7 @@ class ExpenseManagerActivitiesResponseTest : ShouldSpec({
             it.map { activity -> activity.type } shouldContainExactly listOf(EXPENSE, EXPENSE, EXPENSE)
             it.map { activity -> activity.creatorId } shouldContainExactly creatorIds
             it.map { activity -> activity.title } shouldContainExactly titles
-            it.map { activity -> activity.sum } shouldContainExactly costs
+            it.map { activity -> activity.value } shouldContainExactly totalCosts
             it.map { activity -> activity.baseCurrency } shouldContainExactly baseCurrencies
             it.map { activity -> activity.targetCurrency } shouldContainExactly targetCurrencies
             it.map { activity -> activity.status } shouldContainExactly statuses
