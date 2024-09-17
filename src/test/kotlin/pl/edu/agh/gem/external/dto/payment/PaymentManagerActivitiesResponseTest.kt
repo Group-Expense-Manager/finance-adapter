@@ -27,7 +27,7 @@ class PaymentManagerActivitiesResponseTest : ShouldSpec({
             it.type shouldBe PAYMENT
             it.creatorId shouldBe paymentManagerActivityDTO.creatorId
             it.title shouldBe paymentManagerActivityDTO.title
-            it.sum shouldBe paymentManagerActivityDTO.amount.value
+            it.value shouldBe paymentManagerActivityDTO.amount.value
             it.baseCurrency shouldBe paymentManagerActivityDTO.amount.currency
             it.targetCurrency shouldBe paymentManagerActivityDTO.targetCurrency
             it.status shouldBe paymentManagerActivityDTO.status
@@ -83,7 +83,7 @@ class PaymentManagerActivitiesResponseTest : ShouldSpec({
             it.map { activity -> activity.type } shouldContainExactly listOf(PAYMENT, PAYMENT, PAYMENT)
             it.map { activity -> activity.creatorId } shouldContainExactly creatorIds
             it.map { activity -> activity.title } shouldContainExactly titles
-            it.map { activity -> activity.sum } shouldContainExactly amounts.map { amount -> amount.value }
+            it.map { activity -> activity.value } shouldContainExactly amounts.map { amount -> amount.value }
             it.map { activity -> activity.baseCurrency } shouldContainExactly amounts.map { amount -> amount.currency }
             it.map { activity -> activity.targetCurrency } shouldContainExactly targetCurrencies
             it.map { activity -> activity.status } shouldContainExactly statuses

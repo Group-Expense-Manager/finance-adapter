@@ -28,7 +28,7 @@ data class PaymentManagerActivityDto(
         type = PAYMENT,
         creatorId = creatorId,
         title = title,
-        sum = amount.value,
+        value = amount.value,
         baseCurrency = amount.currency,
         targetCurrency = targetCurrency,
         status = status,

@@ -29,7 +29,7 @@ import pl.edu.agh.gem.util.DummyData.EXPENSE_ID
 import pl.edu.agh.gem.util.DummyData.OTHER_EXPENSE_ID
 import pl.edu.agh.gem.util.DummyData.OTHER_PAYMENT_ID
 import pl.edu.agh.gem.util.DummyData.PAYMENT_ID
-import pl.edu.agh.gem.util.DummyData.SUM
+import pl.edu.agh.gem.util.DummyData.VALUE
 import java.math.BigDecimal
 import java.time.Instant
 
@@ -41,7 +41,7 @@ fun createExpenseManagerActivityDto(
     expenseId: String = EXPENSE_ID,
     creatorId: String = USER_ID,
     title: String = ACTIVITY_TITLE,
-    cost: BigDecimal = SUM,
+    totalCost: BigDecimal = VALUE,
     baseCurrency: String = CURRENCY_1,
     targetCurrency: String? = CURRENCY_2,
     status: ActivityStatus = PENDING,
@@ -51,7 +51,7 @@ fun createExpenseManagerActivityDto(
     expenseId = expenseId,
     creatorId = creatorId,
     title = title,
-    cost = cost,
+    totalCost = totalCost,
     baseCurrency = baseCurrency,
     targetCurrency = targetCurrency,
     status = status,
@@ -114,7 +114,7 @@ fun createActivity(
     type: ActivityType = EXPENSE,
     creatorId: String = USER_ID,
     title: String = ACTIVITY_TITLE,
-    sum: BigDecimal = SUM,
+    value: BigDecimal = VALUE,
     baseCurrency: String = CURRENCY_1,
     targetCurrency: String? = CURRENCY_2,
     status: ActivityStatus = PENDING,
@@ -125,7 +125,7 @@ fun createActivity(
     type = type,
     creatorId = creatorId,
     title = title,
-    sum = sum,
+    value = value,
     baseCurrency = baseCurrency,
     targetCurrency = targetCurrency,
     status = status,
@@ -171,7 +171,7 @@ object DummyData {
     const val OTHER_PAYMENT_ID = "otherPaymentId"
 
     const val ACTIVITY_TITLE = "activityTitle"
-    val SUM = 100.toBigDecimal()
+    val VALUE = 100.toBigDecimal()
     const val CURRENCY_1 = "PLN"
     const val CURRENCY_2 = "EUR"
 }

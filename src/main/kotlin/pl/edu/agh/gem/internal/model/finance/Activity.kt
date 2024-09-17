@@ -8,7 +8,7 @@ data class Activity(
     val type: ActivityType,
     val creatorId: String,
     val title: String,
-    val sum: BigDecimal,
+    val value: BigDecimal,
     val baseCurrency: String,
     val targetCurrency: String?,
     val status: ActivityStatus,
