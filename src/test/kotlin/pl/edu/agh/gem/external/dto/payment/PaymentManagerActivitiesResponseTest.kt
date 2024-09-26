@@ -31,7 +31,7 @@ class PaymentManagerActivitiesResponseTest : ShouldSpec({
             it.baseCurrency shouldBe paymentManagerActivityDTO.amount.currency
             it.targetCurrency shouldBe paymentManagerActivityDTO.targetCurrency
             it.status shouldBe paymentManagerActivityDTO.status
-            it.participantIds shouldBe listOf(paymentManagerActivityDTO.creatorId, paymentManagerActivityDTO.recipientId)
+            it.participantIds shouldBe listOf(paymentManagerActivityDTO.recipientId)
             it.date shouldBe paymentManagerActivityDTO.date
         }
     }
@@ -87,8 +87,8 @@ class PaymentManagerActivitiesResponseTest : ShouldSpec({
             it.map { activity -> activity.baseCurrency } shouldContainExactly amounts.map { amount -> amount.currency }
             it.map { activity -> activity.targetCurrency } shouldContainExactly targetCurrencies
             it.map { activity -> activity.status } shouldContainExactly statuses
-            it.map { activity -> activity.participantIds } shouldContainExactly creatorIds
-                .mapIndexed { index, creatorId -> listOf(creatorId, recipientIds[index]) }
+            it.map { activity -> activity.participantIds } shouldContainExactly recipientIds
+                .map { recipientId -> listOf(recipientId) }
             it.map { activity -> activity.date } shouldContainExactly dates
         }
     }

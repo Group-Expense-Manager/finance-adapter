@@ -32,7 +32,7 @@ data class PaymentManagerActivityDto(
         baseCurrency = amount.currency,
         targetCurrency = targetCurrency,
         status = status,
-        participantIds = listOf(creatorId, recipientId),
+        participantIds = listOf(recipientId),
         date = date,
     )
 }
