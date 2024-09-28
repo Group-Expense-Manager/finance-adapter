@@ -36,3 +36,19 @@ fun stubPaymentManagerActivities(body: Any?, groupId: String, clientFilterOption
             ),
     )
 }
+
+private fun createAcceptedPaymentsUrl(groupId: String) = "$INTERNAL/payments/accepted/groups/$groupId"
+
+fun stubAcceptedPayments(body: Any?, groupId: String, statusCode: HttpStatusCode = OK) {
+    wiremock.stubFor(
+        get(createAcceptedPaymentsUrl(groupId))
+            .willReturn(
+                aResponse()
+                    .withStatus(statusCode.value())
+                    .withAppContentType()
+                    .withBody(
+                        jacksonObjectMapper().registerModules(JavaTimeModule()).writeValueAsString(body),
+                    ),
+            ),
+    )
+}
