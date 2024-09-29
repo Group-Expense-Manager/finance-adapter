@@ -4,7 +4,6 @@ import pl.edu.agh.gem.model.GroupMembers
 
 data class GroupData(
     val members: GroupMembers,
-    val acceptRequired: Boolean,
     val currencies: Currencies,
 )
 
