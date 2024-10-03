@@ -29,8 +29,7 @@ class ActivitiesResponseTest : ShouldSpec({
             it.creatorId shouldBe activity.creatorId
             it.title shouldBe activity.title
             it.value shouldBe activity.value
-            it.baseCurrency shouldBe activity.baseCurrency
-            it.targetCurrency shouldBe activity.targetCurrency
+            it.currency shouldBe activity.currency
             it.status shouldBe activity.status
             it.participantIds shouldBe activity.participantIds
             it.date shouldBe activity.date
@@ -44,8 +43,7 @@ class ActivitiesResponseTest : ShouldSpec({
         val creatorIds = listOf("creatorId1", "creatorId2", "creatorId3")
         val titles = listOf("title1", "title2", "title3")
         val values = listOf(BigDecimal.ONE, BigDecimal.TWO, BigDecimal.TEN)
-        val baseCurrencies = listOf("PLN", "EUR", "USD")
-        val targetCurrencies = listOf("EUR", null, "PLN")
+        val currencies = listOf("PLN", "EUR", "USD")
         val statuses = listOf(PENDING, ACCEPTED, REJECTED)
         val participantsIds = listOf(
             listOf("participant1", "participant2"),
@@ -65,8 +63,7 @@ class ActivitiesResponseTest : ShouldSpec({
                 creatorId = creatorIds[index],
                 title = titles[index],
                 value = values[index],
-                baseCurrency = baseCurrencies[index],
-                targetCurrency = targetCurrencies[index],
+                currency = currencies[index],
                 status = statuses[index],
                 participantIds = participantsIds[index],
                 date = activityDates[index],
@@ -85,8 +82,7 @@ class ActivitiesResponseTest : ShouldSpec({
             it.map { dto -> dto.creatorId } shouldContainExactly creatorIds
             it.map { dto -> dto.title } shouldContainExactly titles
             it.map { dto -> dto.value } shouldContainExactly values
-            it.map { dto -> dto.baseCurrency } shouldContainExactly baseCurrencies
-            it.map { dto -> dto.targetCurrency } shouldContainExactly targetCurrencies
+            it.map { dto -> dto.currency } shouldContainExactly currencies
             it.map { dto -> dto.status } shouldContainExactly statuses
             it.map { dto -> dto.participantIds } shouldContainExactly participantsIds
             it.map { dto -> dto.date } shouldContainExactly activityDates

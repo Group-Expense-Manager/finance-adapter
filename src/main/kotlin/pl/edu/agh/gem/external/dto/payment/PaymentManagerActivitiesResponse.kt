@@ -4,6 +4,7 @@ import pl.edu.agh.gem.internal.model.finance.Activity
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus
 import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.Instant
 
 data class PaymentManagerActivitiesResponse(
@@ -19,7 +20,7 @@ data class PaymentManagerActivityDto(
     val recipientId: String,
     val title: String,
     val amount: AmountDto,
-    val targetCurrency: String?,
+    val fxData: FxDataDto?,
     val status: ActivityStatus,
     val date: Instant,
 ) {
@@ -28,9 +29,8 @@ data class PaymentManagerActivityDto(
         type = PAYMENT,
         creatorId = creatorId,
         title = title,
-        value = amount.value,
-        baseCurrency = amount.currency,
-        targetCurrency = targetCurrency,
+        value = amount.value.multiply(fxData?.exchangeRate ?: BigDecimal.ONE).setScale(2, RoundingMode.DOWN).stripTrailingZeros(),
+        currency = fxData?.targetCurrency ?: amount.currency,
         status = status,
         participantIds = listOf(recipientId),
         date = date,
@@ -39,4 +39,9 @@ data class PaymentManagerActivityDto(
 data class AmountDto(
     val value: BigDecimal,
     val currency: String,
+)
+
+data class FxDataDto(
+    val targetCurrency: String,
+    val exchangeRate: BigDecimal,
 )
