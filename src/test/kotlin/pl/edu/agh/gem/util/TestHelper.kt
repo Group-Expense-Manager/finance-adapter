@@ -8,10 +8,10 @@ import pl.edu.agh.gem.external.dto.expense.ExpenseManagerActivityDto
 import pl.edu.agh.gem.external.dto.finance.BalancesResponse
 import pl.edu.agh.gem.external.dto.finance.CurrencyBalancesDto
 import pl.edu.agh.gem.external.dto.finance.UserBalanceDto
-import pl.edu.agh.gem.external.dto.group.CurrencyDTO
+import pl.edu.agh.gem.external.dto.group.CurrencyDto
 import pl.edu.agh.gem.external.dto.group.GroupDTO
 import pl.edu.agh.gem.external.dto.group.GroupResponse
-import pl.edu.agh.gem.external.dto.group.MemberDTO
+import pl.edu.agh.gem.external.dto.group.MemberDto
 import pl.edu.agh.gem.external.dto.group.UserGroupsResponse
 import pl.edu.agh.gem.external.dto.payment.AcceptedPaymentDto
 import pl.edu.agh.gem.external.dto.payment.AcceptedPaymentsResponse
@@ -37,6 +37,9 @@ import pl.edu.agh.gem.internal.model.finance.filter.SortOrder
 import pl.edu.agh.gem.internal.model.finance.filter.SortOrder.ASCENDING
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy.DATE
+import pl.edu.agh.gem.internal.model.finance.report.Report
+import pl.edu.agh.gem.internal.model.finance.report.ReportActivity
+import pl.edu.agh.gem.internal.model.finance.report.ReportActivityMember
 import pl.edu.agh.gem.internal.model.group.Currencies
 import pl.edu.agh.gem.internal.model.group.Currency
 import pl.edu.agh.gem.internal.model.group.GroupData
@@ -328,8 +331,8 @@ fun createAcceptedPayment(
 )
 
 fun createGroupResponse(
-    members: List<MemberDTO> = listOf(USER_ID, OTHER_USER_ID).map { MemberDTO(it) },
-    groupCurrencies: List<CurrencyDTO> = listOf(CURRENCY_1, CURRENCY_2).map { CurrencyDTO(it) },
+    members: List<MemberDto> = listOf(USER_ID, OTHER_USER_ID).map { MemberDto(it) },
+    groupCurrencies: List<CurrencyDto> = listOf(CURRENCY_1, CURRENCY_2).map { CurrencyDto(it) },
 ) = GroupResponse(
     members = members,
     groupCurrencies = groupCurrencies,
@@ -345,11 +348,11 @@ fun createGroupData(
 
 fun createCurrenciesDTO(
     vararg currency: String = arrayOf(CURRENCY_1, CURRENCY_2),
-) = currency.map { CurrencyDTO(it) }
+) = currency.map { CurrencyDto(it) }
 
 fun createMembersDTO(
     vararg members: String = arrayOf(USER_ID, OTHER_USER_ID),
-) = members.map { MemberDTO(it) }
+) = members.map { MemberDto(it) }
 
 fun createCurrencyBalanceDto(
     currency: String = CURRENCY_1,
@@ -386,6 +389,40 @@ fun createUserBalanceDto(
 ) = UserBalanceDto(
     userId = userId,
     balance = balance,
+)
+
+fun createReportActivityMember(
+    userId: String = USER_ID,
+    value: BigDecimal = "3".toBigDecimal(),
+) = ReportActivityMember(
+    userId = userId,
+    value = value,
+)
+
+fun createReportActivity(
+    title: String = "Some title",
+    date: Instant = Instant.ofEpochMilli(0L),
+    value: BigDecimal = "10".toBigDecimal(),
+    currency: Currency = Currency(CURRENCY_1),
+    members: List<ReportActivityMember> = listOf(
+        createReportActivityMember(userId = USER_ID, value = "5".toBigDecimal()),
+        createReportActivityMember(userId = USER_ID, value = "-5".toBigDecimal()),
+    ),
+) = ReportActivity(
+    title = title,
+    date = date,
+    value = value,
+    currency = currency,
+    members = members,
+)
+
+fun createReport(
+    activities: List<ReportActivity> = listOf(
+        createReportActivity(currency = Currency(code = CURRENCY_1)),
+        createReportActivity(currency = Currency(code = CURRENCY_2)),
+    ),
+) = Report(
+    activities = activities,
 )
 
 object DummyData {

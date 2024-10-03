@@ -9,6 +9,7 @@ import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
 import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
 import pl.edu.agh.gem.internal.model.finance.balance.Balances
 import pl.edu.agh.gem.internal.model.finance.filter.FilterOptions
+import pl.edu.agh.gem.internal.model.finance.report.Report
 import pl.edu.agh.gem.internal.sort.ActivityMerger
 import java.math.BigDecimal
 
@@ -56,5 +57,11 @@ class FinanceService(
         }
 
         return balances
+    }
+
+    fun getReport(groupId: String): Report {
+        val expenseBalanceElements = expenseManagerClient.getAcceptedExpenses(groupId).map { it.toReportActivity() }
+        val paymentBalanceElements = paymentManagerClient.getAcceptedPayments(groupId).map { it.toReportActivity() }
+        return Report(activities = (expenseBalanceElements + paymentBalanceElements))
     }
 }

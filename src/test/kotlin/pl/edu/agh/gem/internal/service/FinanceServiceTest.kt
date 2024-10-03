@@ -3,6 +3,7 @@ package pl.edu.agh.gem.internal.service
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.inspectors.shouldForAll
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
@@ -17,6 +18,7 @@ import pl.edu.agh.gem.internal.client.GroupManagerClient
 import pl.edu.agh.gem.internal.client.PaymentManagerClient
 import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
 import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
+import pl.edu.agh.gem.internal.model.group.Currency
 import pl.edu.agh.gem.util.DummyData.ANOTHER_USER_ID
 import pl.edu.agh.gem.util.DummyData.CURRENCY_1
 import pl.edu.agh.gem.util.DummyData.CURRENCY_2
@@ -28,6 +30,7 @@ import pl.edu.agh.gem.util.createAmount
 import pl.edu.agh.gem.util.createClientFilterOptions
 import pl.edu.agh.gem.util.createFilterOptions
 import pl.edu.agh.gem.util.createGroupData
+import pl.edu.agh.gem.util.createReportActivityMember
 import java.math.BigDecimal
 
 class FinanceServiceTest : ShouldSpec({
@@ -150,6 +153,62 @@ class FinanceServiceTest : ShouldSpec({
         }
 
         verify(groupManagerClient, times(1)).getGroup(GROUP_ID)
+        verify(expenseManagerClient, times(1)).getAcceptedExpenses(GROUP_ID)
+        verify(paymentManagerClient, times(1)).getAcceptedPayments(GROUP_ID)
+    }
+
+    should("get report") {
+        val firstParticipant = createAcceptedExpenseParticipant(participantId = OTHER_USER_ID, participantCost = "3".toBigDecimal())
+        val secondParticipant = createAcceptedExpenseParticipant(participantId = ANOTHER_USER_ID, participantCost = "5".toBigDecimal())
+        val expense = createAcceptedExpense(
+            creatorId = USER_ID,
+            participants = listOf(firstParticipant, secondParticipant),
+            baseCurrency = CURRENCY_1,
+            totalCost = "5".toBigDecimal(),
+            targetCurrency = null,
+            exchangeRate = null,
+
+        )
+        val payment = createAcceptedPayment(
+            creatorId = USER_ID,
+            recipientId = OTHER_USER_ID,
+            amount = createAmount(
+                value = "3".toBigDecimal(),
+                currency = CURRENCY_1,
+            ),
+            fxData = null,
+        )
+        whenever(expenseManagerClient.getAcceptedExpenses(GROUP_ID)).thenReturn(listOf(expense))
+        whenever(paymentManagerClient.getAcceptedPayments(GROUP_ID)).thenReturn(listOf(payment))
+
+        // when
+        val result = financeService.getReport(GROUP_ID)
+        result.also {
+            it.activities.first().also { first ->
+                first.title shouldBe expense.title
+                first.value shouldBe "5".toBigDecimal()
+                first.date shouldBe expense.expenseDate
+                first.currency shouldBe Currency(expense.baseCurrency)
+                first.members.size shouldBe 3
+                first.members shouldContainExactlyInAnyOrder listOf(
+                    createReportActivityMember(USER_ID, "8".toBigDecimal()),
+                    createReportActivityMember(OTHER_USER_ID, "-3".toBigDecimal()),
+                    createReportActivityMember(ANOTHER_USER_ID, "-5".toBigDecimal()),
+                )
+            }
+            it.activities.last().also { last ->
+                last.title shouldBe payment.title
+                last.date shouldBe payment.date
+                last.value shouldBe "3".toBigDecimal()
+                last.currency shouldBe Currency(payment.amount.currency)
+                last.members shouldContainExactlyInAnyOrder listOf(
+                    createReportActivityMember(USER_ID, "3".toBigDecimal()),
+                    createReportActivityMember(OTHER_USER_ID, "-3".toBigDecimal()),
+                )
+            }
+        }
+
+        // then
         verify(expenseManagerClient, times(1)).getAcceptedExpenses(GROUP_ID)
         verify(paymentManagerClient, times(1)).getAcceptedPayments(GROUP_ID)
     }

@@ -12,6 +12,7 @@ import pl.edu.agh.gem.internal.model.finance.ActivityType
 import pl.edu.agh.gem.internal.model.finance.filter.SortOrder
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy
 import pl.edu.agh.gem.paths.Paths.EXTERNAL
+import pl.edu.agh.gem.paths.Paths.INTERNAL
 import pl.edu.agh.gem.security.GemUser
 import java.util.Optional
 
@@ -57,6 +58,17 @@ class ServiceTestClient(applicationContext: WebApplicationContext) {
                 it.path("$EXTERNAL/balances/groups/$groupId").build()
             }
             .headers { it.withValidatedUser(gemUser).withAppAcceptType() }
+            .exchange()
+    }
+
+    fun getReport(
+        groupId: String,
+    ): ResponseSpec {
+        return webClient.get()
+            .uri {
+                it.path("$INTERNAL/reports/groups/$groupId").build()
+            }
+            .headers { it.withAppAcceptType() }
             .exchange()
     }
 }
