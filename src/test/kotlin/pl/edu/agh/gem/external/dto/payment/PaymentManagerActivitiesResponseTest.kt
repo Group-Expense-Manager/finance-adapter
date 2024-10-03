@@ -9,14 +9,16 @@ import pl.edu.agh.gem.internal.model.finance.ActivityStatus.ACCEPTED
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus.PENDING
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus.REJECTED
 import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
+import pl.edu.agh.gem.util.createAmountDto
+import pl.edu.agh.gem.util.createFxDataDto
 import pl.edu.agh.gem.util.createPaymentManagerActivityDto
 import java.math.BigDecimal
 import java.time.Instant
 
 class PaymentManagerActivitiesResponseTest : ShouldSpec({
-    should("map PaymentManagerActivityDTO to Activity correctly") {
+    should("map PaymentManagerActivityDTO to Activity correctly when fxData is null") {
         // given
-        val paymentManagerActivityDTO = createPaymentManagerActivityDto()
+        val paymentManagerActivityDTO = createPaymentManagerActivityDto(fxData = null)
 
         // when
         val activity = paymentManagerActivityDTO.toActivity()
@@ -28,8 +30,31 @@ class PaymentManagerActivitiesResponseTest : ShouldSpec({
             it.creatorId shouldBe paymentManagerActivityDTO.creatorId
             it.title shouldBe paymentManagerActivityDTO.title
             it.value shouldBe paymentManagerActivityDTO.amount.value
-            it.baseCurrency shouldBe paymentManagerActivityDTO.amount.currency
-            it.targetCurrency shouldBe paymentManagerActivityDTO.targetCurrency
+            it.currency shouldBe paymentManagerActivityDTO.amount.currency
+            it.status shouldBe paymentManagerActivityDTO.status
+            it.participantIds shouldBe listOf(paymentManagerActivityDTO.recipientId)
+            it.date shouldBe paymentManagerActivityDTO.date
+        }
+    }
+
+    should("map PaymentManagerActivityDTO to Activity correctly when fxData is not null") {
+        // given
+        val paymentManagerActivityDTO = createPaymentManagerActivityDto(
+            amount = createAmountDto(value = "1.2".toBigDecimal()),
+            fxData = createFxDataDto(exchangeRate = "3".toBigDecimal()),
+        )
+
+        // when
+        val activity = paymentManagerActivityDTO.toActivity()
+
+        // then
+        activity.also {
+            it.activityId shouldBe paymentManagerActivityDTO.paymentId
+            it.type shouldBe PAYMENT
+            it.creatorId shouldBe paymentManagerActivityDTO.creatorId
+            it.title shouldBe paymentManagerActivityDTO.title
+            it.value shouldBe "3.6".toBigDecimal()
+            it.currency shouldBe paymentManagerActivityDTO.fxData?.targetCurrency
             it.status shouldBe paymentManagerActivityDTO.status
             it.participantIds shouldBe listOf(paymentManagerActivityDTO.recipientId)
             it.date shouldBe paymentManagerActivityDTO.date
@@ -43,11 +68,15 @@ class PaymentManagerActivitiesResponseTest : ShouldSpec({
         val creatorIds = listOf("creatorId1", "creatorId2", "creatorId3")
         val titles = listOf("title1", "title2", "title3")
         val amounts = listOf(
-            AmountDto(value = BigDecimal.ONE, currency = "PLN"),
+            createAmountDto(value = BigDecimal.ONE, currency = "PLN"),
             AmountDto(value = BigDecimal.TWO, currency = "EUR"),
-            AmountDto(value = BigDecimal.TEN, currency = "USD"),
+            AmountDto(value = BigDecimal.TWO, currency = "USD"),
         )
-        val targetCurrencies = listOf("EUR", null, "PLN")
+        val fxData = listOf(
+            FxDataDto(targetCurrency = "EUR", exchangeRate = "2".toBigDecimal()),
+            null,
+            FxDataDto(targetCurrency = "PLN", exchangeRate = "3".toBigDecimal()),
+        )
         val statuses = listOf(PENDING, ACCEPTED, REJECTED)
         val dates = listOf(
             Instant.ofEpochSecond(1000),
@@ -58,11 +87,10 @@ class PaymentManagerActivitiesResponseTest : ShouldSpec({
             createPaymentManagerActivityDto(
                 paymentId = paymentId,
                 recipientId = recipientIds[index],
-
                 creatorId = creatorIds[index],
                 title = titles[index],
                 amount = amounts[index],
-                targetCurrency = targetCurrencies[index],
+                fxData = fxData[index],
                 status = statuses[index],
                 date = dates[index],
             )
@@ -83,9 +111,8 @@ class PaymentManagerActivitiesResponseTest : ShouldSpec({
             it.map { activity -> activity.type } shouldContainExactly listOf(PAYMENT, PAYMENT, PAYMENT)
             it.map { activity -> activity.creatorId } shouldContainExactly creatorIds
             it.map { activity -> activity.title } shouldContainExactly titles
-            it.map { activity -> activity.value } shouldContainExactly amounts.map { amount -> amount.value }
-            it.map { activity -> activity.baseCurrency } shouldContainExactly amounts.map { amount -> amount.currency }
-            it.map { activity -> activity.targetCurrency } shouldContainExactly targetCurrencies
+            it.map { activity -> activity.value } shouldContainExactly listOf("2".toBigDecimal(), "2".toBigDecimal(), "6".toBigDecimal())
+            it.map { activity -> activity.currency } shouldContainExactly listOf("EUR", "EUR", "PLN")
             it.map { activity -> activity.status } shouldContainExactly statuses
             it.map { activity -> activity.participantIds } shouldContainExactly recipientIds
                 .map { recipientId -> listOf(recipientId) }

@@ -14,9 +14,9 @@ import java.math.BigDecimal
 import java.time.Instant
 
 class ExpenseManagerActivitiesResponseTest : ShouldSpec({
-    should("map ExpenseManagerActivityDTO to Activity correctly") {
+    should("map ExpenseManagerActivityDTO to Activity correctly when target currency is null") {
         // given
-        val expenseManagerActivityDTO = createExpenseManagerActivityDto()
+        val expenseManagerActivityDTO = createExpenseManagerActivityDto(targetCurrency = null, exchangeRate = null)
 
         // when
         val activity = expenseManagerActivityDTO.toActivity()
@@ -28,8 +28,28 @@ class ExpenseManagerActivitiesResponseTest : ShouldSpec({
             it.creatorId shouldBe expenseManagerActivityDTO.creatorId
             it.title shouldBe expenseManagerActivityDTO.title
             it.value shouldBe expenseManagerActivityDTO.totalCost
-            it.baseCurrency shouldBe expenseManagerActivityDTO.baseCurrency
-            it.targetCurrency shouldBe expenseManagerActivityDTO.targetCurrency
+            it.currency shouldBe expenseManagerActivityDTO.baseCurrency
+            it.status shouldBe expenseManagerActivityDTO.status
+            it.participantIds shouldBe expenseManagerActivityDTO.participantIds
+            it.date shouldBe expenseManagerActivityDTO.expenseDate
+        }
+    }
+
+    should("map ExpenseManagerActivityDTO to Activity correctly when target currency is not null") {
+        // given
+        val expenseManagerActivityDTO = createExpenseManagerActivityDto(totalCost = "2".toBigDecimal(), exchangeRate = "3.14".toBigDecimal())
+
+        // when
+        val activity = expenseManagerActivityDTO.toActivity()
+
+        // then
+        activity.also {
+            it.activityId shouldBe expenseManagerActivityDTO.expenseId
+            it.type shouldBe EXPENSE
+            it.creatorId shouldBe expenseManagerActivityDTO.creatorId
+            it.title shouldBe expenseManagerActivityDTO.title
+            it.value shouldBe "6.28".toBigDecimal()
+            it.currency shouldBe expenseManagerActivityDTO.targetCurrency
             it.status shouldBe expenseManagerActivityDTO.status
             it.participantIds shouldBe expenseManagerActivityDTO.participantIds
             it.date shouldBe expenseManagerActivityDTO.expenseDate
@@ -41,9 +61,10 @@ class ExpenseManagerActivitiesResponseTest : ShouldSpec({
         val expenseIds = listOf("expenseId1", "expenseId2", "expenseId3")
         val creatorIds = listOf("creatorId1", "creatorId2", "creatorId3")
         val titles = listOf("title1", "title2", "title3")
-        val totalCosts = listOf(BigDecimal.ONE, BigDecimal.TWO, BigDecimal.TEN)
+        val totalCosts = listOf(BigDecimal.ONE, BigDecimal.TWO, BigDecimal.TWO)
         val baseCurrencies = listOf("PLN", "EUR", "USD")
         val targetCurrencies = listOf("EUR", null, "PLN")
+        val exchangeRates = listOf("2".toBigDecimal(), null, "3".toBigDecimal())
         val statuses = listOf(PENDING, ACCEPTED, REJECTED)
         val participantIds = listOf(
             listOf("participant1", "participant2"),
@@ -63,6 +84,7 @@ class ExpenseManagerActivitiesResponseTest : ShouldSpec({
                 totalCost = totalCosts[index],
                 baseCurrency = baseCurrencies[index],
                 targetCurrency = targetCurrencies[index],
+                exchangeRate = exchangeRates[index],
                 status = statuses[index],
                 participantIds = participantIds[index],
                 expenseDate = expenseDates[index],
@@ -84,9 +106,8 @@ class ExpenseManagerActivitiesResponseTest : ShouldSpec({
             it.map { activity -> activity.type } shouldContainExactly listOf(EXPENSE, EXPENSE, EXPENSE)
             it.map { activity -> activity.creatorId } shouldContainExactly creatorIds
             it.map { activity -> activity.title } shouldContainExactly titles
-            it.map { activity -> activity.value } shouldContainExactly totalCosts
-            it.map { activity -> activity.baseCurrency } shouldContainExactly baseCurrencies
-            it.map { activity -> activity.targetCurrency } shouldContainExactly targetCurrencies
+            it.map { activity -> activity.value } shouldContainExactly listOf("2".toBigDecimal(), "2".toBigDecimal(), "6".toBigDecimal())
+            it.map { activity -> activity.currency } shouldContainExactly baseCurrencies.zip(targetCurrencies).map { c -> c.second ?: c.first }
             it.map { activity -> activity.status } shouldContainExactly statuses
             it.map { activity -> activity.participantIds } shouldContainExactly participantIds
             it.map { activity -> activity.date } shouldContainExactly expenseDates

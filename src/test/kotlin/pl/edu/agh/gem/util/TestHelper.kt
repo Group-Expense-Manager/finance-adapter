@@ -5,6 +5,7 @@ import pl.edu.agh.gem.external.dto.expense.ExpenseManagerActivityDto
 import pl.edu.agh.gem.external.dto.group.GroupDTO
 import pl.edu.agh.gem.external.dto.group.UserGroupsResponse
 import pl.edu.agh.gem.external.dto.payment.AmountDto
+import pl.edu.agh.gem.external.dto.payment.FxDataDto
 import pl.edu.agh.gem.external.dto.payment.PaymentManagerActivitiesResponse
 import pl.edu.agh.gem.external.dto.payment.PaymentManagerActivityDto
 import pl.edu.agh.gem.helper.group.DummyGroup.GROUP_ID
@@ -44,6 +45,7 @@ fun createExpenseManagerActivityDto(
     totalCost: BigDecimal = VALUE,
     baseCurrency: String = CURRENCY_1,
     targetCurrency: String? = CURRENCY_2,
+    exchangeRate: BigDecimal? = "2".toBigDecimal(),
     status: ActivityStatus = PENDING,
     participantIds: List<String> = listOf(OTHER_USER_ID, USER_ID),
     expenseDate: Instant = Instant.ofEpochMilli(0L),
@@ -54,6 +56,7 @@ fun createExpenseManagerActivityDto(
     totalCost = totalCost,
     baseCurrency = baseCurrency,
     targetCurrency = targetCurrency,
+    exchangeRate = exchangeRate,
     status = status,
     participantIds = participantIds,
     expenseDate = expenseDate,
@@ -71,11 +74,19 @@ fun createExpenseManagerActivitiesResponse(
 )
 
 fun createAmountDto(
-    value: BigDecimal = "10".toBigDecimal(),
+    value: BigDecimal = "4".toBigDecimal(),
     currency: String = CURRENCY_1,
 ) = AmountDto(
     value = value,
     currency = currency,
+)
+
+fun createFxDataDto(
+    targetCurrency: String = CURRENCY_2,
+    exchangeRate: BigDecimal = "2".toBigDecimal(),
+) = FxDataDto(
+    targetCurrency = targetCurrency,
+    exchangeRate = exchangeRate,
 )
 
 fun createPaymentManagerActivityDto(
@@ -84,7 +95,7 @@ fun createPaymentManagerActivityDto(
     recipientId: String = OTHER_USER_ID,
     title: String = ACTIVITY_TITLE,
     amount: AmountDto = createAmountDto(),
-    targetCurrency: String? = CURRENCY_2,
+    fxData: FxDataDto? = createFxDataDto(),
     status: ActivityStatus = PENDING,
     date: Instant = Instant.ofEpochMilli(0L),
 ) = PaymentManagerActivityDto(
@@ -93,7 +104,7 @@ fun createPaymentManagerActivityDto(
     recipientId = recipientId,
     title = title,
     amount = amount,
-    targetCurrency = targetCurrency,
+    fxData = fxData,
     status = status,
     date = date,
 )
@@ -115,8 +126,7 @@ fun createActivity(
     creatorId: String = USER_ID,
     title: String = ACTIVITY_TITLE,
     value: BigDecimal = VALUE,
-    baseCurrency: String = CURRENCY_1,
-    targetCurrency: String? = CURRENCY_2,
+    currency: String = CURRENCY_1,
     status: ActivityStatus = PENDING,
     participantIds: List<String> = listOf(OTHER_USER_ID, USER_ID),
     date: Instant = Instant.ofEpochMilli(0L),
@@ -126,8 +136,7 @@ fun createActivity(
     creatorId = creatorId,
     title = title,
     value = value,
-    baseCurrency = baseCurrency,
-    targetCurrency = targetCurrency,
+    currency = currency,
     status = status,
     participantIds = participantIds,
     date = date,
@@ -171,7 +180,7 @@ object DummyData {
     const val OTHER_PAYMENT_ID = "otherPaymentId"
 
     const val ACTIVITY_TITLE = "activityTitle"
-    val VALUE = 100.toBigDecimal()
+    val VALUE = 12.toBigDecimal()
     const val CURRENCY_1 = "PLN"
     const val CURRENCY_2 = "EUR"
 }
