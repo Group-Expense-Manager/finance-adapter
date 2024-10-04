@@ -39,6 +39,7 @@ import pl.edu.agh.gem.util.createAmountDto
 import pl.edu.agh.gem.util.createClientFilterOptions
 import pl.edu.agh.gem.util.createCurrenciesDTO
 import pl.edu.agh.gem.util.createExpenseManagerActivitiesResponse
+import pl.edu.agh.gem.util.createFxDataDto
 import pl.edu.agh.gem.util.createGroupResponse
 import pl.edu.agh.gem.util.createMembersDTO
 import pl.edu.agh.gem.util.createPaymentManagerActivitiesResponse
@@ -238,9 +239,14 @@ class ExternalFinanceControllerIT(
                                 participantCost = "2".toBigDecimal(),
                             ),
                         ),
-                        baseCurrency = CURRENCY_1,
-                        targetCurrency = CURRENCY_2,
-                        exchangeRate = "3".toBigDecimal(),
+                        amount = createAmountDto(
+                            value = "3".toBigDecimal(),
+                            currency = CURRENCY_1,
+                        ),
+                        fxData = createFxDataDto(
+                            targetCurrency = CURRENCY_2,
+                            exchangeRate = "3".toBigDecimal(),
+                        ),
                     ),
                 ),
             ),

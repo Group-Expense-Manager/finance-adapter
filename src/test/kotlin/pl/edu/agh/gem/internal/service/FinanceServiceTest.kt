@@ -116,9 +116,7 @@ class FinanceServiceTest : ShouldSpec({
         val expense = createAcceptedExpense(
             creatorId = USER_ID,
             participants = listOf(firstParticipant, secondParticipant),
-            baseCurrency = CURRENCY_1,
-            targetCurrency = null,
-            exchangeRate = null,
+            fxData = null,
         )
         val payment = createAcceptedPayment(
             creatorId = OTHER_USER_ID,

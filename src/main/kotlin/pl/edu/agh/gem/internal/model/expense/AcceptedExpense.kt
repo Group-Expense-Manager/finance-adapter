@@ -1,5 +1,7 @@
 package pl.edu.agh.gem.internal.model.expense
 
+import pl.edu.agh.gem.internal.model.payment.Amount
+import pl.edu.agh.gem.internal.model.payment.FxData
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.Instant
@@ -7,16 +9,14 @@ import java.time.Instant
 data class AcceptedExpense(
     val creatorId: String,
     val title: String,
-    val totalCost: BigDecimal,
-    val baseCurrency: String,
-    val targetCurrency: String?,
-    val exchangeRate: BigDecimal?,
+    val amount: Amount,
+    val fxData: FxData?,
     val participants: List<AcceptedExpenseParticipant>,
     val expenseDate: Instant,
 ) {
     fun toBalanceElements(): List<Triple<String, String, BigDecimal>> {
-        val currency = targetCurrency ?: baseCurrency
-        val multiplier = exchangeRate ?: BigDecimal.ONE
+        val currency = fxData?.targetCurrency ?: amount.currency
+        val multiplier = fxData?.exchangeRate ?: BigDecimal.ONE
 
         val participantsBalanceElements = participants.map {
             Triple(

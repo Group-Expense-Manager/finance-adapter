@@ -16,48 +16,48 @@ import java.math.BigDecimal
 import java.time.Instant
 
 class PaymentManagerActivitiesResponseTest : ShouldSpec({
-    should("map PaymentManagerActivityDTO to Activity correctly when fxData is null") {
+    should("map PaymentManagerActivityDto to Activity correctly when fxData is null") {
         // given
-        val paymentManagerActivityDTO = createPaymentManagerActivityDto(fxData = null)
+        val paymentManagerActivityDto = createPaymentManagerActivityDto(fxData = null)
 
         // when
-        val activity = paymentManagerActivityDTO.toActivity()
+        val activity = paymentManagerActivityDto.toActivity()
 
         // then
         activity.also {
-            it.activityId shouldBe paymentManagerActivityDTO.paymentId
+            it.activityId shouldBe paymentManagerActivityDto.paymentId
             it.type shouldBe PAYMENT
-            it.creatorId shouldBe paymentManagerActivityDTO.creatorId
-            it.title shouldBe paymentManagerActivityDTO.title
-            it.value shouldBe paymentManagerActivityDTO.amount.value
-            it.currency shouldBe paymentManagerActivityDTO.amount.currency
-            it.status shouldBe paymentManagerActivityDTO.status
-            it.participantIds shouldBe listOf(paymentManagerActivityDTO.recipientId)
-            it.date shouldBe paymentManagerActivityDTO.date
+            it.creatorId shouldBe paymentManagerActivityDto.creatorId
+            it.title shouldBe paymentManagerActivityDto.title
+            it.value shouldBe paymentManagerActivityDto.amount.value
+            it.currency shouldBe paymentManagerActivityDto.amount.currency
+            it.status shouldBe paymentManagerActivityDto.status
+            it.participantIds shouldBe listOf(paymentManagerActivityDto.recipientId)
+            it.date shouldBe paymentManagerActivityDto.date
         }
     }
 
-    should("map PaymentManagerActivityDTO to Activity correctly when fxData is not null") {
+    should("map PaymentManagerActivityDto to Activity correctly when fxData is not null") {
         // given
-        val paymentManagerActivityDTO = createPaymentManagerActivityDto(
+        val paymentManagerActivityDto = createPaymentManagerActivityDto(
             amount = createAmountDto(value = "1.2".toBigDecimal()),
             fxData = createFxDataDto(exchangeRate = "3".toBigDecimal()),
         )
 
         // when
-        val activity = paymentManagerActivityDTO.toActivity()
+        val activity = paymentManagerActivityDto.toActivity()
 
         // then
         activity.also {
-            it.activityId shouldBe paymentManagerActivityDTO.paymentId
+            it.activityId shouldBe paymentManagerActivityDto.paymentId
             it.type shouldBe PAYMENT
-            it.creatorId shouldBe paymentManagerActivityDTO.creatorId
-            it.title shouldBe paymentManagerActivityDTO.title
+            it.creatorId shouldBe paymentManagerActivityDto.creatorId
+            it.title shouldBe paymentManagerActivityDto.title
             it.value shouldBe "3.6".toBigDecimal()
-            it.currency shouldBe paymentManagerActivityDTO.fxData?.targetCurrency
-            it.status shouldBe paymentManagerActivityDTO.status
-            it.participantIds shouldBe listOf(paymentManagerActivityDTO.recipientId)
-            it.date shouldBe paymentManagerActivityDTO.date
+            it.currency shouldBe paymentManagerActivityDto.fxData?.targetCurrency
+            it.status shouldBe paymentManagerActivityDto.status
+            it.participantIds shouldBe listOf(paymentManagerActivityDto.recipientId)
+            it.date shouldBe paymentManagerActivityDto.date
         }
     }
 

@@ -5,7 +5,6 @@ import pl.edu.agh.gem.external.dto.expense.AcceptedExpenseParticipantDto
 import pl.edu.agh.gem.external.dto.expense.AcceptedExpensesResponse
 import pl.edu.agh.gem.external.dto.expense.ExpenseManagerActivitiesResponse
 import pl.edu.agh.gem.external.dto.expense.ExpenseManagerActivityDto
-import pl.edu.agh.gem.external.dto.finance.BalancesResponse
 import pl.edu.agh.gem.external.dto.finance.CurrencyBalancesDto
 import pl.edu.agh.gem.external.dto.finance.UserBalanceDto
 import pl.edu.agh.gem.external.dto.group.CurrencyDTO
@@ -64,10 +63,8 @@ fun createExpenseManagerActivityDto(
     expenseId: String = EXPENSE_ID,
     creatorId: String = USER_ID,
     title: String = ACTIVITY_TITLE,
-    totalCost: BigDecimal = VALUE,
-    baseCurrency: String = CURRENCY_1,
-    targetCurrency: String? = CURRENCY_2,
-    exchangeRate: BigDecimal? = "2".toBigDecimal(),
+    amount: AmountDto = createAmountDto(),
+    fxData: FxDataDto? = createFxDataDto(),
     status: ActivityStatus = PENDING,
     participantIds: List<String> = listOf(OTHER_USER_ID, USER_ID),
     expenseDate: Instant = Instant.ofEpochMilli(0L),
@@ -75,10 +72,8 @@ fun createExpenseManagerActivityDto(
     expenseId = expenseId,
     creatorId = creatorId,
     title = title,
-    totalCost = totalCost,
-    baseCurrency = baseCurrency,
-    targetCurrency = targetCurrency,
-    exchangeRate = exchangeRate,
+    amount = amount,
+    fxData = fxData,
     status = status,
     participantIds = participantIds,
     expenseDate = expenseDate,
@@ -200,10 +195,8 @@ fun createAcceptedExpensesResponse(
 fun createAcceptedExpenseDto(
     creatorId: String = USER_ID,
     title: String = "Some title",
-    totalCost: BigDecimal = BigDecimal.valueOf(4L),
-    baseCurrency: String = CURRENCY_1,
-    targetCurrency: String? = CURRENCY_2,
-    exchangeRate: BigDecimal? = null,
+    amount: AmountDto = createAmountDto(),
+    fxData: FxDataDto? = createFxDataDto(),
     participants: List<AcceptedExpenseParticipantDto> = listOf(
         createAcceptedExpenseParticipantDto(participantId = OTHER_USER_ID),
         createAcceptedExpenseParticipantDto(participantId = ANOTHER_USER_ID),
@@ -212,10 +205,8 @@ fun createAcceptedExpenseDto(
 ) = AcceptedExpenseDto(
     creatorId = creatorId,
     title = title,
-    totalCost = totalCost,
-    baseCurrency = baseCurrency,
-    targetCurrency = targetCurrency,
-    exchangeRate = exchangeRate,
+    amount = amount,
+    fxData = fxData,
     participants = participants,
     expenseDate = expenseDate,
 )
@@ -231,10 +222,8 @@ fun createAcceptedExpenseParticipantDto(
 fun createAcceptedExpense(
     creatorId: String = USER_ID,
     title: String = "Some title",
-    totalCost: BigDecimal = BigDecimal.valueOf(4L),
-    baseCurrency: String = CURRENCY_1,
-    targetCurrency: String? = CURRENCY_2,
-    exchangeRate: BigDecimal? = null,
+    amount: Amount = createAmount(),
+    fxData: FxData? = createFxData(),
     participants: List<AcceptedExpenseParticipant> = listOf(
         createAcceptedExpenseParticipant(participantId = OTHER_USER_ID),
         createAcceptedExpenseParticipant(participantId = ANOTHER_USER_ID),
@@ -243,10 +232,8 @@ fun createAcceptedExpense(
 ) = AcceptedExpense(
     creatorId = creatorId,
     title = title,
-    totalCost = totalCost,
-    baseCurrency = baseCurrency,
-    targetCurrency = targetCurrency,
-    exchangeRate = exchangeRate,
+    amount = amount,
+    fxData = fxData,
     participants = participants,
     expenseDate = expenseDate,
 )
@@ -362,17 +349,6 @@ fun createCurrencyBalanceDto(
 ) = CurrencyBalancesDto(
     currency = currency,
     userBalances = userBalances,
-)
-
-fun createBalancesResponse(
-    groupId: String = GROUP_ID,
-    balances: List<CurrencyBalancesDto> = listOf(
-        createCurrencyBalanceDto(currency = CURRENCY_1),
-        createCurrencyBalanceDto(currency = CURRENCY_2),
-    ),
-) = BalancesResponse(
-    groupId = groupId,
-    balances = balances,
 )
 
 fun createBalances() = mapOf(

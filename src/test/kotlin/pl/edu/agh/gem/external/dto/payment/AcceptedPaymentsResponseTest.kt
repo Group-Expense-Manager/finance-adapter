@@ -24,8 +24,8 @@ class AcceptedPaymentsResponseTest : ShouldSpec({
             FxDataDto(targetCurrency = "EUR", exchangeRate = "3.41".toBigDecimal()),
             null,
             FxDataDto(targetCurrency = "PLN", exchangeRate = "4.44".toBigDecimal()),
-
         )
+
         val dates = listOf(
             Instant.ofEpochSecond(1000),
             Instant.ofEpochSecond(2000),

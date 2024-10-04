@@ -9,19 +9,23 @@ import pl.edu.agh.gem.util.DummyData.CURRENCY_1
 import pl.edu.agh.gem.util.DummyData.CURRENCY_2
 import pl.edu.agh.gem.util.createAcceptedExpense
 import pl.edu.agh.gem.util.createAcceptedExpenseParticipant
+import pl.edu.agh.gem.util.createAmount
+import pl.edu.agh.gem.util.createFxData
 
 class AcceptedExpenseTest : ShouldSpec({
 
-    should("map to BalanceElements when targetCurrency is null") {
+    should("map to BalanceElements when fxData is null") {
         // given
         val firstParticipant = createAcceptedExpenseParticipant(participantId = OTHER_USER_ID, participantCost = "3".toBigDecimal())
         val secondParticipant = createAcceptedExpenseParticipant(participantId = ANOTHER_USER_ID, participantCost = "5".toBigDecimal())
         val expense = createAcceptedExpense(
             creatorId = USER_ID,
             participants = listOf(firstParticipant, secondParticipant),
-            baseCurrency = CURRENCY_1,
-            targetCurrency = null,
-            exchangeRate = null,
+            amount = createAmount(
+                value = "9".toBigDecimal(),
+                currency = CURRENCY_1,
+            ),
+            fxData = null,
         )
 
         // when
@@ -35,16 +39,21 @@ class AcceptedExpenseTest : ShouldSpec({
         )
     }
 
-    should("map to BalanceElements when targetCurrency is not null") {
+    should("map to BalanceElements when fxData is not null") {
         // given
         val firstParticipant = createAcceptedExpenseParticipant(participantId = OTHER_USER_ID, participantCost = "3".toBigDecimal())
         val secondParticipant = createAcceptedExpenseParticipant(participantId = ANOTHER_USER_ID, participantCost = "5".toBigDecimal())
         val expense = createAcceptedExpense(
             creatorId = USER_ID,
             participants = listOf(firstParticipant, secondParticipant),
-            baseCurrency = CURRENCY_1,
-            targetCurrency = CURRENCY_2,
-            exchangeRate = "0.5".toBigDecimal(),
+            amount = createAmount(
+                value = "9".toBigDecimal(),
+                currency = CURRENCY_1,
+            ),
+            fxData = createFxData(
+                targetCurrency = CURRENCY_2,
+                exchangeRate = "0.5".toBigDecimal(),
+            ),
         )
 
         // when
