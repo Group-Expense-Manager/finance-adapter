@@ -12,11 +12,13 @@ import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import pl.edu.agh.gem.config.ExpenseManagerProperties
+import pl.edu.agh.gem.external.dto.expense.AcceptedExpensesResponse
 import pl.edu.agh.gem.external.dto.expense.ExpenseManagerActivitiesResponse
 import pl.edu.agh.gem.headers.HeadersUtils.withAppAcceptType
 import pl.edu.agh.gem.internal.client.ExpenseManagerClient
 import pl.edu.agh.gem.internal.client.ExpenseManagerClientException
 import pl.edu.agh.gem.internal.client.RetryableExpenseManagerClientException
+import pl.edu.agh.gem.internal.model.expense.AcceptedExpense
 import pl.edu.agh.gem.internal.model.finance.Activity
 import pl.edu.agh.gem.internal.model.finance.filter.ClientFilterOptions
 import pl.edu.agh.gem.paths.Paths.INTERNAL
@@ -49,6 +51,27 @@ class RestExpenseManagerClient(
         }
     }
 
+    @Retry(name = "expenseManager")
+    override fun getAcceptedExpenses(groupId: String): List<AcceptedExpense> {
+        return try {
+            restTemplate.exchange(
+                resolveAcceptedExpensesAddress(groupId),
+                GET,
+                HttpEntity<Any>(HttpHeaders().withAppAcceptType()),
+                AcceptedExpensesResponse::class.java,
+            ).body?.toDomain() ?: throw ExpenseManagerClientException("While trying to retrieve accepted expenses we receive empty body")
+        } catch (ex: HttpClientErrorException) {
+            logger.warn(ex) { "Client side exception while trying to retrieve accepted expenses" }
+            throw ExpenseManagerClientException(ex.message)
+        } catch (ex: HttpServerErrorException) {
+            logger.warn(ex) { "Server side exception while trying to retrieve accepted expenses" }
+            throw RetryableExpenseManagerClientException(ex.message)
+        } catch (ex: Exception) {
+            logger.warn(ex) { "Unexpected exception while trying to retrieve accepted expenses" }
+            throw ExpenseManagerClientException(ex.message)
+        }
+    }
+
     private fun resolveActivitiesAddress(groupId: String, clientFilterOptions: ClientFilterOptions) =
         UriComponentsBuilder.fromUriString("${expenseManagerProperties.url}$INTERNAL/expenses/activities/groups/$groupId")
             .queryParamIfPresent("title", Optional.ofNullable(clientFilterOptions.title))
@@ -58,6 +81,9 @@ class RestExpenseManagerClient(
             .queryParam("sortOrder", clientFilterOptions.sortOrder)
             .build()
             .toUriString()
+
+    private fun resolveAcceptedExpensesAddress(groupId: String) =
+        "${expenseManagerProperties.url}$INTERNAL/expenses/accepted/groups/$groupId"
 
     companion object {
         private val logger = KotlinLogging.logger {}

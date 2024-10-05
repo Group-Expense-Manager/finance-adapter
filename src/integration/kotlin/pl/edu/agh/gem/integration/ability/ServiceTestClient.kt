@@ -47,4 +47,16 @@ class ServiceTestClient(applicationContext: WebApplicationContext) {
             .headers { it.withValidatedUser(gemUser).withAppAcceptType() }
             .exchange()
     }
+
+    fun getBalances(
+        gemUser: GemUser,
+        groupId: String,
+    ): ResponseSpec {
+        return webClient.get()
+            .uri {
+                it.path("$EXTERNAL/balances/groups/$groupId").build()
+            }
+            .headers { it.withValidatedUser(gemUser).withAppAcceptType() }
+            .exchange()
+    }
 }

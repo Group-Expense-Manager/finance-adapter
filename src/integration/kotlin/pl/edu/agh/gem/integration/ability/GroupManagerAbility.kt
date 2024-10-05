@@ -25,3 +25,19 @@ fun stubGroupManagerUserGroups(body: Any?, userId: String, statusCode: HttpStatu
             ),
     )
 }
+
+private fun createGroupDataUrl(groupId: String) = "$INTERNAL/groups/$groupId"
+
+fun stubGroupManagerGroupData(body: Any?, groupId: String, statusCode: HttpStatusCode = OK) {
+    wiremock.stubFor(
+        get(urlMatching(createGroupDataUrl(groupId)))
+            .willReturn(
+                aResponse()
+                    .withStatus(statusCode.value())
+                    .withAppContentType()
+                    .withBody(
+                        jacksonObjectMapper().writeValueAsString(body),
+                    ),
+            ),
+    )
+}

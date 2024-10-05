@@ -36,3 +36,19 @@ fun stubExpenseManagerActivities(body: Any?, groupId: String, clientFilterOption
             ),
     )
 }
+
+private fun createAcceptedExpensesUrl(groupId: String) = "$INTERNAL/expenses/accepted/groups/$groupId"
+
+fun stubAcceptedExpenses(body: Any?, groupId: String, statusCode: HttpStatusCode = OK) {
+    wiremock.stubFor(
+        get(createAcceptedExpensesUrl(groupId))
+            .willReturn(
+                aResponse()
+                    .withStatus(statusCode.value())
+                    .withAppContentType()
+                    .withBody(
+                        jacksonObjectMapper().registerModules(JavaTimeModule()).writeValueAsString(body),
+                    ),
+            ),
+    )
+}

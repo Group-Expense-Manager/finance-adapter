@@ -1,5 +1,7 @@
 package pl.edu.agh.gem.external.dto.expense
 
+import pl.edu.agh.gem.external.dto.payment.AmountDto
+import pl.edu.agh.gem.external.dto.payment.FxDataDto
 import pl.edu.agh.gem.internal.model.finance.Activity
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus
 import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
@@ -18,10 +20,8 @@ data class ExpenseManagerActivityDto(
     val expenseId: String,
     val creatorId: String,
     val title: String,
-    val totalCost: BigDecimal,
-    val baseCurrency: String,
-    val targetCurrency: String?,
-    val exchangeRate: BigDecimal?,
+    val amount: AmountDto,
+    val fxData: FxDataDto?,
     val status: ActivityStatus,
     val participantIds: List<String>,
     val expenseDate: Instant,
@@ -31,8 +31,8 @@ data class ExpenseManagerActivityDto(
         type = EXPENSE,
         creatorId = creatorId,
         title = title,
-        value = totalCost.multiply(exchangeRate ?: BigDecimal.ONE).setScale(2, RoundingMode.DOWN).stripTrailingZeros(),
-        currency = targetCurrency ?: baseCurrency,
+        value = amount.value.multiply(fxData?.exchangeRate ?: BigDecimal.ONE).setScale(2, RoundingMode.DOWN).stripTrailingZeros(),
+        currency = fxData?.targetCurrency ?: amount.currency,
         status = status,
         participantIds = participantIds,
         date = expenseDate,

@@ -3,6 +3,8 @@ package pl.edu.agh.gem.external.dto.payment
 import pl.edu.agh.gem.internal.model.finance.Activity
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus
 import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
+import pl.edu.agh.gem.internal.model.payment.Amount
+import pl.edu.agh.gem.internal.model.payment.FxData
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.Instant
@@ -39,9 +41,19 @@ data class PaymentManagerActivityDto(
 data class AmountDto(
     val value: BigDecimal,
     val currency: String,
-)
+) {
+    fun toDomain() = Amount(
+        value = value,
+        currency = currency,
+    )
+}
 
 data class FxDataDto(
     val targetCurrency: String,
     val exchangeRate: BigDecimal,
-)
+) {
+    fun toDomain() = FxData(
+        targetCurrency = targetCurrency,
+        exchangeRate = exchangeRate,
+    )
+}
