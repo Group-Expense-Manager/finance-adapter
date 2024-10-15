@@ -5,7 +5,7 @@ import pl.edu.agh.gem.external.dto.expense.AcceptedExpenseParticipantDto
 import pl.edu.agh.gem.external.dto.expense.AcceptedExpensesResponse
 import pl.edu.agh.gem.external.dto.expense.ExpenseManagerActivitiesResponse
 import pl.edu.agh.gem.external.dto.expense.ExpenseManagerActivityDto
-import pl.edu.agh.gem.external.dto.finance.CurrencyBalancesDto
+import pl.edu.agh.gem.external.dto.finance.BalancesDto
 import pl.edu.agh.gem.external.dto.finance.UserBalanceDto
 import pl.edu.agh.gem.external.dto.group.CurrencyDTO
 import pl.edu.agh.gem.external.dto.group.GroupDTO
@@ -20,9 +20,10 @@ import pl.edu.agh.gem.external.dto.payment.PaymentManagerActivitiesResponse
 import pl.edu.agh.gem.external.dto.payment.PaymentManagerActivityDto
 import pl.edu.agh.gem.helper.group.DummyGroup.GROUP_ID
 import pl.edu.agh.gem.helper.group.DummyGroup.OTHER_GROUP_ID
-import pl.edu.agh.gem.helper.group.createGroupMembers
 import pl.edu.agh.gem.helper.user.DummyUser.OTHER_USER_ID
 import pl.edu.agh.gem.helper.user.DummyUser.USER_ID
+import pl.edu.agh.gem.internal.job.ReconciliationJobState
+import pl.edu.agh.gem.internal.job.ReconciliationJobState.STARTING
 import pl.edu.agh.gem.internal.model.expense.AcceptedExpense
 import pl.edu.agh.gem.internal.model.expense.AcceptedExpenseParticipant
 import pl.edu.agh.gem.internal.model.finance.Activity
@@ -30,19 +31,24 @@ import pl.edu.agh.gem.internal.model.finance.ActivityStatus
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus.PENDING
 import pl.edu.agh.gem.internal.model.finance.ActivityType
 import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
+import pl.edu.agh.gem.internal.model.finance.balance.Balance
+import pl.edu.agh.gem.internal.model.finance.balance.Balances
 import pl.edu.agh.gem.internal.model.finance.filter.ClientFilterOptions
 import pl.edu.agh.gem.internal.model.finance.filter.FilterOptions
 import pl.edu.agh.gem.internal.model.finance.filter.SortOrder
 import pl.edu.agh.gem.internal.model.finance.filter.SortOrder.ASCENDING
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy.DATE
-import pl.edu.agh.gem.internal.model.group.Currencies
+import pl.edu.agh.gem.internal.model.finance.settelment.Settlement
+import pl.edu.agh.gem.internal.model.finance.settelment.SettlementStatus
+import pl.edu.agh.gem.internal.model.finance.settelment.Settlements
 import pl.edu.agh.gem.internal.model.group.Currency
 import pl.edu.agh.gem.internal.model.group.GroupData
 import pl.edu.agh.gem.internal.model.payment.AcceptedPayment
 import pl.edu.agh.gem.internal.model.payment.Amount
 import pl.edu.agh.gem.internal.model.payment.FxData
-import pl.edu.agh.gem.model.GroupMembers
+import pl.edu.agh.gem.internal.model.reconciliation.ReconciliationJob
+import pl.edu.agh.gem.model.GroupMember
 import pl.edu.agh.gem.util.DummyData.ACTIVITY_TITLE
 import pl.edu.agh.gem.util.DummyData.ANOTHER_USER_ID
 import pl.edu.agh.gem.util.DummyData.CURRENCY_1
@@ -92,7 +98,7 @@ fun createExpenseManagerActivitiesResponse(
 
 fun createAmountDto(
     value: BigDecimal = "4".toBigDecimal(),
-    currency: String = CURRENCY_1,
+    currency: String = CURRENCY_2,
 ) = AmountDto(
     value = value,
     currency = currency,
@@ -247,7 +253,7 @@ fun createAcceptedExpenseParticipant(
 )
 
 fun createFxDataDto(
-    targetCurrency: String = CURRENCY_2,
+    targetCurrency: String = CURRENCY_1,
     exchangeRate: BigDecimal = "3.24".toBigDecimal(),
 ) = FxDataDto(
     targetCurrency = targetCurrency,
@@ -289,8 +295,8 @@ fun createAcceptedPaymentDto(
 fun createAcceptedPaymentsResponse(
     groupId: String = GROUP_ID,
     payments: List<AcceptedPaymentDto> = listOf(
-        createAcceptedPaymentDto(creatorId = USER_ID, recipientId = OTHER_USER_ID),
-        createAcceptedPaymentDto(creatorId = OTHER_USER_ID, recipientId = USER_ID),
+        createAcceptedPaymentDto(creatorId = USER_ID, recipientId = OTHER_USER_ID, amount = createAmountDto(value = "10".toBigDecimal())),
+        createAcceptedPaymentDto(creatorId = OTHER_USER_ID, recipientId = USER_ID, amount = createAmountDto(value = "5".toBigDecimal())),
 
     ),
 ) = AcceptedPaymentsResponse(
@@ -323,8 +329,8 @@ fun createGroupResponse(
 )
 
 fun createGroupData(
-    members: GroupMembers = createGroupMembers(USER_ID, OTHER_USER_ID),
-    currencies: Currencies = listOf(CURRENCY_1, CURRENCY_2).map { Currency(it) },
+    members: List<GroupMember> = listOf(USER_ID, OTHER_USER_ID).map { GroupMember(it) },
+    currencies: List<Currency> = listOf(CURRENCY_1, CURRENCY_2).map { Currency(it) },
 ) = GroupData(
     members = members,
     currencies = currencies,
@@ -338,7 +344,7 @@ fun createMembersDTO(
     vararg members: String = arrayOf(USER_ID, OTHER_USER_ID),
 ) = members.map { MemberDTO(it) }
 
-fun createCurrencyBalanceDto(
+fun createBalanceDto(
     currency: String = CURRENCY_1,
     userBalances: List<UserBalanceDto> = listOf(
         createUserBalanceDto(userId = USER_ID, "5".toBigDecimal()),
@@ -346,14 +352,57 @@ fun createCurrencyBalanceDto(
         createUserBalanceDto(userId = ANOTHER_USER_ID, "-3".toBigDecimal()),
 
     ),
-) = CurrencyBalancesDto(
+) = BalancesDto(
     currency = currency,
     userBalances = userBalances,
 )
 
-fun createBalances() = mapOf(
-    CURRENCY_1 to mapOf(USER_ID to "1".toBigDecimal(), OTHER_USER_ID to "-1".toBigDecimal()),
-    CURRENCY_2 to mapOf(USER_ID to "2".toBigDecimal(), OTHER_USER_ID to "-2".toBigDecimal()),
+fun createBalances(
+    currency: String = CURRENCY_1,
+    groupId: String = GROUP_ID,
+    balances: List<Balance> = listOf(
+        createBalance(userId = USER_ID, "5".toBigDecimal()),
+        createBalance(userId = OTHER_USER_ID, "-2".toBigDecimal()),
+        createBalance(userId = ANOTHER_USER_ID, "-3".toBigDecimal()),
+    ),
+) = Balances(
+    groupId = groupId,
+    currency = currency,
+    users = balances,
+)
+
+fun createBalance(
+    userId: String = USER_ID,
+    value: BigDecimal = "1".toBigDecimal(),
+) = Balance(
+    userId = userId,
+    value = value,
+)
+
+fun createSettlements(
+    groupId: String = "group1",
+    currency: String = "USD",
+    status: SettlementStatus = SettlementStatus.PENDING,
+    settlements: List<Settlement> = listOf(
+        createSettlement(fromUserId = USER_ID, toUserId = OTHER_USER_ID, value = "100".toBigDecimal()),
+        createSettlement(fromUserId = USER_ID, toUserId = OTHER_USER_ID, value = "200".toBigDecimal()),
+        createSettlement(fromUserId = OTHER_USER_ID, toUserId = USER_ID, value = "-300".toBigDecimal()),
+    ),
+) = Settlements(
+    groupId = groupId,
+    currency = currency,
+    status = status,
+    settlements = settlements,
+)
+
+fun createSettlement(
+    fromUserId: String = USER_ID,
+    toUserId: String = OTHER_USER_ID,
+    value: BigDecimal = "100".toBigDecimal(),
+) = Settlement(
+    fromUserId = fromUserId,
+    toUserId = toUserId,
+    value = value,
 )
 
 fun createUserBalanceDto(
@@ -362,6 +411,32 @@ fun createUserBalanceDto(
 ) = UserBalanceDto(
     userId = userId,
     balance = balance,
+)
+
+fun createGroupMembers(
+    vararg users: String = arrayOf(USER_ID),
+) = users.map { GroupMember(it) }
+
+fun createReconciliationJob(
+    id: String = "exchange-rate-job-id",
+    groupId: String = GROUP_ID,
+    currency: String = CURRENCY_1,
+    state: ReconciliationJobState = STARTING,
+    balances: List<Balance> = listOf(),
+    settlements: List<Settlement> = listOf(),
+    nextProcessAt: Instant = Instant.parse("2023-01-01T00:00:00.00Z"),
+    retry: Long = 0,
+    canceled: Boolean = false,
+) = ReconciliationJob(
+    id = id,
+    groupId = groupId,
+    currency = currency,
+    state = state,
+    balances = balances,
+    settlements = settlements,
+    nextProcessAt = nextProcessAt,
+    retry = retry,
+    canceled = canceled,
 )
 
 object DummyData {

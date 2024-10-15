@@ -12,3 +12,8 @@ payment-manager:
   url: http://${PAYMENT_MANAGER_SERVICE_SERVICE_HOST}:8080
   read-timeout: 1000ms
   connect-timeout: 1000ms
+
+spring:
+  data:
+    mongodb:
+      uri: ${FINANCE_ADAPTER_DB_URI}

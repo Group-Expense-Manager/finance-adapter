@@ -5,7 +5,6 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.springframework.http.HttpStatus.FORBIDDEN
-import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.OK
 import pl.edu.agh.gem.assertion.shouldBody
 import pl.edu.agh.gem.assertion.shouldHaveErrors
@@ -20,26 +19,20 @@ import pl.edu.agh.gem.helper.user.DummyUser.USER_ID
 import pl.edu.agh.gem.helper.user.createGemUser
 import pl.edu.agh.gem.integration.BaseIntegrationSpec
 import pl.edu.agh.gem.integration.ability.ServiceTestClient
-import pl.edu.agh.gem.integration.ability.stubAcceptedExpenses
-import pl.edu.agh.gem.integration.ability.stubAcceptedPayments
 import pl.edu.agh.gem.integration.ability.stubExpenseManagerActivities
 import pl.edu.agh.gem.integration.ability.stubGroupManagerGroupData
 import pl.edu.agh.gem.integration.ability.stubGroupManagerUserGroups
 import pl.edu.agh.gem.integration.ability.stubPaymentManagerActivities
 import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
 import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
+import pl.edu.agh.gem.internal.model.finance.balance.Balance
+import pl.edu.agh.gem.internal.model.finance.balance.Balances
+import pl.edu.agh.gem.internal.persistence.BalancesRepository
 import pl.edu.agh.gem.util.DummyData.CURRENCY_1
 import pl.edu.agh.gem.util.DummyData.CURRENCY_2
-import pl.edu.agh.gem.util.createAcceptedExpenseDto
-import pl.edu.agh.gem.util.createAcceptedExpenseParticipantDto
-import pl.edu.agh.gem.util.createAcceptedExpensesResponse
-import pl.edu.agh.gem.util.createAcceptedPaymentDto
-import pl.edu.agh.gem.util.createAcceptedPaymentsResponse
-import pl.edu.agh.gem.util.createAmountDto
 import pl.edu.agh.gem.util.createClientFilterOptions
 import pl.edu.agh.gem.util.createCurrenciesDTO
 import pl.edu.agh.gem.util.createExpenseManagerActivitiesResponse
-import pl.edu.agh.gem.util.createFxDataDto
 import pl.edu.agh.gem.util.createGroupResponse
 import pl.edu.agh.gem.util.createMembersDTO
 import pl.edu.agh.gem.util.createPaymentManagerActivitiesResponse
@@ -48,6 +41,7 @@ import java.math.BigDecimal
 
 class ExternalFinanceControllerIT(
     private val service: ServiceTestClient,
+    private val balancesRepository: BalancesRepository,
 ) : BaseIntegrationSpec({
 
     should("return forbidden when user doesn't have access") {
@@ -128,39 +122,6 @@ class ExternalFinanceControllerIT(
         }
     }
 
-    should("return INTERNAL_SERVER_ERROR when fetching data from expenseManager fails") {
-        // given
-        val user = createGemUser(USER_ID)
-        val clientFilterOptions = createClientFilterOptions()
-        stubGroupManagerUserGroups(createUserGroupsResponse(GROUP_ID), USER_ID)
-        val expenseManagerActivitiesResponse = createExpenseManagerActivitiesResponse()
-        stubExpenseManagerActivities(expenseManagerActivitiesResponse, GROUP_ID, clientFilterOptions, INTERNAL_SERVER_ERROR)
-        val paymentManagerActivitiesResponse = createPaymentManagerActivitiesResponse()
-        stubPaymentManagerActivities(paymentManagerActivitiesResponse, GROUP_ID, clientFilterOptions)
-
-        // when
-        val response = service.getActivities(user, GROUP_ID)
-
-        // then
-        response shouldHaveHttpStatus INTERNAL_SERVER_ERROR
-    }
-    should("return INTERNAL_SERVER_ERROR when fetching data from paymentManager fails") {
-        // given
-        val user = createGemUser(USER_ID)
-        val clientFilterOptions = createClientFilterOptions()
-        stubGroupManagerUserGroups(createUserGroupsResponse(GROUP_ID), USER_ID)
-        val expenseManagerActivitiesResponse = createExpenseManagerActivitiesResponse()
-        stubExpenseManagerActivities(expenseManagerActivitiesResponse, GROUP_ID, clientFilterOptions)
-        val paymentManagerActivitiesResponse = createPaymentManagerActivitiesResponse()
-        stubPaymentManagerActivities(paymentManagerActivitiesResponse, GROUP_ID, clientFilterOptions, INTERNAL_SERVER_ERROR)
-
-        // when
-        val response = service.getActivities(user, GROUP_ID)
-
-        // then
-        response shouldHaveHttpStatus INTERNAL_SERVER_ERROR
-    }
-
     should("return forbidden when user doesn't have access") {
         // given
         val user = createGemUser(USER_ID)
@@ -177,46 +138,6 @@ class ExternalFinanceControllerIT(
         }
     }
 
-    should("return INTERNAL_SERVER_ERROR when fetching data from groupManager fails") {
-        // given
-        val user = createGemUser(USER_ID)
-        stubGroupManagerUserGroups(createUserGroupsResponse(GROUP_ID, OTHER_GROUP_ID), USER_ID)
-        stubGroupManagerUserGroups(createGroupResponse(), GROUP_ID, INTERNAL_SERVER_ERROR)
-
-        // when
-        val response = service.getBalances(user, GROUP_ID)
-
-        // then
-        response shouldHaveHttpStatus INTERNAL_SERVER_ERROR
-    }
-
-    should("return INTERNAL_SERVER_ERROR when fetching data from expenseManager fails") {
-        // given
-        val user = createGemUser(USER_ID)
-        stubGroupManagerUserGroups(createUserGroupsResponse(GROUP_ID, OTHER_GROUP_ID), USER_ID)
-        stubGroupManagerUserGroups(createGroupResponse(), GROUP_ID)
-        stubAcceptedExpenses(createAcceptedExpensesResponse(), GROUP_ID, INTERNAL_SERVER_ERROR)
-        // when
-        val response = service.getBalances(user, GROUP_ID)
-
-        // then
-        response shouldHaveHttpStatus INTERNAL_SERVER_ERROR
-    }
-
-    should("return INTERNAL_SERVER_ERROR when fetching data from expenseManager fails") {
-        // given
-        val user = createGemUser(USER_ID)
-        stubGroupManagerUserGroups(createUserGroupsResponse(GROUP_ID, OTHER_GROUP_ID), USER_ID)
-        stubGroupManagerUserGroups(createGroupResponse(), GROUP_ID)
-        stubAcceptedExpenses(createAcceptedExpensesResponse(), GROUP_ID)
-        stubAcceptedPayments(createAcceptedPaymentsResponse(), GROUP_ID, INTERNAL_SERVER_ERROR)
-        // when
-        val response = service.getBalances(user, GROUP_ID)
-
-        // then
-        response shouldHaveHttpStatus INTERNAL_SERVER_ERROR
-    }
-
     should("return balances") {
         // given
         val user = createGemUser(USER_ID)
@@ -228,46 +149,39 @@ class ExternalFinanceControllerIT(
             ),
             GROUP_ID,
         )
-        stubAcceptedExpenses(
-            createAcceptedExpensesResponse(
-                expenses = listOf(
-                    createAcceptedExpenseDto(
-                        creatorId = USER_ID,
-                        participants = listOf(
-                            createAcceptedExpenseParticipantDto(
-                                participantId = OTHER_USER_ID,
-                                participantCost = "2".toBigDecimal(),
-                            ),
-                        ),
-                        amount = createAmountDto(
-                            value = "3".toBigDecimal(),
-                            currency = CURRENCY_1,
-                        ),
-                        fxData = createFxDataDto(
-                            targetCurrency = CURRENCY_2,
-                            exchangeRate = "3".toBigDecimal(),
-                        ),
+        balancesRepository.save(
+            Balances(
+                currency = CURRENCY_1,
+                groupId = GROUP_ID,
+                users = listOf(
+                    Balance(
+                        userId = USER_ID,
+                        value = "0".toBigDecimal(),
+                    ),
+                    Balance(
+                        userId = OTHER_USER_ID,
+                        value = "0".toBigDecimal(),
                     ),
                 ),
             ),
-            GROUP_ID,
         )
-        stubAcceptedPayments(
-            createAcceptedPaymentsResponse(
-                payments = listOf(
-                    createAcceptedPaymentDto(
-                        creatorId = OTHER_USER_ID,
-                        recipientId = USER_ID,
-                        amount = createAmountDto(
-                            value = "3".toBigDecimal(),
-                            currency = CURRENCY_2,
-                        ),
-                        fxData = null,
+        balancesRepository.save(
+            Balances(
+                currency = CURRENCY_2,
+                groupId = GROUP_ID,
+                users = listOf(
+                    Balance(
+                        userId = USER_ID,
+                        value = "3".toBigDecimal(),
+                    ),
+                    Balance(
+                        userId = OTHER_USER_ID,
+                        value = "-3".toBigDecimal(),
                     ),
                 ),
             ),
-            GROUP_ID,
         )
+
         // when
         val response = service.getBalances(user, GROUP_ID)
 

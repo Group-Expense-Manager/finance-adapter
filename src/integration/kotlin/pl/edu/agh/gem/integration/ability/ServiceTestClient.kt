@@ -5,13 +5,16 @@ import org.springframework.stereotype.Component
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec
 import org.springframework.test.web.servlet.client.MockMvcWebTestClient.bindToApplicationContext
 import org.springframework.web.context.WebApplicationContext
+import pl.edu.agh.gem.external.dto.reconciliation.GenerateReconciliationRequest
 import pl.edu.agh.gem.headers.HeadersUtils.withAppAcceptType
+import pl.edu.agh.gem.headers.HeadersUtils.withAppContentType
 import pl.edu.agh.gem.headers.HeadersUtils.withValidatedUser
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus
 import pl.edu.agh.gem.internal.model.finance.ActivityType
 import pl.edu.agh.gem.internal.model.finance.filter.SortOrder
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy
 import pl.edu.agh.gem.paths.Paths.EXTERNAL
+import pl.edu.agh.gem.paths.Paths.INTERNAL
 import pl.edu.agh.gem.security.GemUser
 import java.util.Optional
 
@@ -57,6 +60,19 @@ class ServiceTestClient(applicationContext: WebApplicationContext) {
                 it.path("$EXTERNAL/balances/groups/$groupId").build()
             }
             .headers { it.withValidatedUser(gemUser).withAppAcceptType() }
+            .exchange()
+    }
+
+    fun generateReconciliation(
+        groupId: String,
+        currency: String,
+    ): ResponseSpec {
+        return webClient.post()
+            .uri {
+                it.path("$INTERNAL/generate/groups/$groupId").build()
+            }
+            .headers { it.withAppContentType() }
+            .bodyValue(GenerateReconciliationRequest(currency = "PLN"))
             .exchange()
     }
 }

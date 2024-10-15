@@ -1,13 +1,11 @@
 package pl.edu.agh.gem.internal.model.group
 
-import pl.edu.agh.gem.model.GroupMembers
+import pl.edu.agh.gem.model.GroupMember
 
 data class GroupData(
-    val members: GroupMembers,
-    val currencies: Currencies,
+    val members: List<GroupMember>,
+    val currencies: List<Currency>,
 )
-
-typealias Currencies = List<Currency>
 
 data class Currency(
     val code: String,

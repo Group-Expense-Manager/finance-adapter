@@ -1,6 +1,9 @@
 spring:
   application:
     name: finance-adapter
+  data:
+    mongodb:
+      auto-index-creation: true
 
 resilience4j.retry:
   configs:
@@ -58,3 +61,27 @@ payment-manager:
   url: "expense/manager/some/url"
   read-timeout: 1000ms
   connect-timeout: 1000ms
+
+reconciliation-job-executor:
+  corePoolSize: 2
+  maxPoolSize: 2
+  queueCapacity: 100
+
+reconciliation-job-producer:
+  corePoolSize: 1
+  maxPoolSize: 1
+  queueCapacity: 1
+
+reconciliation-job-processor:
+  enabled: true
+  lockTime: 5m
+  emptyCandidateDelay: 10s
+  retryDelays:
+    - 1m
+    - 5m
+    - 10m
+    - 30m
+    - 1h
+    - 4h
+    - 12h
+    - 24h

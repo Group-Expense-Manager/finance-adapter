@@ -7,8 +7,11 @@ import pl.edu.agh.gem.internal.client.PaymentManagerClient
 import pl.edu.agh.gem.internal.model.finance.Activity
 import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
 import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
+import pl.edu.agh.gem.internal.model.finance.balance.Balance
 import pl.edu.agh.gem.internal.model.finance.balance.Balances
 import pl.edu.agh.gem.internal.model.finance.filter.FilterOptions
+import pl.edu.agh.gem.internal.persistence.BalancesRepository
+import pl.edu.agh.gem.internal.persistence.SettlementsRepository
 import pl.edu.agh.gem.internal.sort.ActivityMerger
 import java.math.BigDecimal
 
@@ -17,6 +20,8 @@ class FinanceService(
     private val expenseManagerClient: ExpenseManagerClient,
     private val paymentManagerClient: PaymentManagerClient,
     private val groupManagerClient: GroupManagerClient,
+    private val balancesRepository: BalancesRepository,
+    private val settlementsRepository: SettlementsRepository,
 ) {
     fun getActivities(groupId: String, filterOptions: FilterOptions): List<Activity> {
         return when (filterOptions.type) {
@@ -31,30 +36,39 @@ class FinanceService(
         }
     }
 
-    private fun buildBalancesMap(groupId: String): MutableMap<String, MutableMap<String, BigDecimal>> {
-        val groupData = groupManagerClient.getGroup(groupId)
-        val currencies = groupData.currencies.map { it.code }
-        val memberIds = groupData.members.members.map { it.id }
-
-        return currencies.associateWith { _ ->
-            memberIds.associateWith { BigDecimal.ZERO }.toMutableMap()
-        }.toMutableMap()
+    fun blockSettlements(groupId: String, currency: String) {
+        settlementsRepository.blockSettlements(groupId, currency)
     }
 
-    fun getBalances(groupId: String): Balances {
-        val balances = buildBalancesMap(groupId)
+    fun saveBalances(balances: Balances) {
+        balancesRepository.save(balances)
+    }
 
-        val expenseBalanceElements = expenseManagerClient.getAcceptedExpenses(groupId).flatMap { it.toBalanceElements() }
-        val paymentBalanceElements = paymentManagerClient.getAcceptedPayments(groupId).flatMap { it.toBalanceElements() }
+    fun getBalances(groupId: String): List<Balances> {
+        return balancesRepository.getBalances(groupId)
+    }
 
-        (expenseBalanceElements + paymentBalanceElements).forEach { (currency, userId, value) ->
-            balances[currency]?.let { innerMap ->
-                innerMap[userId]?.let { currentValue ->
-                    innerMap[userId] = currentValue + value
-                }
-            }
-        }
+    fun fetchBalances(groupId: String, currency: String): Balances {
+        val expenseBalanceList = expenseManagerClient.getAcceptedExpenses(groupId)
+            .filter { (it.fxData?.targetCurrency ?: it.amount.currency) == currency }
+            .flatMap { it.toBalanceList() }
+        val paymentBalanceList = paymentManagerClient.getAcceptedPayments(groupId)
+            .filter { (it.fxData?.targetCurrency ?: it.amount.currency) == currency }
+            .flatMap { it.toBalanceList() }
 
-        return balances
+        val zeroBalanceList = groupManagerClient.getGroup(groupId).members
+            .filter { member -> !expenseBalanceList.any { it.userId == member.id } && !paymentBalanceList.any { it.userId == member.id } }
+            .map { Balance(userId = it.id, value = BigDecimal.ZERO) }
+
+        val userBalances = (expenseBalanceList + paymentBalanceList + zeroBalanceList)
+            .groupBy { it.userId }
+            .mapValues { it.value.sumOf { balance -> balance.value } }
+            .map { (userId, value) -> Balance(userId = userId, value = value) }
+
+        return Balances(
+            groupId = groupId,
+            currency = currency,
+            users = userBalances,
+        )
     }
 }
