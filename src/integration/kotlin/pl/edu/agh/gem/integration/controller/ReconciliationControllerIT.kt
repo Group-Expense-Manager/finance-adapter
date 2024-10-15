@@ -1,9 +1,6 @@
 package pl.edu.agh.gem.integration.controller
 
-import io.kotest.matchers.collections.shouldContain
-import io.kotest.matchers.collections.shouldContainAnyOf
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
-import io.kotest.matchers.collections.shouldContainOnly
 import io.kotest.matchers.shouldBe
 import org.mockito.kotlin.any
 import org.mockito.kotlin.verify

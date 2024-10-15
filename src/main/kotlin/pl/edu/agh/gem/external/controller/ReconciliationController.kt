@@ -29,9 +29,9 @@ class ReconciliationController(
     ) {
         financeService.blockSettlements(groupId, generateReconciliationRequest.currency)
         val balances = financeService.fetchBalances(groupId, generateReconciliationRequest.currency)
-        
+
         logger.info { "Balances fetched for groupId: $groupId and currency: ${generateReconciliationRequest.currency}: $balances" }
-        
+
         financeService.saveBalances(balances)
         reconciliationService.generateNewSettlement(balances)
     }
