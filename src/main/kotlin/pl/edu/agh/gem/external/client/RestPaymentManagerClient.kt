@@ -52,10 +52,10 @@ class RestPaymentManagerClient(
     }
 
     @Retry(name = "paymentManager")
-    override fun getAcceptedPayments(groupId: String): List<AcceptedPayment> {
+    override fun getAcceptedPayments(groupId: String, currency: String): List<AcceptedPayment> {
         return try {
             restTemplate.exchange(
-                resolveAcceptedPaymentsAddress(groupId),
+                resolveAcceptedPaymentsAddress(groupId, currency),
                 GET,
                 HttpEntity<Any>(HttpHeaders().withAppAcceptType()),
                 AcceptedPaymentsResponse::class.java,
@@ -82,8 +82,8 @@ class RestPaymentManagerClient(
             .build()
             .toUriString()
 
-    private fun resolveAcceptedPaymentsAddress(groupId: String) =
-        "${paymentManagerProperties.url}$INTERNAL/payments/accepted/groups/$groupId"
+    private fun resolveAcceptedPaymentsAddress(groupId: String, currency: String) =
+        "${paymentManagerProperties.url}$INTERNAL/payments/accepted/groups/$groupId?currency=$currency"
 
     companion object {
         private val logger = KotlinLogging.logger {}

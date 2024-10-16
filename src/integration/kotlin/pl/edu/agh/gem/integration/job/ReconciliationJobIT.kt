@@ -97,7 +97,6 @@ private suspend fun waitTillReconciliationJob(reconciliationJobRepository: Recon
     while (true) {
         delay(1L.seconds.toJavaDuration())
         val reconciliationJob = reconciliationJobRepository.findById(reconciliationJobId)
-        println(reconciliationJob)
         if (reconciliationJob == null) {
             break
         }

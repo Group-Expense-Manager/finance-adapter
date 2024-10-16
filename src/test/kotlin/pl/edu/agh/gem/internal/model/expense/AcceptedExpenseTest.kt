@@ -15,7 +15,7 @@ import pl.edu.agh.gem.util.createFxData
 
 class AcceptedExpenseTest : ShouldSpec({
 
-    should("map to BalanceElements when fxData is null") {
+    should("map to BalanceList when fxData is null") {
         // given
         val firstParticipant = createAcceptedExpenseParticipant(participantId = OTHER_USER_ID, participantCost = "3".toBigDecimal())
         val secondParticipant = createAcceptedExpenseParticipant(participantId = ANOTHER_USER_ID, participantCost = "5".toBigDecimal())
@@ -40,7 +40,7 @@ class AcceptedExpenseTest : ShouldSpec({
         )
     }
 
-    should("map to BalanceElements when fxData is not null") {
+    should("map to BalanceList when fxData is not null") {
         // given
         val firstParticipant = createAcceptedExpenseParticipant(participantId = OTHER_USER_ID, participantCost = "3".toBigDecimal())
         val secondParticipant = createAcceptedExpenseParticipant(participantId = ANOTHER_USER_ID, participantCost = "5".toBigDecimal())

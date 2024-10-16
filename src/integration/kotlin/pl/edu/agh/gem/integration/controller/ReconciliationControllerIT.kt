@@ -47,7 +47,6 @@ class ReconciliationControllerIT(
         response shouldHaveHttpStatus OK
         verify(reconciliationJobRepository).save(any())
         val balances = balancesRepository.getBalances(GROUP_ID)
-        println(balances)
         balances.size shouldBe 1
         balances.map { it.currency } shouldContainExactlyInAnyOrder listOf("PLN")
         balances.find { it.currency == "PLN" }?.also {

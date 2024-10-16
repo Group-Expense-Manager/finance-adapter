@@ -12,6 +12,7 @@ import pl.edu.agh.gem.integration.ability.stubExpenseManagerActivities
 import pl.edu.agh.gem.internal.client.ExpenseManagerClient
 import pl.edu.agh.gem.internal.client.ExpenseManagerClientException
 import pl.edu.agh.gem.internal.client.RetryableExpenseManagerClientException
+import pl.edu.agh.gem.util.DummyData.CURRENCY_1
 import pl.edu.agh.gem.util.DummyData.EXPENSE_ID
 import pl.edu.agh.gem.util.DummyData.OTHER_EXPENSE_ID
 import pl.edu.agh.gem.util.createAcceptedExpensesResponse
@@ -63,7 +64,7 @@ class ExpenseManagerClientIT(
         stubAcceptedExpenses(acceptedExpensesResponse, GROUP_ID)
 
         // when
-        val result = expenseManagerClient.getAcceptedExpenses(GROUP_ID)
+        val result = expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_1)
 
         // then
         result shouldBe acceptedExpensesResponse.toDomain()
@@ -72,22 +73,22 @@ class ExpenseManagerClientIT(
     should("throw ExpenseManagerClientException when we send bad accepted expenses request") {
         // given
         val acceptedExpensesResponse = createAcceptedExpensesResponse()
-        stubAcceptedExpenses(acceptedExpensesResponse, GROUP_ID, NOT_ACCEPTABLE)
+        stubAcceptedExpenses(acceptedExpensesResponse, GROUP_ID, CURRENCY_1 ,NOT_ACCEPTABLE)
 
         // when & then
         shouldThrow<ExpenseManagerClientException> {
-            expenseManagerClient.getAcceptedExpenses(GROUP_ID)
+            expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_1)
         }
     }
 
     should("throw RetryableGroupManagerClientException when sending accepted expenses request and client has internal error") {
         // given
         val acceptedExpensesResponse = createAcceptedExpensesResponse()
-        stubAcceptedExpenses(acceptedExpensesResponse, GROUP_ID, INTERNAL_SERVER_ERROR)
+        stubAcceptedExpenses(acceptedExpensesResponse, GROUP_ID, CURRENCY_1 , INTERNAL_SERVER_ERROR)
 
         // when & then
         shouldThrow<RetryableExpenseManagerClientException> {
-            expenseManagerClient.getAcceptedExpenses(GROUP_ID)
+            expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_1)
         }
     }
 },)

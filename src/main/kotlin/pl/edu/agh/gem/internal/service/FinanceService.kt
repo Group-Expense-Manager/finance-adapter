@@ -45,15 +45,29 @@ class FinanceService(
     }
 
     fun getBalances(groupId: String): List<Balances> {
-        return balancesRepository.getBalances(groupId)
+        val balances = balancesRepository.getBalances(groupId).toMutableList()
+        val groupDetails = groupManagerClient.getGroup(groupId)
+        groupDetails.currencies.forEach { currency ->
+            if (balances.none { it.currency == currency.code }) {
+                balances += fetchBalances(groupId, currency.code)
+            }
+        }
+        return balances.map { balance ->
+            if (groupDetails.members.all { member -> balance.users.any { it.userId == member.id } }) {
+                balance
+            } else {
+                val zeroBalanceList = groupDetails.members
+                    .filter { member -> !balance.users.any { it.userId == member.id } }
+                    .map { Balance(userId = it.id, value = BigDecimal.ZERO) }
+                balance.copy(users = balance.users + zeroBalanceList)
+            }
+        }
     }
 
     fun fetchBalances(groupId: String, currency: String): Balances {
-        val expenseBalanceList = expenseManagerClient.getAcceptedExpenses(groupId)
-            .filter { (it.fxData?.targetCurrency ?: it.amount.currency) == currency }
+        val expenseBalanceList = expenseManagerClient.getAcceptedExpenses(groupId, currency)
             .flatMap { it.toBalanceList() }
-        val paymentBalanceList = paymentManagerClient.getAcceptedPayments(groupId)
-            .filter { (it.fxData?.targetCurrency ?: it.amount.currency) == currency }
+        val paymentBalanceList = paymentManagerClient.getAcceptedPayments(groupId, currency)
             .flatMap { it.toBalanceList() }
 
         val zeroBalanceList = groupManagerClient.getGroup(groupId).members

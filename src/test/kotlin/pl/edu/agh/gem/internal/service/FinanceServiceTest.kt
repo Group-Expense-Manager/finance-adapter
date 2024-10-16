@@ -16,16 +16,21 @@ import pl.edu.agh.gem.internal.client.GroupManagerClient
 import pl.edu.agh.gem.internal.client.PaymentManagerClient
 import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
 import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
+import pl.edu.agh.gem.internal.model.group.Currency
 import pl.edu.agh.gem.internal.persistence.BalancesRepository
 import pl.edu.agh.gem.internal.persistence.SettlementsRepository
+import pl.edu.agh.gem.model.GroupMember
 import pl.edu.agh.gem.util.DummyData.ANOTHER_USER_ID
 import pl.edu.agh.gem.util.DummyData.CURRENCY_1
 import pl.edu.agh.gem.util.DummyData.CURRENCY_2
+import pl.edu.agh.gem.util.createAcceptedExpense
+import pl.edu.agh.gem.util.createAcceptedPayment
 import pl.edu.agh.gem.util.createActivity
 import pl.edu.agh.gem.util.createBalance
 import pl.edu.agh.gem.util.createBalances
 import pl.edu.agh.gem.util.createClientFilterOptions
 import pl.edu.agh.gem.util.createFilterOptions
+import pl.edu.agh.gem.util.createGroupData
 import java.math.BigDecimal
 
 class FinanceServiceTest : ShouldSpec({
@@ -87,13 +92,43 @@ class FinanceServiceTest : ShouldSpec({
 
     should("get empty balances") {
         // given
+        whenever(groupManagerClient.getGroup(GROUP_ID)).thenReturn(
+            createGroupData(
+                members = listOf(USER_ID, OTHER_USER_ID, ANOTHER_USER_ID).map { GroupMember(it) },
+                currencies = listOf(CURRENCY_1, CURRENCY_2).map { Currency(it) },
+            ),
+        )
+        whenever(expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_1)).thenReturn(listOf())
+        whenever(expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_2)).thenReturn(listOf(createAcceptedExpense()))
+        whenever(paymentManagerClient.getAcceptedPayments(GROUP_ID, CURRENCY_1)).thenReturn(listOf())
+        whenever(paymentManagerClient.getAcceptedPayments(GROUP_ID, CURRENCY_2)).thenReturn(listOf(createAcceptedPayment()))
         whenever(balancesRepository.getBalances(GROUP_ID)).thenReturn(listOf())
 
         // when
         val result = financeService.getBalances(GROUP_ID)
 
         // then
-        result shouldBe listOf()
+        verify(balancesRepository, times(1)).getBalances(GROUP_ID)
+        result.map { it.currency } shouldContainExactlyInAnyOrder listOf(CURRENCY_1, CURRENCY_2)
+        result.map { it.groupId } shouldContainOnly listOf(GROUP_ID)
+        result.find { it.currency == CURRENCY_1 }?.users
+            ?.map { Pair(it.value.toString(), it.userId) }
+            .shouldContainExactlyInAnyOrder(
+                listOf(
+                    Pair("0", USER_ID),
+                    Pair("0", OTHER_USER_ID),
+                    Pair("0", ANOTHER_USER_ID),
+                ),
+            )
+        result.find { it.currency == CURRENCY_2 }?.users
+            ?.map { Pair(it.value.toString(), it.userId) }
+            .shouldContainExactlyInAnyOrder(
+                listOf(
+                    Pair("-38.88", OTHER_USER_ID),
+                    Pair("-6.48", ANOTHER_USER_ID),
+                    Pair("45.36", USER_ID),
+                ),
+            )
         verify(balancesRepository, times(1)).getBalances(GROUP_ID)
     }
 
@@ -119,20 +154,43 @@ class FinanceServiceTest : ShouldSpec({
                 ),
             ),
         )
+        whenever(groupManagerClient.getGroup(GROUP_ID)).thenReturn(
+            createGroupData(
+                members = listOf(USER_ID, OTHER_USER_ID, ANOTHER_USER_ID).map { GroupMember(it) },
+                currencies = listOf(CURRENCY_1, CURRENCY_2).map { Currency(it) },
+            ),
+        )
+        whenever(expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_1)).thenReturn(listOf())
+        whenever(expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_2)).thenReturn(listOf(createAcceptedExpense()))
+        whenever(paymentManagerClient.getAcceptedPayments(GROUP_ID, CURRENCY_1)).thenReturn(listOf())
+        whenever(paymentManagerClient.getAcceptedPayments(GROUP_ID, CURRENCY_2)).thenReturn(listOf(createAcceptedPayment()))
+        whenever(balancesRepository.getBalances(GROUP_ID)).thenReturn(listOf())
 
         // when
         val result = financeService.getBalances(GROUP_ID)
 
         // then
+        verify(balancesRepository, times(1)).getBalances(GROUP_ID)
         result.map { it.currency } shouldContainExactlyInAnyOrder listOf(CURRENCY_1, CURRENCY_2)
         result.map { it.groupId } shouldContainOnly listOf(GROUP_ID)
-        result.flatMap { it.users }.map { it.userId } shouldContainOnly listOf(USER_ID, OTHER_USER_ID, ANOTHER_USER_ID)
         result.find { it.currency == CURRENCY_1 }?.users
-            ?.map { it.value }
-            .shouldContainExactlyInAnyOrder(listOf("5", "0", "-5").map { it.toBigDecimal() })
+            ?.map { Pair(it.value.toString(), it.userId) }
+            .shouldContainExactlyInAnyOrder(
+                listOf(
+                    Pair("0", USER_ID),
+                    Pair("0", OTHER_USER_ID),
+                    Pair("0", ANOTHER_USER_ID),
+                ),
+            )
         result.find { it.currency == CURRENCY_2 }?.users
-            ?.map { it.value }
-            .shouldContainExactlyInAnyOrder(listOf("0").map { it.toBigDecimal() })
+            ?.map { Pair(it.value.toString(), it.userId) }
+            .shouldContainExactlyInAnyOrder(
+                listOf(
+                    Pair("-38.88", OTHER_USER_ID),
+                    Pair("-6.48", ANOTHER_USER_ID),
+                    Pair("45.36", USER_ID),
+                ),
+            )
         verify(balancesRepository, times(1)).getBalances(GROUP_ID)
     }
 },)
