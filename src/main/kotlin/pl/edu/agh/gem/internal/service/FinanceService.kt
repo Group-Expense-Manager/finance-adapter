@@ -8,7 +8,11 @@ import pl.edu.agh.gem.internal.model.finance.Activity
 import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
 import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
 import pl.edu.agh.gem.internal.model.finance.balance.Balances
+import pl.edu.agh.gem.internal.model.finance.balance.toBalances
 import pl.edu.agh.gem.internal.model.finance.filter.FilterOptions
+import pl.edu.agh.gem.internal.model.finance.settlements.CurrencySettlement
+import pl.edu.agh.gem.internal.model.finance.settlements.Settlements
+import pl.edu.agh.gem.internal.settlement.SettlementGenerator
 import pl.edu.agh.gem.internal.sort.ActivityMerger
 import java.math.BigDecimal
 
@@ -18,6 +22,9 @@ class FinanceService(
     private val paymentManagerClient: PaymentManagerClient,
     private val groupManagerClient: GroupManagerClient,
 ) {
+
+    val settlementGenerator = SettlementGenerator()
+
     fun getActivities(groupId: String, filterOptions: FilterOptions): List<Activity> {
         return when (filterOptions.type) {
             EXPENSE -> expenseManagerClient.getActivities(groupId, filterOptions.toClientFilterOptions())
@@ -41,9 +48,7 @@ class FinanceService(
         }.toMutableMap()
     }
 
-    fun getBalances(groupId: String): Balances {
-        val balances = buildBalancesMap(groupId)
-
+    private fun fillBalancesMap(groupId: String, balances: MutableMap<String, MutableMap<String, BigDecimal>>): Map<String, Map<String, BigDecimal>> {
         val expenseBalanceElements = expenseManagerClient.getAcceptedExpenses(groupId).flatMap { it.toBalanceElements() }
         val paymentBalanceElements = paymentManagerClient.getAcceptedPayments(groupId).flatMap { it.toBalanceElements() }
 
@@ -56,5 +61,16 @@ class FinanceService(
         }
 
         return balances
+    }
+
+    fun getBalances(groupId: String): Balances {
+        return fillBalancesMap(groupId, buildBalancesMap(groupId)).toBalances()
+    }
+
+    fun getSettlements(groupId: String): Settlements {
+        return getBalances(groupId)
+                .map { CurrencySettlement(
+                        currency = it.currency, 
+                        settlements = settlementGenerator.generate(it.balances)) }
     }
 }

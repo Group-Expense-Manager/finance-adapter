@@ -8,10 +8,10 @@ import java.time.Instant
 
 data class ActivitiesResponse(
     val groupId: String,
-    val activities: List<ActivityDTO>,
+    val activities: List<ActivityDto>,
 )
 
-data class ActivityDTO(
+data class ActivityDto(
     val activityId: String,
     val type: ActivityType,
     val creatorId: String,
@@ -23,8 +23,8 @@ data class ActivityDTO(
     val date: Instant,
 )
 
-fun Activity.toDTO(): ActivityDTO {
-    return ActivityDTO(
+fun Activity.toDto(): ActivityDto {
+    return ActivityDto(
         activityId = activityId,
         type = type,
         creatorId = creatorId,
@@ -40,6 +40,6 @@ fun Activity.toDTO(): ActivityDTO {
 fun List<Activity>.toActivitiesResponse(groupId: String): ActivitiesResponse {
     return ActivitiesResponse(
         groupId = groupId,
-        activities = this.map { it.toDTO() },
+        activities = this.map { it.toDto() },
     )
 }

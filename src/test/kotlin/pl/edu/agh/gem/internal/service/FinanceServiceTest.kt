@@ -3,6 +3,7 @@ package pl.edu.agh.gem.internal.service
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.inspectors.shouldForAll
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
@@ -25,6 +26,7 @@ import pl.edu.agh.gem.util.createAcceptedExpenseParticipant
 import pl.edu.agh.gem.util.createAcceptedPayment
 import pl.edu.agh.gem.util.createActivity
 import pl.edu.agh.gem.util.createAmount
+import pl.edu.agh.gem.util.createBalance
 import pl.edu.agh.gem.util.createClientFilterOptions
 import pl.edu.agh.gem.util.createFilterOptions
 import pl.edu.agh.gem.util.createGroupData
@@ -95,11 +97,13 @@ class FinanceServiceTest : ShouldSpec({
 
         // then
         result.also {
-            it.keys shouldContainExactly setOf(CURRENCY_1, CURRENCY_2)
-            it.values.shouldForAll { userBalanceMap ->
-                userBalanceMap.keys shouldContainExactly setOf(USER_ID, OTHER_USER_ID)
-                userBalanceMap.values.shouldForAll { balance ->
-                    balance shouldBe BigDecimal.ZERO
+            it shouldHaveSize 2
+            it.map { currencyBalances -> currencyBalances.currency.code } shouldContainExactly setOf(CURRENCY_1, CURRENCY_2)
+
+            it.shouldForAll { currencyBalances ->
+                currencyBalances.balances.map { balance -> balance.userId } shouldContainExactly setOf(USER_ID, OTHER_USER_ID)
+                currencyBalances.balances.shouldForAll { balance ->
+                    balance.value shouldBe BigDecimal.ZERO
                 }
             }
         }
@@ -135,16 +139,22 @@ class FinanceServiceTest : ShouldSpec({
         val result = financeService.getBalances(GROUP_ID)
 
         // then
-        result.also {
-            it.keys shouldContainExactly setOf(CURRENCY_1, CURRENCY_2)
-            it.values.shouldForAll { userBalanceMap ->
-                userBalanceMap.keys shouldContainExactly setOf(USER_ID, OTHER_USER_ID, ANOTHER_USER_ID)
-            }
-            it[CURRENCY_1]?.get(USER_ID) shouldBe "5".toBigDecimal()
-            it[CURRENCY_1]?.get(OTHER_USER_ID) shouldBe "0".toBigDecimal()
-            it[CURRENCY_1]?.get(ANOTHER_USER_ID) shouldBe "-5".toBigDecimal()
 
-            it[CURRENCY_2]?.values?.shouldForAll { balance -> balance shouldBe BigDecimal.ZERO }
+        result.also {
+            it shouldHaveSize 2
+            it.first().also { first ->
+                first.currency.code shouldBe CURRENCY_1
+                first.balances.shouldContainExactly(
+                    createBalance(userId = USER_ID, value = "5".toBigDecimal()),
+                    createBalance(userId = OTHER_USER_ID, value = "0".toBigDecimal()),
+                    createBalance(userId = ANOTHER_USER_ID, value = "-5".toBigDecimal()),
+
+                )
+            }
+            it.last().also { last ->
+                last.currency.code shouldBe CURRENCY_2
+                last.balances.shouldForAll { balance -> balance.value shouldBe BigDecimal.ZERO }
+            }
         }
 
         verify(groupManagerClient, times(1)).getGroup(GROUP_ID)

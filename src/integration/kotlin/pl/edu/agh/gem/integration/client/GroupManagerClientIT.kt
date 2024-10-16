@@ -17,9 +17,9 @@ import pl.edu.agh.gem.internal.client.GroupManagerClientException
 import pl.edu.agh.gem.internal.client.RetryableGroupManagerClientException
 import pl.edu.agh.gem.internal.model.group.Currency
 import pl.edu.agh.gem.model.GroupMember
-import pl.edu.agh.gem.util.createCurrenciesDTO
+import pl.edu.agh.gem.util.createCurrenciesDto
 import pl.edu.agh.gem.util.createGroupResponse
-import pl.edu.agh.gem.util.createMembersDTO
+import pl.edu.agh.gem.util.createMembersDto
 import pl.edu.agh.gem.util.createUserGroupsResponse
 
 class GroupManagerClientIT(
@@ -28,8 +28,8 @@ class GroupManagerClientIT(
 
     should("get group") {
         // given
-        val members = createMembersDTO(USER_ID, OTHER_USER_ID)
-        val listOfCurrencies = createCurrenciesDTO("PLN", "USD", "EUR")
+        val members = createMembersDto(USER_ID, OTHER_USER_ID)
+        val listOfCurrencies = createCurrenciesDto("PLN", "USD", "EUR")
         val groupResponse = createGroupResponse(members = members, groupCurrencies = listOfCurrencies)
         stubGroupManagerGroupData(groupResponse, GROUP_ID)
 

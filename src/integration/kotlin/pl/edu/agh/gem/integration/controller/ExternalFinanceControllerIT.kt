@@ -37,11 +37,11 @@ import pl.edu.agh.gem.util.createAcceptedPaymentDto
 import pl.edu.agh.gem.util.createAcceptedPaymentsResponse
 import pl.edu.agh.gem.util.createAmountDto
 import pl.edu.agh.gem.util.createClientFilterOptions
-import pl.edu.agh.gem.util.createCurrenciesDTO
+import pl.edu.agh.gem.util.createCurrenciesDto
 import pl.edu.agh.gem.util.createExpenseManagerActivitiesResponse
 import pl.edu.agh.gem.util.createFxDataDto
 import pl.edu.agh.gem.util.createGroupResponse
-import pl.edu.agh.gem.util.createMembersDTO
+import pl.edu.agh.gem.util.createMembersDto
 import pl.edu.agh.gem.util.createPaymentManagerActivitiesResponse
 import pl.edu.agh.gem.util.createUserGroupsResponse
 import java.math.BigDecimal
@@ -223,8 +223,8 @@ class ExternalFinanceControllerIT(
         stubGroupManagerUserGroups(createUserGroupsResponse(GROUP_ID, OTHER_GROUP_ID), USER_ID)
         stubGroupManagerGroupData(
             createGroupResponse(
-                members = createMembersDTO(USER_ID, OTHER_USER_ID),
-                groupCurrencies = createCurrenciesDTO(CURRENCY_1, CURRENCY_2),
+                members = createMembersDto(USER_ID, OTHER_USER_ID),
+                groupCurrencies = createCurrenciesDto(CURRENCY_1, CURRENCY_2),
             ),
             GROUP_ID,
         )
@@ -275,27 +275,27 @@ class ExternalFinanceControllerIT(
         response shouldHaveHttpStatus OK
         response.shouldBody<BalancesResponse> {
             groupId shouldBe GROUP_ID
-            balances shouldHaveSize 2
-            balances.first().also { first ->
-                first.currency shouldBe CURRENCY_1
-                first.userBalances.also { userBalances ->
+            currencyBalances shouldHaveSize 2
+            currencyBalances.first().also { first ->
+                first.currency.code shouldBe CURRENCY_1
+                first.balances.also { userBalances ->
                     userBalances.map { it.userId } shouldContainExactly listOf(USER_ID, OTHER_USER_ID)
                     userBalances.shouldForAll { userBalance ->
-                        userBalance.balance shouldBe BigDecimal.ZERO
+                        userBalance.value shouldBe BigDecimal.ZERO
                     }
                 }
             }
 
-            balances.last().also { last ->
-                last.currency shouldBe CURRENCY_2
-                last.userBalances.also { userBalances ->
+            currencyBalances.last().also { last ->
+                last.currency.code shouldBe CURRENCY_2
+                last.balances.also { userBalances ->
                     userBalances.first().also { userBalance ->
                         userBalance.userId shouldBe USER_ID
-                        userBalance.balance shouldBe "3".toBigDecimal()
+                        userBalance.value shouldBe "3".toBigDecimal()
                     }
                     userBalances.last().also { userBalance ->
                         userBalance.userId shouldBe OTHER_USER_ID
-                        userBalance.balance shouldBe "-3".toBigDecimal()
+                        userBalance.value shouldBe "-3".toBigDecimal()
                     }
                 }
             }

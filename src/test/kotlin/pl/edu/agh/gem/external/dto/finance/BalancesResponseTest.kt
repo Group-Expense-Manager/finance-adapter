@@ -2,43 +2,43 @@ package pl.edu.agh.gem.external.dto.finance
 
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe
+import pl.edu.agh.gem.external.dto.group.toDto
 import pl.edu.agh.gem.helper.group.DummyGroup.GROUP_ID
-import pl.edu.agh.gem.helper.user.DummyUser.USER_ID
-import pl.edu.agh.gem.util.DummyData.CURRENCY_1
+import pl.edu.agh.gem.util.createBalance
 import pl.edu.agh.gem.util.createBalances
-import java.math.BigDecimal
+import pl.edu.agh.gem.util.createCurrencyBalances
 
 class BalancesResponseTest : ShouldSpec({
 
-    should("map user-balance entry  to UserBalanceDto") {
+    should("map Balance to BalanceDto") {
         // given
-        val entry = mapOf(USER_ID to BigDecimal.ONE).entries.first()
+        val balance = createBalance()
 
         // when
-        val userBalanceDto = entry.toUserBalanceDto()
+        val balanceDto = balance.toBalanceDto()
 
         // then
-        userBalanceDto.also {
-            it.userId shouldBe USER_ID
-            it.balance shouldBe BigDecimal.ONE
+        balanceDto.also {
+            it.userId shouldBe balance.userId
+            it.value shouldBe balance.value
         }
     }
 
-    should("map currency-user-balances entry  to CurrencyBalancesDto") {
+    should("map CurrencyBalances to CurrencyBalancesDto") {
         // given
-        val entry = createBalances().entries.first()
+        val currencyBalances = createCurrencyBalances()
 
         // when
-        val currencyBalancesDto = entry.toCurrencyBalancesDto()
+        val currencyBalancesDto = currencyBalances.toCurrencyBalancesDto()
 
         // then
         currencyBalancesDto.also {
-            it.currency shouldBe CURRENCY_1
-            it.userBalances shouldBe entry.value.entries.map { userBalance -> userBalance.toUserBalanceDto() }
+            it.currency shouldBe currencyBalances.currency.toDto()
+            it.balances shouldBe currencyBalances.balances.map { balance -> balance.toBalanceDto() }
         }
     }
 
-    should("map Balances  to BalancesResponse") {
+    should("map Balances to BalancesResponse") {
         // given
         val balances = createBalances()
 
@@ -48,7 +48,7 @@ class BalancesResponseTest : ShouldSpec({
         // then
         balancesResponse.also {
             it.groupId shouldBe GROUP_ID
-            it.balances shouldBe balances.map { currencyBalances -> currencyBalances.toCurrencyBalancesDto() }
+            it.currencyBalances shouldBe balances.map { currencyBalances -> currencyBalances.toCurrencyBalancesDto() }
         }
     }
 },)

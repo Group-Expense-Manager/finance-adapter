@@ -5,12 +5,10 @@ import pl.edu.agh.gem.external.dto.expense.AcceptedExpenseParticipantDto
 import pl.edu.agh.gem.external.dto.expense.AcceptedExpensesResponse
 import pl.edu.agh.gem.external.dto.expense.ExpenseManagerActivitiesResponse
 import pl.edu.agh.gem.external.dto.expense.ExpenseManagerActivityDto
-import pl.edu.agh.gem.external.dto.finance.CurrencyBalancesDto
-import pl.edu.agh.gem.external.dto.finance.UserBalanceDto
-import pl.edu.agh.gem.external.dto.group.CurrencyDTO
+import pl.edu.agh.gem.external.dto.group.CurrencyDto
 import pl.edu.agh.gem.external.dto.group.GroupDTO
 import pl.edu.agh.gem.external.dto.group.GroupResponse
-import pl.edu.agh.gem.external.dto.group.MemberDTO
+import pl.edu.agh.gem.external.dto.group.MemberDto
 import pl.edu.agh.gem.external.dto.group.UserGroupsResponse
 import pl.edu.agh.gem.external.dto.payment.AcceptedPaymentDto
 import pl.edu.agh.gem.external.dto.payment.AcceptedPaymentsResponse
@@ -30,12 +28,16 @@ import pl.edu.agh.gem.internal.model.finance.ActivityStatus
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus.PENDING
 import pl.edu.agh.gem.internal.model.finance.ActivityType
 import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
+import pl.edu.agh.gem.internal.model.finance.balance.Balance
+import pl.edu.agh.gem.internal.model.finance.balance.CurrencyBalances
 import pl.edu.agh.gem.internal.model.finance.filter.ClientFilterOptions
 import pl.edu.agh.gem.internal.model.finance.filter.FilterOptions
 import pl.edu.agh.gem.internal.model.finance.filter.SortOrder
 import pl.edu.agh.gem.internal.model.finance.filter.SortOrder.ASCENDING
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy.DATE
+import pl.edu.agh.gem.internal.model.finance.settlements.CurrencySettlement
+import pl.edu.agh.gem.internal.model.finance.settlements.Settlement
 import pl.edu.agh.gem.internal.model.group.Currencies
 import pl.edu.agh.gem.internal.model.group.Currency
 import pl.edu.agh.gem.internal.model.group.GroupData
@@ -315,8 +317,8 @@ fun createAcceptedPayment(
 )
 
 fun createGroupResponse(
-    members: List<MemberDTO> = listOf(USER_ID, OTHER_USER_ID).map { MemberDTO(it) },
-    groupCurrencies: List<CurrencyDTO> = listOf(CURRENCY_1, CURRENCY_2).map { CurrencyDTO(it) },
+    members: List<MemberDto> = listOf(USER_ID, OTHER_USER_ID).map { MemberDto(it) },
+    groupCurrencies: List<CurrencyDto> = listOf(CURRENCY_1, CURRENCY_2).map { CurrencyDto(it) },
 ) = GroupResponse(
     members = members,
     groupCurrencies = groupCurrencies,
@@ -330,38 +332,93 @@ fun createGroupData(
     currencies = currencies,
 )
 
-fun createCurrenciesDTO(
+fun createCurrenciesDto(
     vararg currency: String = arrayOf(CURRENCY_1, CURRENCY_2),
-) = currency.map { CurrencyDTO(it) }
+) = currency.map { CurrencyDto(it) }
 
-fun createMembersDTO(
+fun createMembersDto(
     vararg members: String = arrayOf(USER_ID, OTHER_USER_ID),
-) = members.map { MemberDTO(it) }
+) = members.map { MemberDto(it) }
 
-fun createCurrencyBalanceDto(
-    currency: String = CURRENCY_1,
-    userBalances: List<UserBalanceDto> = listOf(
-        createUserBalanceDto(userId = USER_ID, "5".toBigDecimal()),
-        createUserBalanceDto(userId = OTHER_USER_ID, "-2".toBigDecimal()),
-        createUserBalanceDto(userId = ANOTHER_USER_ID, "-3".toBigDecimal()),
-
-    ),
-) = CurrencyBalancesDto(
-    currency = currency,
-    userBalances = userBalances,
+fun createBalance(
+    userId: String = USER_ID,
+    value: BigDecimal = "3".toBigDecimal(),
+) = Balance(
+    userId = userId,
+    value = value,
 )
 
-fun createBalances() = mapOf(
+fun createCurrencyBalances(
+    currency: Currency = Currency(code = CURRENCY_1),
+    balances: List<Balance> = listOf(
+        createBalance(userId = USER_ID, "5".toBigDecimal()),
+        createBalance(userId = OTHER_USER_ID, "-2".toBigDecimal()),
+        createBalance(userId = ANOTHER_USER_ID, "-3".toBigDecimal()),
+    ),
+) = CurrencyBalances(
+    currency = currency,
+    balances = balances,
+)
+
+fun createBalances(
+    balances: List<CurrencyBalances> = listOf(
+        createCurrencyBalances(
+            currency = Currency(code = CURRENCY_1),
+            balances = listOf(
+                createBalance(userId = USER_ID, "1".toBigDecimal()),
+                createBalance(userId = OTHER_USER_ID, "-1".toBigDecimal()),
+            ),
+        ),
+        createCurrencyBalances(
+            currency = Currency(code = CURRENCY_2),
+            balances = listOf(
+                createBalance(userId = USER_ID, "2".toBigDecimal()),
+                createBalance(userId = OTHER_USER_ID, "-2".toBigDecimal()),
+            ),
+        ),
+    ),
+) = balances
+
+fun createSettlement(
+    payerId: String = USER_ID,
+    payeeId: String = OTHER_USER_ID,
+    value: BigDecimal = "3".toBigDecimal(),
+) = Settlement(
+    payerId = payerId,
+    payeeId = payeeId,
+    value = value,
+)
+
+fun createCurrencySettlement(
+    currency: Currency = Currency(code = CURRENCY_1),
+    settlements: List<Settlement> = listOf(
+        createSettlement(USER_ID, OTHER_USER_ID, "4".toBigDecimal()),
+        createSettlement(ANOTHER_USER_ID, OTHER_USER_ID, "5".toBigDecimal()),
+    ),
+) = CurrencySettlement(
+    currency = currency,
+    settlements = settlements,
+)
+
+fun createSettlements(
+    settlements: List<CurrencySettlement> = listOf(
+        createCurrencySettlement(
+            currency = Currency(code = CURRENCY_1),
+            settlements = listOf(
+                createSettlement(USER_ID, OTHER_USER_ID, "4".toBigDecimal()),
+                createSettlement(ANOTHER_USER_ID, OTHER_USER_ID, "5".toBigDecimal()),
+            ),
+        ),
+        createCurrencySettlement(
+            currency = Currency(code = CURRENCY_2),
+            settlements = listOf(),
+        ),
+    ),
+) = settlements
+
+fun createBalancesMap() = mapOf(
     CURRENCY_1 to mapOf(USER_ID to "1".toBigDecimal(), OTHER_USER_ID to "-1".toBigDecimal()),
     CURRENCY_2 to mapOf(USER_ID to "2".toBigDecimal(), OTHER_USER_ID to "-2".toBigDecimal()),
-)
-
-fun createUserBalanceDto(
-    userId: String = USER_ID,
-    balance: BigDecimal = "3".toBigDecimal(),
-) = UserBalanceDto(
-    userId = userId,
-    balance = balance,
 )
 
 object DummyData {

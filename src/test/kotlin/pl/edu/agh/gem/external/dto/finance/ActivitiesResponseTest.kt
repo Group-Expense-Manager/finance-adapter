@@ -15,15 +15,15 @@ import java.math.BigDecimal
 import java.time.Instant
 
 class ActivitiesResponseTest : ShouldSpec({
-    should("map Activity to DTO correctly") {
+    should("map Activity to dto correctly") {
         // given
         val activity = createActivity()
 
         // when
-        val activityDTO = activity.toDTO()
+        val activityDto = activity.toDto()
 
         // then
-        activityDTO.also {
+        activityDto.also {
             it.activityId shouldBe activity.activityId
             it.type shouldBe activity.type
             it.creatorId shouldBe activity.creatorId

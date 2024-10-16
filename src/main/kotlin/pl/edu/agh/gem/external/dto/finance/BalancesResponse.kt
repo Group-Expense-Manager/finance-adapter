@@ -1,34 +1,38 @@
 package pl.edu.agh.gem.external.dto.finance
 
+import pl.edu.agh.gem.external.dto.group.CurrencyDto
+import pl.edu.agh.gem.external.dto.group.toDto
+import pl.edu.agh.gem.internal.model.finance.balance.Balance
 import pl.edu.agh.gem.internal.model.finance.balance.Balances
+import pl.edu.agh.gem.internal.model.finance.balance.CurrencyBalances
 import java.math.BigDecimal
 
 data class BalancesResponse(
     val groupId: String,
-    val balances: List<CurrencyBalancesDto>,
+    val currencyBalances: List<CurrencyBalancesDto>,
 )
 
 data class CurrencyBalancesDto(
-    val currency: String,
-    val userBalances: List<UserBalanceDto>,
+    val currency: CurrencyDto,
+    val balances: List<BalanceDto>,
 )
 
-data class UserBalanceDto(
+data class BalanceDto(
     val userId: String,
-    val balance: BigDecimal,
+    val value: BigDecimal,
 )
 
 fun Balances.toBalancesResponse(groupId: String) = BalancesResponse(
     groupId = groupId,
-    balances = this.map { it.toCurrencyBalancesDto() },
+    currencyBalances = this.map { it.toCurrencyBalancesDto() },
 )
 
-fun Map.Entry<String, Map<String, BigDecimal>>.toCurrencyBalancesDto() = CurrencyBalancesDto(
-    currency = key,
-    userBalances = value.map { it.toUserBalanceDto() },
+fun CurrencyBalances.toCurrencyBalancesDto() = CurrencyBalancesDto(
+    currency = currency.toDto(),
+    balances = balances.map { it.toBalanceDto() },
 )
 
-fun Map.Entry<String, BigDecimal>.toUserBalanceDto() = UserBalanceDto(
-    userId = key,
-    balance = value,
+fun Balance.toBalanceDto() = BalanceDto(
+    userId = userId,
+    value = value,
 )
