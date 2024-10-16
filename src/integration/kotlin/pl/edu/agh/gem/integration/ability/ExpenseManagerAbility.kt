@@ -38,11 +38,11 @@ fun stubExpenseManagerActivities(body: Any?, groupId: String, clientFilterOption
     )
 }
 
-private fun createAcceptedExpensesUrl(groupId: String,currency:String) = "$INTERNAL/expenses/accepted/groups/$groupId?currency=$currency"
+private fun createAcceptedExpensesUrl(groupId: String, currency: String) = "$INTERNAL/expenses/accepted/groups/$groupId?currency=$currency"
 
-fun stubAcceptedExpenses(body: Any?, groupId: String,currency:String = CURRENCY_1, statusCode: HttpStatusCode = OK) {
+fun stubAcceptedExpenses(body: Any?, groupId: String, currency: String = CURRENCY_1, statusCode: HttpStatusCode = OK) {
     wiremock.stubFor(
-        get(createAcceptedExpensesUrl(groupId,currency))
+        get(createAcceptedExpensesUrl(groupId, currency))
             .willReturn(
                 aResponse()
                     .withStatus(statusCode.value())

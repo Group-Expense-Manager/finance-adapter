@@ -73,7 +73,7 @@ class ExpenseManagerClientIT(
     should("throw ExpenseManagerClientException when we send bad accepted expenses request") {
         // given
         val acceptedExpensesResponse = createAcceptedExpensesResponse()
-        stubAcceptedExpenses(acceptedExpensesResponse, GROUP_ID, CURRENCY_1 ,NOT_ACCEPTABLE)
+        stubAcceptedExpenses(acceptedExpensesResponse, GROUP_ID, CURRENCY_1, NOT_ACCEPTABLE)
 
         // when & then
         shouldThrow<ExpenseManagerClientException> {
@@ -84,7 +84,7 @@ class ExpenseManagerClientIT(
     should("throw RetryableGroupManagerClientException when sending accepted expenses request and client has internal error") {
         // given
         val acceptedExpensesResponse = createAcceptedExpensesResponse()
-        stubAcceptedExpenses(acceptedExpensesResponse, GROUP_ID, CURRENCY_1 , INTERNAL_SERVER_ERROR)
+        stubAcceptedExpenses(acceptedExpensesResponse, GROUP_ID, CURRENCY_1, INTERNAL_SERVER_ERROR)
 
         // when & then
         shouldThrow<RetryableExpenseManagerClientException> {

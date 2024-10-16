@@ -73,7 +73,7 @@ class PaymentManagerClientIT(
     should("throw PaymentManagerClientException when we send bad accepted payments request") {
         // given
         val acceptedPaymentsResponse = createAcceptedPaymentsResponse()
-        stubAcceptedPayments(acceptedPaymentsResponse, GROUP_ID, CURRENCY_1 , NOT_ACCEPTABLE)
+        stubAcceptedPayments(acceptedPaymentsResponse, GROUP_ID, CURRENCY_1, NOT_ACCEPTABLE)
 
         // when & then
         shouldThrow<PaymentManagerClientException> {
@@ -84,7 +84,7 @@ class PaymentManagerClientIT(
     should("throw RetryableGroupManagerClientException when sending accepted payments request and client has internal error") {
         // given
         val acceptedPaymentsResponse = createAcceptedPaymentsResponse()
-        stubAcceptedPayments(acceptedPaymentsResponse, GROUP_ID, CURRENCY_1 , INTERNAL_SERVER_ERROR)
+        stubAcceptedPayments(acceptedPaymentsResponse, GROUP_ID, CURRENCY_1, INTERNAL_SERVER_ERROR)
 
         // when & then
         shouldThrow<RetryablePaymentManagerClientException> {

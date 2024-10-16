@@ -38,9 +38,9 @@ fun stubPaymentManagerActivities(body: Any?, groupId: String, clientFilterOption
     )
 }
 
-private fun createAcceptedPaymentsUrl(groupId: String,currency: String) = "$INTERNAL/payments/accepted/groups/$groupId?currency=$currency"
+private fun createAcceptedPaymentsUrl(groupId: String, currency: String) = "$INTERNAL/payments/accepted/groups/$groupId?currency=$currency"
 
-fun stubAcceptedPayments(body: Any?, groupId: String, currency :String = CURRENCY_1, statusCode: HttpStatusCode = OK) {
+fun stubAcceptedPayments(body: Any?, groupId: String, currency: String = CURRENCY_1, statusCode: HttpStatusCode = OK) {
     wiremock.stubFor(
         get(createAcceptedPaymentsUrl(groupId, currency))
             .willReturn(
