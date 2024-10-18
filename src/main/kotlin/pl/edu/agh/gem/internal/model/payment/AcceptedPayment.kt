@@ -1,5 +1,6 @@
 package pl.edu.agh.gem.internal.model.payment
 
+import pl.edu.agh.gem.internal.model.finance.balance.Balance
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.Instant
@@ -12,14 +13,11 @@ data class AcceptedPayment(
     val fxData: FxData?,
     val date: Instant,
 ) {
-    fun toBalanceElements(): List<Triple<String, String, BigDecimal>> {
-        val currency = fxData?.targetCurrency ?: amount.currency
+    fun toBalanceList(): List<Balance> {
         val multiplier = fxData?.exchangeRate ?: BigDecimal.ONE
         val value = amount.value.multiply(multiplier).setScale(2, RoundingMode.HALF_UP).stripTrailingZeros()
 
-        val creatorBalanceElement = Triple(currency, creatorId, value)
-        val recipientBalanceElement = Triple(currency, recipientId, value.negate())
-        return listOf(creatorBalanceElement, recipientBalanceElement)
+        return listOf(Balance(creatorId, value), Balance(recipientId, value.negate()))
     }
 }
 

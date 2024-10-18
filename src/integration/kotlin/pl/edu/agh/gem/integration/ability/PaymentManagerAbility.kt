@@ -11,6 +11,7 @@ import pl.edu.agh.gem.headers.HeadersTestUtils.withAppContentType
 import pl.edu.agh.gem.integration.environment.ProjectConfig.wiremock
 import pl.edu.agh.gem.internal.model.finance.filter.ClientFilterOptions
 import pl.edu.agh.gem.paths.Paths.INTERNAL
+import pl.edu.agh.gem.util.DummyData.CURRENCY_1
 import java.util.Optional
 
 private fun createActivitiesUrl(groupId: String, clientFilterOptions: ClientFilterOptions) =
@@ -37,11 +38,11 @@ fun stubPaymentManagerActivities(body: Any?, groupId: String, clientFilterOption
     )
 }
 
-private fun createAcceptedPaymentsUrl(groupId: String) = "$INTERNAL/payments/accepted/groups/$groupId"
+private fun createAcceptedPaymentsUrl(groupId: String, currency: String) = "$INTERNAL/payments/accepted/groups/$groupId?currency=$currency"
 
-fun stubAcceptedPayments(body: Any?, groupId: String, statusCode: HttpStatusCode = OK) {
+fun stubAcceptedPayments(body: Any?, groupId: String, currency: String = CURRENCY_1, statusCode: HttpStatusCode = OK) {
     wiremock.stubFor(
-        get(createAcceptedPaymentsUrl(groupId))
+        get(createAcceptedPaymentsUrl(groupId, currency))
             .willReturn(
                 aResponse()
                     .withStatus(statusCode.value())

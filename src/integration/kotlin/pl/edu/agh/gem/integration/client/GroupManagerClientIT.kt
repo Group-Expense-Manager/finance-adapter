@@ -40,7 +40,7 @@ class GroupManagerClientIT(
         result.also {
             it.shouldNotBeNull()
             it.currencies shouldBe listOfCurrencies.map { currency -> Currency(currency.code) }
-            it.members.members shouldBe members.map { member -> GroupMember(member.id) }
+            it.members shouldBe members.map { member -> GroupMember(member.id) }
         }
     }
 

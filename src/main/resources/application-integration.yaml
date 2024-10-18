@@ -23,3 +23,20 @@ server:
 spring:
   main:
     allow-bean-definition-overriding: true
+
+reconciliation-job-executor:
+  corePoolSize: 1
+  maxPoolSize: 1
+  queueCapacity: 3
+
+reconciliation-job-producer:
+  corePoolSize: 1
+  maxPoolSize: 1
+  queueCapacity: 1
+
+reconciliation-job-processor:
+  enabled: true
+  lockTime: 10s
+  emptyCandidateDelay: 10s
+  retryDelays:
+    - 0s

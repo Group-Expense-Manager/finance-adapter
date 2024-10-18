@@ -1,5 +1,6 @@
 package pl.edu.agh.gem.internal.model.expense
 
+import pl.edu.agh.gem.internal.model.finance.balance.Balance
 import pl.edu.agh.gem.internal.model.payment.Amount
 import pl.edu.agh.gem.internal.model.payment.FxData
 import java.math.BigDecimal
@@ -14,19 +15,17 @@ data class AcceptedExpense(
     val participants: List<AcceptedExpenseParticipant>,
     val expenseDate: Instant,
 ) {
-    fun toBalanceElements(): List<Triple<String, String, BigDecimal>> {
-        val currency = fxData?.targetCurrency ?: amount.currency
+    fun toBalanceList(): List<Balance> {
         val multiplier = fxData?.exchangeRate ?: BigDecimal.ONE
 
         val participantsBalanceElements = participants.map {
-            Triple(
-                currency,
+            Balance(
                 it.participantId,
-                it.participantCost.multiply(multiplier).setScale(2, RoundingMode.HALF_UP).negate().stripTrailingZeros(),
+                it.participantCost.multiply(multiplier).setScale(2, RoundingMode.HALF_UP).stripTrailingZeros().negate(),
             )
         }
-        val creatorCost = participantsBalanceElements.sumOf { it.third }.negate().stripTrailingZeros()
-        val creatorBalanceElement = Triple(currency, creatorId, creatorCost)
+        val creatorCost = participantsBalanceElements.sumOf { it.value }.negate().stripTrailingZeros()
+        val creatorBalanceElement = Balance(creatorId, creatorCost)
         return participantsBalanceElements + creatorBalanceElement
     }
 }

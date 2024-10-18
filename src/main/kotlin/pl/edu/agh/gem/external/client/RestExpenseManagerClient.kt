@@ -52,10 +52,10 @@ class RestExpenseManagerClient(
     }
 
     @Retry(name = "expenseManager")
-    override fun getAcceptedExpenses(groupId: String): List<AcceptedExpense> {
+    override fun getAcceptedExpenses(groupId: String, currency: String): List<AcceptedExpense> {
         return try {
             restTemplate.exchange(
-                resolveAcceptedExpensesAddress(groupId),
+                resolveAcceptedExpensesAddress(groupId, currency),
                 GET,
                 HttpEntity<Any>(HttpHeaders().withAppAcceptType()),
                 AcceptedExpensesResponse::class.java,
@@ -82,8 +82,8 @@ class RestExpenseManagerClient(
             .build()
             .toUriString()
 
-    private fun resolveAcceptedExpensesAddress(groupId: String) =
-        "${expenseManagerProperties.url}$INTERNAL/expenses/accepted/groups/$groupId"
+    private fun resolveAcceptedExpensesAddress(groupId: String, currency: String) =
+        "${expenseManagerProperties.url}$INTERNAL/expenses/accepted/groups/$groupId?currency=$currency"
 
     companion object {
         private val logger = KotlinLogging.logger {}

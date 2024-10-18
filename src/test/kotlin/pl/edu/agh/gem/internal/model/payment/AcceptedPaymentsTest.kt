@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import pl.edu.agh.gem.helper.user.DummyUser.OTHER_USER_ID
 import pl.edu.agh.gem.helper.user.DummyUser.USER_ID
+import pl.edu.agh.gem.internal.model.finance.balance.Balance
 import pl.edu.agh.gem.util.DummyData.CURRENCY_1
 import pl.edu.agh.gem.util.DummyData.CURRENCY_2
 import pl.edu.agh.gem.util.createAcceptedPayment
@@ -25,12 +26,12 @@ class AcceptedPaymentsTest : ShouldSpec({
         )
 
         // when
-        val balanceElements = payment.toBalanceElements()
+        val balanceElements = payment.toBalanceList()
 
         // then
         balanceElements shouldContainExactlyInAnyOrder listOf(
-            Triple(CURRENCY_1, USER_ID, "2".toBigDecimal()),
-            Triple(CURRENCY_1, OTHER_USER_ID, "-2".toBigDecimal()),
+            Balance(USER_ID, "2".toBigDecimal()),
+            Balance(OTHER_USER_ID, "-2".toBigDecimal()),
         )
     }
     should("map to BalanceElements when fxData is not null") {
@@ -49,12 +50,12 @@ class AcceptedPaymentsTest : ShouldSpec({
         )
 
         // when
-        val balanceElements = payment.toBalanceElements()
+        val balanceElements = payment.toBalanceList()
 
         // then
         balanceElements shouldContainExactlyInAnyOrder listOf(
-            Triple(CURRENCY_2, USER_ID, "8".toBigDecimal()),
-            Triple(CURRENCY_2, OTHER_USER_ID, "-8".toBigDecimal()),
+            Balance(USER_ID, "8".toBigDecimal()),
+            Balance(OTHER_USER_ID, "-8".toBigDecimal()),
         )
     }
 },)

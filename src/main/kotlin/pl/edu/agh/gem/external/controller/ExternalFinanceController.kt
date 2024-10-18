@@ -62,7 +62,7 @@ class ExternalFinanceController(
         @PathVariable groupId: String,
     ): BalancesResponse {
         userId.checkIfUserHaveAccess(groupId)
-        return financeService.getBalances(groupId).toBalancesResponse(groupId)
+        return financeService.getBalances(groupId).toBalancesResponse()
     }
 
     private fun String.checkIfUserHaveAccess(groupId: String) {
