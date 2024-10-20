@@ -1,6 +1,7 @@
 package pl.edu.agh.gem.internal.service
 
 import io.kotest.core.spec.style.ShouldSpec
+import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldContainOnly
 import io.kotest.matchers.shouldBe
@@ -124,7 +125,7 @@ class FinanceServiceTest : ShouldSpec({
             )
         result.find { it.currency == CURRENCY_2 }?.users
             ?.map { Pair(it.value.toString(), it.userId) }
-            .shouldContainExactlyInAnyOrder(
+            .shouldContainExactly(
                 listOf(
                     Pair("-38.88", OTHER_USER_ID),
                     Pair("-6.48", ANOTHER_USER_ID),
@@ -186,7 +187,7 @@ class FinanceServiceTest : ShouldSpec({
             )
         result.find { it.currency == CURRENCY_2 }?.users
             ?.map { Pair(it.value.toString(), it.userId) }
-            .shouldContainExactlyInAnyOrder(
+            .shouldContainExactly(
                 listOf(
                     Pair("-38.88", OTHER_USER_ID),
                     Pair("-6.48", ANOTHER_USER_ID),

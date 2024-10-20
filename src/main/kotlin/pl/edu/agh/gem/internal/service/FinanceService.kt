@@ -63,7 +63,7 @@ class FinanceService(
                     .map { Balance(userId = it.id, value = BigDecimal.ZERO) }
                 balance.copy(users = balance.users + zeroBalanceList)
             }
-        }
+        }.map { it.copy(users = it.users.sortedBy { it.value }) }
     }
 
     fun fetchBalances(groupId: String, currency: String): Balances {

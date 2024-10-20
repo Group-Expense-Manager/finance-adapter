@@ -211,12 +211,12 @@ class ExternalFinanceControllerIT(
                 last.currency shouldBe CURRENCY_2
                 last.userBalances.also { userBalances ->
                     userBalances.first().also { userBalance ->
-                        userBalance.userId shouldBe USER_ID
-                        userBalance.value shouldBe "3".toBigDecimal()
-                    }
-                    userBalances.last().also { userBalance ->
                         userBalance.userId shouldBe OTHER_USER_ID
                         userBalance.value shouldBe "-3".toBigDecimal()
+                    }
+                    userBalances.last().also { userBalance ->
+                        userBalance.userId shouldBe USER_ID
+                        userBalance.value shouldBe "3".toBigDecimal()
                     }
                 }
             }
