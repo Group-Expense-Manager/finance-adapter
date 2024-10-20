@@ -13,7 +13,7 @@ class ReducingZeroBalancesStage : ProcessingStage() {
         logger.info { "Reducing zero balances for financial reconciliation job: $reconciliationJob" }
         val reducedJob = reconciliationJob.copy(
             balances = reconciliationJob.balances.filterNot {
-                it.value == ZERO
+                it.value.compareTo(ZERO) == 0
             },
         )
         return nextStage(reducedJob, FIND_SETTLEMENTS)
