@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RestController
 import pl.edu.agh.gem.exception.UserWithoutGroupAccessException
 import pl.edu.agh.gem.external.dto.finance.ActivitiesResponse
 import pl.edu.agh.gem.external.dto.finance.BalancesResponse
+import pl.edu.agh.gem.external.dto.finance.SettlementsResponse
 import pl.edu.agh.gem.external.dto.finance.toActivitiesResponse
 import pl.edu.agh.gem.external.dto.finance.toBalancesResponse
+import pl.edu.agh.gem.external.dto.finance.toSettlementsResponse
 import pl.edu.agh.gem.internal.client.GroupManagerClient
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus
 import pl.edu.agh.gem.internal.model.finance.ActivityType
@@ -63,6 +65,16 @@ class ExternalFinanceController(
     ): BalancesResponse {
         userId.checkIfUserHaveAccess(groupId)
         return financeService.getBalances(groupId).toBalancesResponse()
+    }
+
+    @GetMapping("settlements/groups/{groupId}", produces = [APPLICATION_JSON_INTERNAL_VER_1])
+    @ResponseStatus(OK)
+    fun getSettlements(
+        @GemUserId userId: String,
+        @PathVariable groupId: String,
+    ): SettlementsResponse {
+        userId.checkIfUserHaveAccess(groupId)
+        return financeService.getSettlements(groupId).toSettlementsResponse()
     }
 
     private fun String.checkIfUserHaveAccess(groupId: String) {

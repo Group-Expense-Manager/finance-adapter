@@ -10,6 +10,8 @@ import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
 import pl.edu.agh.gem.internal.model.finance.balance.Balance
 import pl.edu.agh.gem.internal.model.finance.balance.Balances
 import pl.edu.agh.gem.internal.model.finance.filter.FilterOptions
+import pl.edu.agh.gem.internal.model.finance.settelment.SettlementStatus
+import pl.edu.agh.gem.internal.model.finance.settelment.Settlements
 import pl.edu.agh.gem.internal.persistence.BalancesRepository
 import pl.edu.agh.gem.internal.persistence.SettlementsRepository
 import pl.edu.agh.gem.internal.sort.ActivityMerger
@@ -84,5 +86,22 @@ class FinanceService(
             currency = currency,
             users = userBalances,
         )
+    }
+
+    fun getSettlements(groupId: String): List<Settlements> {
+        val settlements = settlementsRepository.getSettlements(groupId).toMutableList()
+        val groupDetails = groupManagerClient.getGroup(groupId)
+        groupDetails.currencies.forEach { currency ->
+            if (settlements.none { it.currency == currency.code }) {
+                settlements += Settlements(
+                    settlements = listOf(),
+                    groupId = groupId,
+                    currency = currency.code,
+                    status = SettlementStatus.SAVED,
+
+                )
+            }
+        }
+        return settlements
     }
 }
