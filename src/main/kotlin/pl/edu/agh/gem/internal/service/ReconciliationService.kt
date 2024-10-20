@@ -18,6 +18,7 @@ class ReconciliationService(
             ReconciliationJob(
                 groupId = balances.groupId,
                 currency = balances.currency,
+                balances = balances.users,
                 nextProcessAt = Instant.now(clock),
             ),
         )

@@ -5,8 +5,6 @@ import pl.edu.agh.gem.external.dto.expense.AcceptedExpenseParticipantDto
 import pl.edu.agh.gem.external.dto.expense.AcceptedExpensesResponse
 import pl.edu.agh.gem.external.dto.expense.ExpenseManagerActivitiesResponse
 import pl.edu.agh.gem.external.dto.expense.ExpenseManagerActivityDto
-import pl.edu.agh.gem.external.dto.finance.BalancesDto
-import pl.edu.agh.gem.external.dto.finance.UserBalanceDto
 import pl.edu.agh.gem.external.dto.group.CurrencyDTO
 import pl.edu.agh.gem.external.dto.group.GroupDTO
 import pl.edu.agh.gem.external.dto.group.GroupResponse
@@ -344,19 +342,6 @@ fun createMembersDTO(
     vararg members: String = arrayOf(USER_ID, OTHER_USER_ID),
 ) = members.map { MemberDTO(it) }
 
-fun createBalanceDto(
-    currency: String = CURRENCY_1,
-    userBalances: List<UserBalanceDto> = listOf(
-        createUserBalanceDto(userId = USER_ID, "5".toBigDecimal()),
-        createUserBalanceDto(userId = OTHER_USER_ID, "-2".toBigDecimal()),
-        createUserBalanceDto(userId = ANOTHER_USER_ID, "-3".toBigDecimal()),
-
-    ),
-) = BalancesDto(
-    currency = currency,
-    userBalances = userBalances,
-)
-
 fun createBalances(
     currency: String = CURRENCY_1,
     groupId: String = GROUP_ID,
@@ -404,18 +389,6 @@ fun createSettlement(
     toUserId = toUserId,
     value = value,
 )
-
-fun createUserBalanceDto(
-    userId: String = USER_ID,
-    balance: BigDecimal = "3".toBigDecimal(),
-) = UserBalanceDto(
-    userId = userId,
-    balance = balance,
-)
-
-fun createGroupMembers(
-    vararg users: String = arrayOf(USER_ID),
-) = users.map { GroupMember(it) }
 
 fun createReconciliationJob(
     id: String = "exchange-rate-job-id",

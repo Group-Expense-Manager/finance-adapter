@@ -16,7 +16,7 @@ data class BalancesDto(
 
 data class UserBalanceDto(
     val userId: String,
-    val balance: BigDecimal,
+    val value: BigDecimal,
 )
 
 fun List<Balances>.toBalancesResponse() = BalancesResponse(
@@ -31,5 +31,5 @@ fun Balances.toBalancesDto() = BalancesDto(
 
 fun Balance.toUserBalanceDto() = UserBalanceDto(
     userId = userId,
-    balance = value,
+    value = value,
 )

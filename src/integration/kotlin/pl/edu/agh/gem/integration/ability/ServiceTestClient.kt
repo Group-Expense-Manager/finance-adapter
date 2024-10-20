@@ -75,4 +75,16 @@ class ServiceTestClient(applicationContext: WebApplicationContext) {
             .bodyValue(GenerateReconciliationRequest(currency = "PLN"))
             .exchange()
     }
+
+    fun getSettlements(
+        gemUser: GemUser,
+        groupId: String,
+    ): ResponseSpec {
+        return webClient.get()
+            .uri {
+                it.path("$EXTERNAL/settlements/groups/$groupId").build()
+            }
+            .headers { it.withValidatedUser(gemUser).withAppAcceptType() }
+            .exchange()
+    }
 }

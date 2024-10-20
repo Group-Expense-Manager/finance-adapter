@@ -12,7 +12,7 @@ data class ReconciliationJob(
     val groupId: String,
     val currency: String,
     val state: ReconciliationJobState = STARTING,
-    val balances: List<Balance> = listOf(),
+    val balances: List<Balance>,
     val settlements: List<Settlement> = listOf(),
     val nextProcessAt: Instant,
     val retry: Long = 0,

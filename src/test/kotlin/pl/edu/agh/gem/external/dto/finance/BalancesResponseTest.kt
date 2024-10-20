@@ -21,7 +21,7 @@ class BalancesResponseTest : ShouldSpec({
         // then
         userBalanceDto.also {
             it.userId shouldBe USER_ID
-            it.balance shouldBe BigDecimal.ONE
+            it.value shouldBe BigDecimal.ONE
         }
     }
 

@@ -15,7 +15,7 @@ data class AcceptedPayment(
 ) {
     fun toBalanceList(): List<Balance> {
         val multiplier = fxData?.exchangeRate ?: BigDecimal.ONE
-        val value = amount.value.multiply(multiplier).setScale(2, RoundingMode.HALF_UP).stripTrailingZeros()
+        val value = amount.value.multiply(multiplier).setScale(2, RoundingMode.DOWN).stripTrailingZeros()
 
         return listOf(Balance(creatorId, value), Balance(recipientId, value.negate()))
     }
