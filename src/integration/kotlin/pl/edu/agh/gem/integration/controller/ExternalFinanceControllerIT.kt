@@ -43,7 +43,7 @@ import pl.edu.agh.gem.util.createGroupResponse
 import pl.edu.agh.gem.util.createMembersDTO
 import pl.edu.agh.gem.util.createPaymentManagerActivitiesResponse
 import pl.edu.agh.gem.util.createUserGroupsResponse
-import java.math.BigDecimal
+import java.math.BigDecimal.ZERO
 
 class ExternalFinanceControllerIT(
     private val service: ServiceTestClient,
@@ -202,7 +202,7 @@ class ExternalFinanceControllerIT(
                 first.userBalances.also { userBalances ->
                     userBalances.map { it.userId } shouldContainExactly listOf(USER_ID, OTHER_USER_ID)
                     userBalances.shouldForAll { userBalance ->
-                        userBalance.value shouldBe BigDecimal.ZERO
+                        userBalance.value shouldBe ZERO
                     }
                 }
             }

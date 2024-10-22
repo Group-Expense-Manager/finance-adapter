@@ -15,7 +15,7 @@ import pl.edu.agh.gem.internal.model.finance.settelment.Settlements
 import pl.edu.agh.gem.internal.persistence.BalancesRepository
 import pl.edu.agh.gem.internal.persistence.SettlementsRepository
 import pl.edu.agh.gem.internal.sort.ActivityMerger
-import java.math.BigDecimal
+import java.math.BigDecimal.ZERO
 
 @Service
 class FinanceService(
@@ -56,14 +56,14 @@ class FinanceService(
         }
         return balances.map { balance ->
             if (groupDetails.members.all { member -> balance.users.any { it.userId == member.id } }) {
-                balance
+                balance.copy(users = balance.users.sortedBy { it.value })
             } else {
                 val zeroBalanceList = groupDetails.members
                     .filter { member -> !balance.users.any { it.userId == member.id } }
-                    .map { Balance(userId = it.id, value = BigDecimal.ZERO) }
-                balance.copy(users = balance.users + zeroBalanceList)
+                    .map { Balance(userId = it.id, value = ZERO) }
+                balance.copy(users = (balance.users + zeroBalanceList).sortedBy { it.value })
             }
-        }.map { it.copy(users = it.users.sortedBy { it.value }) }
+        }
     }
 
     fun fetchBalances(groupId: String, currency: String): Balances {
@@ -74,7 +74,7 @@ class FinanceService(
 
         val zeroBalanceList = groupManagerClient.getGroup(groupId).members
             .filter { member -> !expenseBalanceList.any { it.userId == member.id } && !paymentBalanceList.any { it.userId == member.id } }
-            .map { Balance(userId = it.id, value = BigDecimal.ZERO) }
+            .map { Balance(userId = it.id, value = ZERO) }
 
         val userBalances = (expenseBalanceList + paymentBalanceList + zeroBalanceList)
             .groupBy { it.userId }
