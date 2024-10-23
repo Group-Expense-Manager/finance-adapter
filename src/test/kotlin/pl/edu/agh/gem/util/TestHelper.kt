@@ -5,10 +5,10 @@ import pl.edu.agh.gem.external.dto.expense.AcceptedExpenseParticipantDto
 import pl.edu.agh.gem.external.dto.expense.AcceptedExpensesResponse
 import pl.edu.agh.gem.external.dto.expense.ExpenseManagerActivitiesResponse
 import pl.edu.agh.gem.external.dto.expense.ExpenseManagerActivityDto
-import pl.edu.agh.gem.external.dto.group.CurrencyDTO
+import pl.edu.agh.gem.external.dto.group.CurrencyDto
 import pl.edu.agh.gem.external.dto.group.GroupDTO
 import pl.edu.agh.gem.external.dto.group.GroupResponse
-import pl.edu.agh.gem.external.dto.group.MemberDTO
+import pl.edu.agh.gem.external.dto.group.MemberDto
 import pl.edu.agh.gem.external.dto.group.UserGroupsResponse
 import pl.edu.agh.gem.external.dto.payment.AcceptedPaymentDto
 import pl.edu.agh.gem.external.dto.payment.AcceptedPaymentsResponse
@@ -37,9 +37,12 @@ import pl.edu.agh.gem.internal.model.finance.filter.SortOrder
 import pl.edu.agh.gem.internal.model.finance.filter.SortOrder.ASCENDING
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy.DATE
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlement
-import pl.edu.agh.gem.internal.model.finance.settelment.SettlementStatus
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlements
+import pl.edu.agh.gem.internal.model.finance.report.Report
+import pl.edu.agh.gem.internal.model.finance.report.ReportActivity
+import pl.edu.agh.gem.internal.model.finance.report.ReportActivityMember
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlement
+import pl.edu.agh.gem.internal.model.finance.settlement.SettlementStatus
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlements
 import pl.edu.agh.gem.internal.model.group.Currency
 import pl.edu.agh.gem.internal.model.group.GroupData
 import pl.edu.agh.gem.internal.model.payment.AcceptedPayment
@@ -320,8 +323,8 @@ fun createAcceptedPayment(
 )
 
 fun createGroupResponse(
-    members: List<MemberDTO> = listOf(USER_ID, OTHER_USER_ID).map { MemberDTO(it) },
-    groupCurrencies: List<CurrencyDTO> = listOf(CURRENCY_1, CURRENCY_2).map { CurrencyDTO(it) },
+    members: List<MemberDto> = listOf(USER_ID, OTHER_USER_ID).map { MemberDto(it) },
+    groupCurrencies: List<CurrencyDto> = listOf(CURRENCY_1, CURRENCY_2).map { CurrencyDto(it) },
 ) = GroupResponse(
     members = members,
     groupCurrencies = groupCurrencies,
@@ -337,11 +340,11 @@ fun createGroupData(
 
 fun createCurrenciesDTO(
     vararg currency: String = arrayOf(CURRENCY_1, CURRENCY_2),
-) = currency.map { CurrencyDTO(it) }
+) = currency.map { CurrencyDto(it) }
 
 fun createMembersDTO(
     vararg members: String = arrayOf(USER_ID, OTHER_USER_ID),
-) = members.map { MemberDTO(it) }
+) = members.map { MemberDto(it) }
 
 fun createBalances(
     currency: String = CURRENCY_1,
@@ -416,6 +419,54 @@ fun createReconciliationJob(
 fun getSolverTestData(maxSize: Long): List<List<Balance>> {
     return solverTestData.filter { it.size <= maxSize }
 }
+
+fun createReportActivityMember(
+    userId: String = USER_ID,
+    value: BigDecimal = "3".toBigDecimal(),
+) = ReportActivityMember(
+    userId = userId,
+    value = value,
+)
+
+fun createReportActivity(
+    title: String = "Some title",
+    date: Instant = Instant.ofEpochMilli(0L),
+    value: BigDecimal = "10".toBigDecimal(),
+    members: List<ReportActivityMember> = listOf(
+        createReportActivityMember(userId = USER_ID, value = "5".toBigDecimal()),
+        createReportActivityMember(userId = USER_ID, value = "-5".toBigDecimal()),
+    ),
+) = ReportActivity(
+    title = title,
+    date = date,
+    value = value,
+    members = members,
+)
+
+fun createReport(
+    groupId: String = GROUP_ID,
+    currency: String = CURRENCY_1,
+    activities: List<ReportActivity> = listOf(
+        createReportActivity(),
+        createReportActivity(),
+    ),
+    balances: List<Balance> = listOf(
+        createBalance(userId = USER_ID, "5".toBigDecimal()),
+        createBalance(userId = OTHER_USER_ID, "-2".toBigDecimal()),
+        createBalance(userId = ANOTHER_USER_ID, "-3".toBigDecimal()),
+    ),
+    settlements: List<Settlement> = listOf(
+        createSettlement(fromUserId = USER_ID, toUserId = OTHER_USER_ID, value = "100".toBigDecimal()),
+        createSettlement(fromUserId = USER_ID, toUserId = OTHER_USER_ID, value = "200".toBigDecimal()),
+        createSettlement(fromUserId = OTHER_USER_ID, toUserId = USER_ID, value = "-300".toBigDecimal()),
+    ),
+) = Report(
+    groupId = groupId,
+    currency = currency,
+    activities = activities,
+    balances = balances,
+    settlements = settlements,
+)
 
 object DummyData {
     const val EXPENSE_ID = "expenseId"

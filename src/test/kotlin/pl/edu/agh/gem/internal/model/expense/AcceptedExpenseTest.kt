@@ -2,6 +2,7 @@ package pl.edu.agh.gem.internal.model.expense
 
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.shouldBe
 import pl.edu.agh.gem.helper.user.DummyUser.OTHER_USER_ID
 import pl.edu.agh.gem.helper.user.DummyUser.USER_ID
 import pl.edu.agh.gem.internal.model.finance.balance.Balance
@@ -12,10 +13,11 @@ import pl.edu.agh.gem.util.createAcceptedExpense
 import pl.edu.agh.gem.util.createAcceptedExpenseParticipant
 import pl.edu.agh.gem.util.createAmount
 import pl.edu.agh.gem.util.createFxData
+import pl.edu.agh.gem.util.createReportActivityMember
 
 class AcceptedExpenseTest : ShouldSpec({
 
-    should("map to BalanceList when fxData is null") {
+    should("map to BalanceList") {
         // given
         val firstParticipant = createAcceptedExpenseParticipant(participantId = OTHER_USER_ID, participantCost = "3".toBigDecimal())
         val secondParticipant = createAcceptedExpenseParticipant(participantId = ANOTHER_USER_ID, participantCost = "5".toBigDecimal())
@@ -40,7 +42,7 @@ class AcceptedExpenseTest : ShouldSpec({
         )
     }
 
-    should("map to BalanceList when fxData is not null") {
+    should("map to ReportActivity") {
         // given
         val firstParticipant = createAcceptedExpenseParticipant(participantId = OTHER_USER_ID, participantCost = "3".toBigDecimal())
         val secondParticipant = createAcceptedExpenseParticipant(participantId = ANOTHER_USER_ID, participantCost = "5".toBigDecimal())
@@ -58,13 +60,19 @@ class AcceptedExpenseTest : ShouldSpec({
         )
 
         // when
-        val balanceElements = expense.toBalanceList()
+        val reportActivity = expense.toReportActivity()
 
         // then
-        balanceElements shouldContainExactlyInAnyOrder listOf(
-            Balance(USER_ID, "4".toBigDecimal()),
-            Balance(OTHER_USER_ID, "-1.5".toBigDecimal()),
-            Balance(ANOTHER_USER_ID, "-2.5".toBigDecimal()),
-        )
+        reportActivity.also {
+            it.title shouldBe expense.title
+            it.value shouldBe "4.5".toBigDecimal()
+            it.date shouldBe expense.expenseDate
+            it.members.size shouldBe 3
+            it.members shouldContainExactlyInAnyOrder listOf(
+                createReportActivityMember(USER_ID, "4".toBigDecimal()),
+                createReportActivityMember(OTHER_USER_ID, "-1.5".toBigDecimal()),
+                createReportActivityMember(ANOTHER_USER_ID, "-2.5".toBigDecimal()),
+            )
+        }
     }
 },)

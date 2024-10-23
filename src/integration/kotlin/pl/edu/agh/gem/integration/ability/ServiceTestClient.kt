@@ -87,4 +87,15 @@ class ServiceTestClient(applicationContext: WebApplicationContext) {
             .headers { it.withValidatedUser(gemUser).withAppAcceptType() }
             .exchange()
     }
+
+    fun getReport(
+        groupId: String,
+    ): ResponseSpec {
+        return webClient.get()
+            .uri {
+                it.path("$INTERNAL/reports/groups/$groupId").build()
+            }
+            .headers { it.withAppAcceptType() }
+            .exchange()
+    }
 }

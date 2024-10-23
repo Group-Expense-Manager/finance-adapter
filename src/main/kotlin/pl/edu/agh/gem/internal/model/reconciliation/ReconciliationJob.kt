@@ -3,7 +3,7 @@ package pl.edu.agh.gem.internal.model.reconciliation
 import pl.edu.agh.gem.internal.job.ReconciliationJobState
 import pl.edu.agh.gem.internal.job.ReconciliationJobState.STARTING
 import pl.edu.agh.gem.internal.model.finance.balance.Balance
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlement
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlement
 import java.time.Instant
 import java.util.UUID.randomUUID
 

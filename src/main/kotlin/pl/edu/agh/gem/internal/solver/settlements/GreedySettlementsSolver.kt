@@ -1,7 +1,7 @@
 package pl.edu.agh.gem.internal.solver.settlements
 
 import pl.edu.agh.gem.internal.model.finance.balance.Balance
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlement
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlement
 import java.math.BigDecimal.ZERO
 
 object GreedySettlementsSolver {

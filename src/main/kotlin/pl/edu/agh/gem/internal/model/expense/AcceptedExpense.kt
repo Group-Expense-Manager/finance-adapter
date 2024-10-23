@@ -1,6 +1,8 @@
 package pl.edu.agh.gem.internal.model.expense
 
 import pl.edu.agh.gem.internal.model.finance.balance.Balance
+import pl.edu.agh.gem.internal.model.finance.report.ReportActivity
+import pl.edu.agh.gem.internal.model.finance.report.ReportActivityMember
 import pl.edu.agh.gem.internal.model.payment.Amount
 import pl.edu.agh.gem.internal.model.payment.FxData
 import java.math.BigDecimal
@@ -27,6 +29,26 @@ data class AcceptedExpense(
         val creatorCost = participantsBalanceElements.sumOf { it.value }.negate().stripTrailingZeros()
         val creatorBalanceElement = Balance(creatorId, creatorCost)
         return participantsBalanceElements + creatorBalanceElement
+    }
+
+    fun toReportActivity(): ReportActivity {
+        val multiplier = fxData?.exchangeRate ?: BigDecimal.ONE
+
+        val participantReportActivityMembers = participants.map {
+            ReportActivityMember(
+                it.participantId,
+                it.participantCost.multiply(multiplier).setScale(2, RoundingMode.HALF_UP).negate().stripTrailingZeros(),
+            )
+        }
+
+        val creatorCost = participantReportActivityMembers.sumOf { it.value }.negate().stripTrailingZeros()
+        val creatorReportActivityMember = ReportActivityMember(userId = creatorId, value = creatorCost)
+        return ReportActivity(
+            title = title,
+            date = expenseDate,
+            value = amount.value.multiply(multiplier).setScale(2, RoundingMode.HALF_UP).stripTrailingZeros(),
+            members = participantReportActivityMembers + creatorReportActivityMember,
+        )
     }
 }
 

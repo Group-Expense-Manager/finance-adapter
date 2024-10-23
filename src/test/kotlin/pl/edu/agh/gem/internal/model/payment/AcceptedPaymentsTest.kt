@@ -2,6 +2,7 @@ package pl.edu.agh.gem.internal.model.payment
 
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.shouldBe
 import pl.edu.agh.gem.helper.user.DummyUser.OTHER_USER_ID
 import pl.edu.agh.gem.helper.user.DummyUser.USER_ID
 import pl.edu.agh.gem.internal.model.finance.balance.Balance
@@ -10,10 +11,11 @@ import pl.edu.agh.gem.util.DummyData.CURRENCY_2
 import pl.edu.agh.gem.util.createAcceptedPayment
 import pl.edu.agh.gem.util.createAmount
 import pl.edu.agh.gem.util.createFxData
+import pl.edu.agh.gem.util.createReportActivityMember
 
 class AcceptedPaymentsTest : ShouldSpec({
 
-    should("map to BalanceElements when fxData is null") {
+    should("map to BalanceElements") {
         // given
         val payment = createAcceptedPayment(
             creatorId = USER_ID,
@@ -34,7 +36,8 @@ class AcceptedPaymentsTest : ShouldSpec({
             Balance(OTHER_USER_ID, "-2".toBigDecimal()),
         )
     }
-    should("map to BalanceElements when fxData is not null") {
+
+    should("map to ReportActivity") {
         // given
         val payment = createAcceptedPayment(
             creatorId = USER_ID,
@@ -50,12 +53,17 @@ class AcceptedPaymentsTest : ShouldSpec({
         )
 
         // when
-        val balanceElements = payment.toBalanceList()
+        val reportActivity = payment.toReportActivity()
 
         // then
-        balanceElements shouldContainExactlyInAnyOrder listOf(
-            Balance(USER_ID, "8".toBigDecimal()),
-            Balance(OTHER_USER_ID, "-8".toBigDecimal()),
-        )
+        reportActivity.also {
+            it.title shouldBe payment.title
+            it.date shouldBe payment.date
+            it.value shouldBe "8".toBigDecimal()
+            it.members shouldContainExactlyInAnyOrder listOf(
+                createReportActivityMember(USER_ID, "8".toBigDecimal()),
+                createReportActivityMember(OTHER_USER_ID, "-8".toBigDecimal()),
+            )
+        }
     }
 },)

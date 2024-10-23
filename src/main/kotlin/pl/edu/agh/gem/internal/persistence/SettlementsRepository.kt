@@ -1,6 +1,6 @@
 package pl.edu.agh.gem.internal.persistence
 
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlements
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlements
 
 interface SettlementsRepository {
     fun save(settlements: Settlements): Settlements
