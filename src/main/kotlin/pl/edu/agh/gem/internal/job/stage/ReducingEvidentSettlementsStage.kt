@@ -5,7 +5,7 @@ import pl.edu.agh.gem.internal.job.ProcessingStage
 import pl.edu.agh.gem.internal.job.ReconciliationJobState.REDUCING_ZERO_BALANCES
 import pl.edu.agh.gem.internal.job.StageResult
 import pl.edu.agh.gem.internal.model.finance.balance.Balance
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlement
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlement
 import pl.edu.agh.gem.internal.model.reconciliation.ReconciliationJob
 import java.math.BigDecimal.ZERO
 

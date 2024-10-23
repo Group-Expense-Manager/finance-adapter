@@ -10,8 +10,10 @@ import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
 import pl.edu.agh.gem.internal.model.finance.balance.Balance
 import pl.edu.agh.gem.internal.model.finance.balance.Balances
 import pl.edu.agh.gem.internal.model.finance.filter.FilterOptions
-import pl.edu.agh.gem.internal.model.finance.settelment.SettlementStatus
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlements
+import pl.edu.agh.gem.internal.model.finance.report.Report
+import pl.edu.agh.gem.internal.model.finance.settlement.SettlementStatus
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlements
+import pl.edu.agh.gem.internal.model.group.GroupData
 import pl.edu.agh.gem.internal.persistence.BalancesRepository
 import pl.edu.agh.gem.internal.persistence.SettlementsRepository
 import pl.edu.agh.gem.internal.sort.ActivityMerger
@@ -46,9 +48,9 @@ class FinanceService(
         balancesRepository.save(balances)
     }
 
-    fun getBalances(groupId: String): List<Balances> {
+    fun getBalances(groupId: String, groupData: GroupData? = null): List<Balances> {
         val balances = balancesRepository.getBalances(groupId).toMutableList()
-        val groupDetails = groupManagerClient.getGroup(groupId)
+        val groupDetails = groupData ?: groupManagerClient.getGroup(groupId)
         groupDetails.currencies.forEach { currency ->
             if (balances.none { it.currency == currency.code }) {
                 balances += fetchBalances(groupId, currency.code)
@@ -88,9 +90,9 @@ class FinanceService(
         )
     }
 
-    fun getSettlements(groupId: String): List<Settlements> {
+    fun getSettlements(groupId: String, groupData: GroupData? = null): List<Settlements> {
         val settlements = settlementsRepository.getSettlements(groupId).toMutableList()
-        val groupDetails = groupManagerClient.getGroup(groupId)
+        val groupDetails = groupData ?: groupManagerClient.getGroup(groupId)
         groupDetails.currencies.forEach { currency ->
             if (settlements.none { it.currency == currency.code }) {
                 settlements += Settlements(
@@ -103,5 +105,24 @@ class FinanceService(
             }
         }
         return settlements
+    }
+
+    fun getReports(groupId: String): List<Report> {
+        val groupDetails = groupManagerClient.getGroup(groupId)
+        val balances = getBalances(groupId, groupDetails)
+        val settlements = getSettlements(groupId, groupDetails)
+
+        return groupDetails.currencies.map { currency ->
+            val expenseActivities = expenseManagerClient.getAcceptedExpenses(groupId, currency.code).map { it.toReportActivity() }
+            val paymentActivities = paymentManagerClient.getAcceptedPayments(groupId, currency.code).map { it.toReportActivity() }
+
+            Report(
+                groupId = groupId,
+                currency = currency.code,
+                settlements = settlements.find { it.currency == currency.code }?.settlements ?: listOf(),
+                activities = (expenseActivities + paymentActivities).sortedBy { it.date },
+                balances = balances.find { it.currency == currency.code }?.users ?: listOf(),
+            )
+        }.toList()
     }
 }

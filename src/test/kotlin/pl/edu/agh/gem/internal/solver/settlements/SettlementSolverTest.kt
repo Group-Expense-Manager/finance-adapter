@@ -4,7 +4,7 @@ import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.datatest.withData
 import pl.edu.agh.gem.internal.model.finance.balance.Balance
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlement
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlement
 import pl.edu.agh.gem.util.getSolverTestData
 import java.math.BigDecimal.ZERO
 

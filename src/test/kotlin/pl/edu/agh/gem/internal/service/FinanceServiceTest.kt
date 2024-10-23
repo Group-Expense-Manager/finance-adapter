@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldContainOnly
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
@@ -17,7 +18,7 @@ import pl.edu.agh.gem.internal.client.GroupManagerClient
 import pl.edu.agh.gem.internal.client.PaymentManagerClient
 import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
 import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
-import pl.edu.agh.gem.internal.model.finance.settelment.SettlementStatus
+import pl.edu.agh.gem.internal.model.finance.settlement.SettlementStatus
 import pl.edu.agh.gem.internal.model.group.Currency
 import pl.edu.agh.gem.internal.persistence.BalancesRepository
 import pl.edu.agh.gem.internal.persistence.SettlementsRepository
@@ -26,13 +27,17 @@ import pl.edu.agh.gem.util.DummyData.ANOTHER_USER_ID
 import pl.edu.agh.gem.util.DummyData.CURRENCY_1
 import pl.edu.agh.gem.util.DummyData.CURRENCY_2
 import pl.edu.agh.gem.util.createAcceptedExpense
+import pl.edu.agh.gem.util.createAcceptedExpenseParticipant
 import pl.edu.agh.gem.util.createAcceptedPayment
 import pl.edu.agh.gem.util.createActivity
+import pl.edu.agh.gem.util.createAmount
 import pl.edu.agh.gem.util.createBalance
 import pl.edu.agh.gem.util.createBalances
 import pl.edu.agh.gem.util.createClientFilterOptions
 import pl.edu.agh.gem.util.createFilterOptions
 import pl.edu.agh.gem.util.createGroupData
+import pl.edu.agh.gem.util.createReportActivityMember
+import pl.edu.agh.gem.util.createSettlement
 import pl.edu.agh.gem.util.createSettlements
 import java.math.BigDecimal
 
@@ -163,11 +168,8 @@ class FinanceServiceTest : ShouldSpec({
                 currencies = listOf(CURRENCY_1, CURRENCY_2).map { Currency(it) },
             ),
         )
-        whenever(expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_1)).thenReturn(listOf())
-        whenever(expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_2)).thenReturn(listOf(createAcceptedExpense()))
-        whenever(paymentManagerClient.getAcceptedPayments(GROUP_ID, CURRENCY_1)).thenReturn(listOf())
-        whenever(paymentManagerClient.getAcceptedPayments(GROUP_ID, CURRENCY_2)).thenReturn(listOf(createAcceptedPayment()))
-        whenever(balancesRepository.getBalances(GROUP_ID)).thenReturn(listOf())
+        whenever(expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_2)).thenReturn(listOf())
+        whenever(paymentManagerClient.getAcceptedPayments(GROUP_ID, CURRENCY_2)).thenReturn(listOf())
 
         // when
         val result = financeService.getBalances(GROUP_ID)
@@ -178,20 +180,20 @@ class FinanceServiceTest : ShouldSpec({
         result.map { it.groupId } shouldContainOnly listOf(GROUP_ID)
         result.find { it.currency == CURRENCY_1 }?.users
             ?.map { Pair(it.value.toString(), it.userId) }
-            .shouldContainExactlyInAnyOrder(
+            .shouldContainExactly(
                 listOf(
-                    Pair("0", USER_ID),
+                    Pair("-5", ANOTHER_USER_ID),
                     Pair("0", OTHER_USER_ID),
-                    Pair("0", ANOTHER_USER_ID),
+                    Pair("5", USER_ID),
                 ),
             )
         result.find { it.currency == CURRENCY_2 }?.users
             ?.map { Pair(it.value.toString(), it.userId) }
-            .shouldContainExactly(
+            .shouldContainExactlyInAnyOrder(
                 listOf(
-                    Pair("-38.88", OTHER_USER_ID),
-                    Pair("-6.48", ANOTHER_USER_ID),
-                    Pair("45.36", USER_ID),
+                    Pair("0", OTHER_USER_ID),
+                    Pair("0", ANOTHER_USER_ID),
+                    Pair("0", USER_ID),
                 ),
             )
         verify(balancesRepository, times(1)).getBalances(GROUP_ID)
@@ -239,5 +241,142 @@ class FinanceServiceTest : ShouldSpec({
             last.settlements shouldBe listOf()
             last.status shouldBe SettlementStatus.SAVED
         }
+    }
+
+    should("get report") {
+        // given
+        val firstParticipant = createAcceptedExpenseParticipant(participantId = OTHER_USER_ID, participantCost = "3".toBigDecimal())
+        val secondParticipant = createAcceptedExpenseParticipant(participantId = ANOTHER_USER_ID, participantCost = "5".toBigDecimal())
+        val expense = createAcceptedExpense(
+            creatorId = USER_ID,
+            participants = listOf(firstParticipant, secondParticipant),
+            amount = createAmount(
+                value = "5".toBigDecimal(),
+                currency = CURRENCY_1,
+            ),
+            fxData = null,
+
+        )
+        val payment = createAcceptedPayment(
+            creatorId = USER_ID,
+            recipientId = OTHER_USER_ID,
+            amount = createAmount(
+                value = "3".toBigDecimal(),
+                currency = CURRENCY_1,
+            ),
+            fxData = null,
+        )
+        val balances = listOf(
+            createBalances(
+                currency = CURRENCY_1,
+                groupId = GROUP_ID,
+                balances = listOf(
+                    createBalance(USER_ID, BigDecimal("5")),
+                    createBalance(OTHER_USER_ID, BigDecimal("0")),
+                    createBalance(ANOTHER_USER_ID, BigDecimal("-5")),
+                ),
+            ),
+            createBalances(
+                currency = CURRENCY_2,
+                groupId = GROUP_ID,
+                balances = listOf(
+                    createBalance(OTHER_USER_ID, BigDecimal("0")),
+                ),
+            ),
+        )
+        val settlements = listOf(
+            createSettlements(
+                groupId = GROUP_ID,
+                currency = CURRENCY_1,
+                settlements = listOf(
+                    createSettlement(fromUserId = USER_ID, toUserId = OTHER_USER_ID, value = "100".toBigDecimal()),
+                    createSettlement(fromUserId = USER_ID, toUserId = OTHER_USER_ID, value = "200".toBigDecimal()),
+                    createSettlement(fromUserId = OTHER_USER_ID, toUserId = USER_ID, value = "-300".toBigDecimal()),
+                ),
+            ),
+        )
+
+        whenever(groupManagerClient.getGroup(GROUP_ID)).thenReturn(
+            createGroupData(
+                members = listOf(USER_ID, OTHER_USER_ID, ANOTHER_USER_ID).map { GroupMember(it) },
+                currencies = listOf(CURRENCY_1, CURRENCY_2).map { Currency(it) },
+            ),
+        )
+
+        whenever(balancesRepository.getBalances(GROUP_ID)).thenReturn(balances)
+
+        whenever(expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_1)).thenReturn(listOf(expense))
+        whenever(paymentManagerClient.getAcceptedPayments(GROUP_ID, CURRENCY_1)).thenReturn(listOf(payment))
+        whenever(expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_2)).thenReturn(listOf())
+        whenever(paymentManagerClient.getAcceptedPayments(GROUP_ID, CURRENCY_2)).thenReturn(listOf())
+
+        whenever(settlementsRepository.getSettlements(GROUP_ID)).thenReturn(settlements)
+        // when
+        val result = financeService.getReports(GROUP_ID)
+        result.first().also {
+            it.currency shouldBe CURRENCY_1
+            it.activities.first().also { first ->
+                first.title shouldBe expense.title
+                first.value shouldBe "5".toBigDecimal()
+                first.date shouldBe expense.expenseDate
+                first.members.size shouldBe 3
+                first.members shouldContainExactlyInAnyOrder listOf(
+                    createReportActivityMember(USER_ID, "8".toBigDecimal()),
+                    createReportActivityMember(OTHER_USER_ID, "-3".toBigDecimal()),
+                    createReportActivityMember(ANOTHER_USER_ID, "-5".toBigDecimal()),
+                )
+            }
+            it.balances.map { Pair(it.value.toString(), it.userId) }
+                .shouldContainExactly(
+                    listOf(
+                        Pair("-5", ANOTHER_USER_ID),
+                        Pair("0", OTHER_USER_ID),
+                        Pair("5", USER_ID),
+                    ),
+                )
+            it.activities.last().also { last ->
+                last.title shouldBe payment.title
+                last.date shouldBe payment.date
+                last.value shouldBe "3".toBigDecimal()
+                last.members shouldContainExactlyInAnyOrder listOf(
+                    createReportActivityMember(USER_ID, "3".toBigDecimal()),
+                    createReportActivityMember(OTHER_USER_ID, "-3".toBigDecimal()),
+                )
+            }
+
+            it.settlements.map { Triple(it.value.toString(), it.fromUserId, it.toUserId) }
+                .shouldContainExactlyInAnyOrder(
+                    listOf(
+                        Triple("100", USER_ID, OTHER_USER_ID),
+                        Triple("200", USER_ID, OTHER_USER_ID),
+                        Triple("-300", OTHER_USER_ID, USER_ID),
+                    ),
+                )
+        }
+
+        result.last().also {
+            it.currency shouldBe CURRENCY_2
+            it.activities shouldHaveSize 0
+            it.balances.also { balances ->
+                balances.size shouldBe 3
+            }
+            it.balances.map { Pair(it.value.toString(), it.userId) }
+                .shouldContainExactlyInAnyOrder(
+                    listOf(
+                        Pair("0", ANOTHER_USER_ID),
+                        Pair("0", OTHER_USER_ID),
+                        Pair("0", USER_ID),
+                    ),
+                )
+            it.settlements shouldHaveSize 0
+        }
+
+        // then
+        verify(expenseManagerClient, times(1)).getAcceptedExpenses(GROUP_ID, CURRENCY_1)
+        verify(paymentManagerClient, times(1)).getAcceptedPayments(GROUP_ID, CURRENCY_1)
+        verify(expenseManagerClient, times(1)).getAcceptedExpenses(GROUP_ID, CURRENCY_2)
+        verify(paymentManagerClient, times(1)).getAcceptedPayments(GROUP_ID, CURRENCY_2)
+        verify(balancesRepository, times(1)).getBalances(GROUP_ID)
+        verify(settlementsRepository, times(1)).getSettlements(GROUP_ID)
     }
 },)
