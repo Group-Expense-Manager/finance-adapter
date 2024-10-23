@@ -22,7 +22,7 @@ class ReducingEvidentSettlementsStage : ProcessingStage() {
         val settlements = reconciliationJob.settlements.toMutableList()
 
         debtors.forEach { currentBalance ->
-            val matchingBalance = creditors.find { it.value == currentBalance.value.negate() }
+            val matchingBalance = creditors.find { it.value.compareTo(currentBalance.value.negate()) == 0 }
 
             if (matchingBalance != null) {
                 creditors.remove(matchingBalance)

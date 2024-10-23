@@ -21,7 +21,7 @@ data class AcceptedExpense(
         val participantsBalanceElements = participants.map {
             Balance(
                 it.participantId,
-                it.participantCost.multiply(multiplier).setScale(2, RoundingMode.HALF_UP).stripTrailingZeros().negate(),
+                it.participantCost.multiply(multiplier).setScale(2, RoundingMode.DOWN).stripTrailingZeros().negate(),
             )
         }
         val creatorCost = participantsBalanceElements.sumOf { it.value }.negate().stripTrailingZeros()

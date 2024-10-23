@@ -75,8 +75,9 @@ reconciliation-job-producer:
 reconciliation-job-processor:
   enabled: true
   lockTime: 5m
-  emptyCandidateDelay: 10s
+  emptyCandidateDelay: 3s
   retryDelays:
+    - 10s
     - 1m
     - 5m
     - 10m

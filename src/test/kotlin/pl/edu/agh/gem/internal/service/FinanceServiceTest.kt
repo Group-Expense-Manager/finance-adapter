@@ -1,6 +1,7 @@
 package pl.edu.agh.gem.internal.service
 
 import io.kotest.core.spec.style.ShouldSpec
+import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldContainOnly
 import io.kotest.matchers.shouldBe
@@ -16,6 +17,7 @@ import pl.edu.agh.gem.internal.client.GroupManagerClient
 import pl.edu.agh.gem.internal.client.PaymentManagerClient
 import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
 import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
+import pl.edu.agh.gem.internal.model.finance.settelment.SettlementStatus
 import pl.edu.agh.gem.internal.model.group.Currency
 import pl.edu.agh.gem.internal.persistence.BalancesRepository
 import pl.edu.agh.gem.internal.persistence.SettlementsRepository
@@ -31,6 +33,7 @@ import pl.edu.agh.gem.util.createBalances
 import pl.edu.agh.gem.util.createClientFilterOptions
 import pl.edu.agh.gem.util.createFilterOptions
 import pl.edu.agh.gem.util.createGroupData
+import pl.edu.agh.gem.util.createSettlements
 import java.math.BigDecimal
 
 class FinanceServiceTest : ShouldSpec({
@@ -122,7 +125,7 @@ class FinanceServiceTest : ShouldSpec({
             )
         result.find { it.currency == CURRENCY_2 }?.users
             ?.map { Pair(it.value.toString(), it.userId) }
-            .shouldContainExactlyInAnyOrder(
+            .shouldContainExactly(
                 listOf(
                     Pair("-38.88", OTHER_USER_ID),
                     Pair("-6.48", ANOTHER_USER_ID),
@@ -184,7 +187,7 @@ class FinanceServiceTest : ShouldSpec({
             )
         result.find { it.currency == CURRENCY_2 }?.users
             ?.map { Pair(it.value.toString(), it.userId) }
-            .shouldContainExactlyInAnyOrder(
+            .shouldContainExactly(
                 listOf(
                     Pair("-38.88", OTHER_USER_ID),
                     Pair("-6.48", ANOTHER_USER_ID),
@@ -192,5 +195,49 @@ class FinanceServiceTest : ShouldSpec({
                 ),
             )
         verify(balancesRepository, times(1)).getBalances(GROUP_ID)
+    }
+
+    should("get empty settlements") {
+        // given
+        whenever(settlementsRepository.getSettlements(GROUP_ID)).thenReturn(listOf())
+        whenever(groupManagerClient.getGroup(GROUP_ID)).thenReturn(
+            createGroupData(
+                members = listOf(USER_ID, OTHER_USER_ID, ANOTHER_USER_ID).map { GroupMember(it) },
+                currencies = listOf(CURRENCY_1, CURRENCY_2).map { Currency(it) },
+            ),
+        )
+        // when
+        val result = financeService.getSettlements(GROUP_ID)
+
+        // then
+        verify(settlementsRepository, times(1)).getSettlements(GROUP_ID)
+
+        result.map { it.currency } shouldContainExactlyInAnyOrder listOf(CURRENCY_1, CURRENCY_2)
+        result.map { it.settlements } shouldContainExactlyInAnyOrder listOf(listOf(), listOf())
+    }
+
+    should("get settlements") {
+        // given
+        val settlements = listOf(createSettlements(groupId = GROUP_ID, currency = CURRENCY_1))
+        whenever(settlementsRepository.getSettlements(GROUP_ID)).thenReturn(settlements)
+        whenever(groupManagerClient.getGroup(GROUP_ID)).thenReturn(
+            createGroupData(
+                members = listOf(USER_ID, OTHER_USER_ID, ANOTHER_USER_ID).map { GroupMember(it) },
+                currencies = listOf(CURRENCY_1, CURRENCY_2).map { Currency(it) },
+            ),
+        )
+        // when
+        val result = financeService.getSettlements(GROUP_ID)
+
+        // then
+        verify(settlementsRepository, times(1)).getSettlements(GROUP_ID)
+
+        result.first() shouldBe settlements.first()
+        result.last().also { last ->
+            last.groupId shouldBe GROUP_ID
+            last.currency shouldBe CURRENCY_2
+            last.settlements shouldBe listOf()
+            last.status shouldBe SettlementStatus.SAVED
+        }
     }
 },)
