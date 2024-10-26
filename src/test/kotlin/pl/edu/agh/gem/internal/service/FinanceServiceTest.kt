@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldContainOnly
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
@@ -100,14 +101,26 @@ class FinanceServiceTest : ShouldSpec({
 
         whenever(expenseManagerClient.getActivities(GROUP_ID)).thenReturn(expenseManagerActivities)
         whenever(paymentManagerClient.getActivities(GROUP_ID)).thenReturn(paymentManagerActivities)
-
+        whenever(groupManagerClient.getGroup(GROUP_ID)).thenReturn(
+            createGroupData(
+                members = listOf(USER_ID, OTHER_USER_ID, ANOTHER_USER_ID).map { GroupMember(it) },
+                currencies = listOf(CURRENCY_1, CURRENCY_2).map { Currency(it) },
+            ),
+        )
         // when
         val result = financeService.getActivities(GROUP_ID)
 
         // then
-        result shouldBe (expenseManagerActivities + paymentManagerActivities)
+        result.map { it.currency } shouldContainExactlyInAnyOrder listOf(CURRENCY_1, CURRENCY_2)
+        result.find { it.currency == CURRENCY_1 }?.activities
+            .shouldContainExactlyInAnyOrder(
+                expenseManagerActivities + paymentManagerActivities,
+            )
+        result.find { it.currency == CURRENCY_2 }?.activities?.shouldHaveSize(0)
+
         verify(expenseManagerClient, times(1)).getActivities(GROUP_ID)
         verify(paymentManagerClient, times(1)).getActivities(GROUP_ID)
+        verify(groupManagerClient, times(1)).getGroup(GROUP_ID)
     }
 
     should("get empty balances") {

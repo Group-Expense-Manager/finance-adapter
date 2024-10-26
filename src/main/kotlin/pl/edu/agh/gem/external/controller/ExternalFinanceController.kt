@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import pl.edu.agh.gem.exception.UserWithoutGroupAccessException
-import pl.edu.agh.gem.external.dto.finance.ActivitiesResponse
 import pl.edu.agh.gem.external.dto.finance.BalancesResponse
+import pl.edu.agh.gem.external.dto.finance.ExternalActivitiesResponse
 import pl.edu.agh.gem.external.dto.finance.SettlementsResponse
-import pl.edu.agh.gem.external.dto.finance.toActivitiesResponse
 import pl.edu.agh.gem.external.dto.finance.toBalancesResponse
+import pl.edu.agh.gem.external.dto.finance.toExternalActivitiesResponse
 import pl.edu.agh.gem.external.dto.finance.toSettlementsResponse
 import pl.edu.agh.gem.internal.client.GroupManagerClient
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus
@@ -43,7 +43,7 @@ class ExternalFinanceController(
         @RequestParam type: ActivityType?,
         @RequestParam sortedBy: SortedBy?,
         @RequestParam sortOrder: SortOrder?,
-    ): ActivitiesResponse {
+    ): ExternalActivitiesResponse {
         userId.checkIfUserHaveAccess(groupId)
         val filterOptions = FilterOptions.create(
             userId = userId,
@@ -54,7 +54,7 @@ class ExternalFinanceController(
             sortedBy = sortedBy,
             sortOrder = sortOrder,
         )
-        return financeService.getActivities(groupId, filterOptions).toActivitiesResponse(groupId)
+        return financeService.getActivities(groupId, filterOptions).toExternalActivitiesResponse(groupId)
     }
 
     @GetMapping("balances/groups/{groupId}", produces = [APPLICATION_JSON_INTERNAL_VER_1])

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import pl.edu.agh.gem.internal.client.ExpenseManagerClient
 import pl.edu.agh.gem.internal.client.GroupManagerClient
 import pl.edu.agh.gem.internal.client.PaymentManagerClient
+import pl.edu.agh.gem.internal.model.finance.Activities
 import pl.edu.agh.gem.internal.model.finance.Activity
 import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
 import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
@@ -38,10 +39,27 @@ class FinanceService(
         }
     }
 
-    fun getActivities(groupId: String): List<Activity> {
+    fun getActivities(groupId: String): List<Activities> {
         val expenseActivities = expenseManagerClient.getActivities(groupId)
         val paymentActivities = paymentManagerClient.getActivities(groupId)
-        return expenseActivities + paymentActivities
+
+        val activitiesList = (expenseActivities + paymentActivities)
+            .groupBy { it.currency }
+            .map { (currency, activities) ->
+                Activities(
+                    currency = currency,
+                    activities = activities,
+                )
+            }
+            .toMutableList()
+
+        val groupDetails = groupManagerClient.getGroup(groupId)
+        groupDetails.currencies.forEach { currency ->
+            if (activitiesList.none { it.currency == currency.code }) {
+                activitiesList += Activities(currency.code, listOf())
+            }
+        }
+        return activitiesList
     }
 
     fun blockSettlements(groupId: String, currency: String) {

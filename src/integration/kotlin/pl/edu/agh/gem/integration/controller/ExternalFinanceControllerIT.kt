@@ -10,8 +10,8 @@ import pl.edu.agh.gem.assertion.shouldBody
 import pl.edu.agh.gem.assertion.shouldHaveErrors
 import pl.edu.agh.gem.assertion.shouldHaveHttpStatus
 import pl.edu.agh.gem.exception.UserWithoutGroupAccessException
-import pl.edu.agh.gem.external.dto.finance.ActivitiesResponse
 import pl.edu.agh.gem.external.dto.finance.BalancesResponse
+import pl.edu.agh.gem.external.dto.finance.ExternalActivitiesResponse
 import pl.edu.agh.gem.external.dto.finance.SettlementsResponse
 import pl.edu.agh.gem.helper.group.DummyGroup.GROUP_ID
 import pl.edu.agh.gem.helper.group.DummyGroup.OTHER_GROUP_ID
@@ -83,7 +83,7 @@ class ExternalFinanceControllerIT(
         // then
         response shouldHaveHttpStatus OK
         val ids = expenseManagerActivitiesResponse.expenses.map { it.expenseId } + paymentManagerActivitiesResponse.payments.map { it.paymentId }
-        response.shouldBody<ActivitiesResponse> {
+        response.shouldBody<ExternalActivitiesResponse> {
             groupId shouldBe GROUP_ID
             activities.size shouldBe expenseManagerActivitiesResponse.expenses.size + paymentManagerActivitiesResponse.payments.size
             activities.map { it.activityId } shouldContainExactly ids
@@ -102,7 +102,7 @@ class ExternalFinanceControllerIT(
 
         // then
         response shouldHaveHttpStatus OK
-        response.shouldBody<ActivitiesResponse> {
+        response.shouldBody<ExternalActivitiesResponse> {
             groupId shouldBe GROUP_ID
             activities.size shouldBe expenseManagerActivitiesResponse.expenses.size
             activities.map { it.activityId } shouldContainExactly expenseManagerActivitiesResponse.expenses.map { it.expenseId }
@@ -122,7 +122,7 @@ class ExternalFinanceControllerIT(
 
         // then
         response shouldHaveHttpStatus OK
-        response.shouldBody<ActivitiesResponse> {
+        response.shouldBody<ExternalActivitiesResponse> {
             groupId shouldBe GROUP_ID
             activities.size shouldBe paymentManagerActivitiesResponse.payments.size
             activities.map { it.activityId } shouldContainExactly paymentManagerActivitiesResponse.payments.map { it.paymentId }

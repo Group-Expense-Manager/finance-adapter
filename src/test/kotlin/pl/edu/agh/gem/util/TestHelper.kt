@@ -86,13 +86,13 @@ fun createExpenseManagerActivityDto(
 
 fun createExpenseManagerActivitiesResponse(
     groupId: String = GROUP_ID,
-    vararg expenses: ExpenseManagerActivityDto = arrayOf(
+    expenses: List<ExpenseManagerActivityDto> = listOf(
         createExpenseManagerActivityDto(expenseId = EXPENSE_ID),
         createExpenseManagerActivityDto(expenseId = OTHER_EXPENSE_ID),
     ),
 ) = ExpenseManagerActivitiesResponse(
     groupId = groupId,
-    expenses = expenses.toList(),
+    expenses = expenses,
 )
 
 fun createAmountDto(
@@ -125,13 +125,13 @@ fun createPaymentManagerActivityDto(
 
 fun createPaymentManagerActivitiesResponse(
     groupId: String = GROUP_ID,
-    vararg expenses: PaymentManagerActivityDto = arrayOf(
+    payments: List<PaymentManagerActivityDto> = listOf(
         createPaymentManagerActivityDto(paymentId = PAYMENT_ID),
         createPaymentManagerActivityDto(paymentId = OTHER_PAYMENT_ID),
     ),
 ) = PaymentManagerActivitiesResponse(
     groupId = groupId,
-    payments = expenses.toList(),
+    payments = payments,
 )
 
 fun createActivity(

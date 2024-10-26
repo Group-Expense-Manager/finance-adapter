@@ -3,6 +3,11 @@ package pl.edu.agh.gem.internal.model.finance
 import java.math.BigDecimal
 import java.time.Instant
 
+data class Activities(
+    val currency: String,
+    val activities: List<Activity>,
+)
+
 data class Activity(
     val activityId: String,
     val type: ActivityType,

@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
-import pl.edu.agh.gem.external.dto.finance.ActivitiesResponse
-import pl.edu.agh.gem.external.dto.finance.toActivitiesResponse
+import pl.edu.agh.gem.external.dto.finance.InternalActivitiesResponse
+import pl.edu.agh.gem.external.dto.finance.toInternalActivitiesResponse
 import pl.edu.agh.gem.internal.service.FinanceService
 import pl.edu.agh.gem.media.InternalApiMediaType.APPLICATION_JSON_INTERNAL_VER_1
 import pl.edu.agh.gem.paths.Paths.INTERNAL
@@ -22,7 +22,7 @@ class InternalFinanceController(
     @ResponseStatus(OK)
     fun getActivities(
         @PathVariable groupId: String,
-    ): ActivitiesResponse {
-        return financeService.getActivities(groupId).toActivitiesResponse(groupId)
+    ): InternalActivitiesResponse {
+        return financeService.getActivities(groupId).toInternalActivitiesResponse(groupId)
     }
 }

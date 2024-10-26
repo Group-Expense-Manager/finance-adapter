@@ -6,12 +6,12 @@ import pl.edu.agh.gem.internal.model.finance.ActivityType
 import java.math.BigDecimal
 import java.time.Instant
 
-data class ActivitiesResponse(
+data class ExternalActivitiesResponse(
     val groupId: String,
-    val activities: List<ActivityDTO>,
+    val activities: List<ExternalActivityDTO>,
 )
 
-data class ActivityDTO(
+data class ExternalActivityDTO(
     val activityId: String,
     val type: ActivityType,
     val creatorId: String,
@@ -23,8 +23,8 @@ data class ActivityDTO(
     val date: Instant,
 )
 
-fun Activity.toDTO(): ActivityDTO {
-    return ActivityDTO(
+fun Activity.toDTO(): ExternalActivityDTO {
+    return ExternalActivityDTO(
         activityId = activityId,
         type = type,
         creatorId = creatorId,
@@ -37,8 +37,8 @@ fun Activity.toDTO(): ActivityDTO {
     )
 }
 
-fun List<Activity>.toActivitiesResponse(groupId: String): ActivitiesResponse {
-    return ActivitiesResponse(
+fun List<Activity>.toExternalActivitiesResponse(groupId: String): ExternalActivitiesResponse {
+    return ExternalActivitiesResponse(
         groupId = groupId,
         activities = this.map { it.toDTO() },
     )

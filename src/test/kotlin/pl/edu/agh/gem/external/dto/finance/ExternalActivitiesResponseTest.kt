@@ -14,7 +14,7 @@ import pl.edu.agh.gem.util.createActivity
 import java.math.BigDecimal
 import java.time.Instant
 
-class ActivitiesResponseTest : ShouldSpec({
+class ExternalActivitiesResponseTest : ShouldSpec({
     should("map Activity to DTO correctly") {
         // given
         val activity = createActivity()
@@ -71,7 +71,7 @@ class ActivitiesResponseTest : ShouldSpec({
         }
 
         // when
-        val activitiesResponse = activities.toActivitiesResponse(GROUP_ID)
+        val activitiesResponse = activities.toExternalActivitiesResponse(GROUP_ID)
 
         // then
         activitiesResponse.groupId shouldBe GROUP_ID
@@ -94,7 +94,7 @@ class ActivitiesResponseTest : ShouldSpec({
         val activities = listOf<Activity>()
 
         // when
-        val activitiesResponse = activities.toActivitiesResponse(GROUP_ID)
+        val activitiesResponse = activities.toExternalActivitiesResponse(GROUP_ID)
 
         // then
         activitiesResponse.also {
