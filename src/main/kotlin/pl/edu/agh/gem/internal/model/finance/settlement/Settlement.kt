@@ -1,4 +1,4 @@
-package pl.edu.agh.gem.internal.model.finance.settelment
+package pl.edu.agh.gem.internal.model.finance.settlement
 
 import java.math.BigDecimal
 

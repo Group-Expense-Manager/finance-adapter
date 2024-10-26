@@ -7,8 +7,8 @@ import kotlinx.coroutines.time.delay
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.mock.mockito.SpyBean
 import pl.edu.agh.gem.integration.BaseIntegrationSpec
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlement
-import pl.edu.agh.gem.internal.model.finance.settelment.SettlementStatus.SAVED
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlement
+import pl.edu.agh.gem.internal.model.finance.settlement.SettlementStatus.SAVED
 import pl.edu.agh.gem.internal.persistence.ReconciliationJobRepository
 import pl.edu.agh.gem.internal.persistence.SettlementsRepository
 import pl.edu.agh.gem.util.createBalance

@@ -28,9 +28,9 @@ import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
 import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
 import pl.edu.agh.gem.internal.model.finance.balance.Balance
 import pl.edu.agh.gem.internal.model.finance.balance.Balances
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlement
-import pl.edu.agh.gem.internal.model.finance.settelment.SettlementStatus.SAVED
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlements
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlement
+import pl.edu.agh.gem.internal.model.finance.settlement.SettlementStatus.SAVED
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlements
 import pl.edu.agh.gem.internal.persistence.BalancesRepository
 import pl.edu.agh.gem.internal.persistence.SettlementsRepository
 import pl.edu.agh.gem.util.DummyData.ANOTHER_USER_ID
