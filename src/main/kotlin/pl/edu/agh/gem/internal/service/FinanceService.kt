@@ -10,8 +10,8 @@ import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
 import pl.edu.agh.gem.internal.model.finance.balance.Balance
 import pl.edu.agh.gem.internal.model.finance.balance.Balances
 import pl.edu.agh.gem.internal.model.finance.filter.FilterOptions
-import pl.edu.agh.gem.internal.model.finance.settelment.SettlementStatus
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlements
+import pl.edu.agh.gem.internal.model.finance.settlement.SettlementStatus
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlements
 import pl.edu.agh.gem.internal.persistence.BalancesRepository
 import pl.edu.agh.gem.internal.persistence.SettlementsRepository
 import pl.edu.agh.gem.internal.sort.ActivityMerger
@@ -36,6 +36,12 @@ class FinanceService(
                 activityMerger.merge(expenseActivities, paymentActivities)
             }
         }
+    }
+
+    fun getActivities(groupId: String): List<Activity> {
+        val expenseActivities = expenseManagerClient.getActivities(groupId)
+        val paymentActivities = paymentManagerClient.getActivities(groupId)
+        return expenseActivities + paymentActivities
     }
 
     fun blockSettlements(groupId: String, currency: String) {

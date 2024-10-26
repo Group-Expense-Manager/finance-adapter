@@ -5,7 +5,7 @@ import pl.edu.agh.gem.internal.model.finance.Activity
 import pl.edu.agh.gem.internal.model.finance.filter.ClientFilterOptions
 
 interface ExpenseManagerClient {
-    fun getActivities(groupId: String, clientFilterOptions: ClientFilterOptions): List<Activity>
+    fun getActivities(groupId: String, clientFilterOptions: ClientFilterOptions? = null): List<Activity>
     fun getAcceptedExpenses(groupId: String, currency: String): List<AcceptedExpense>
 }
 

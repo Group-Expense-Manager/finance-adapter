@@ -31,7 +31,7 @@ class RestPaymentManagerClient(
 ) : PaymentManagerClient {
 
     @Retry(name = "paymentManager")
-    override fun getActivities(groupId: String, clientFilterOptions: ClientFilterOptions): List<Activity> {
+    override fun getActivities(groupId: String, clientFilterOptions: ClientFilterOptions?): List<Activity> {
         return try {
             restTemplate.exchange(
                 resolveActivitiesAddress(groupId, clientFilterOptions),
@@ -72,13 +72,13 @@ class RestPaymentManagerClient(
         }
     }
 
-    private fun resolveActivitiesAddress(groupId: String, clientFilterOptions: ClientFilterOptions) =
+    private fun resolveActivitiesAddress(groupId: String, clientFilterOptions: ClientFilterOptions?) =
         UriComponentsBuilder.fromUriString("${paymentManagerProperties.url}$INTERNAL/payments/activities/groups/$groupId")
-            .queryParamIfPresent("title", Optional.ofNullable(clientFilterOptions.title))
-            .queryParamIfPresent("status", Optional.ofNullable(clientFilterOptions.status))
-            .queryParamIfPresent("isCreator", Optional.ofNullable(clientFilterOptions.creatorId))
-            .queryParam("sortedBy", clientFilterOptions.sortedBy)
-            .queryParam("sortOrder", clientFilterOptions.sortOrder)
+            .queryParamIfPresent("title", Optional.ofNullable(clientFilterOptions?.title))
+            .queryParamIfPresent("status", Optional.ofNullable(clientFilterOptions?.status))
+            .queryParamIfPresent("isCreator", Optional.ofNullable(clientFilterOptions?.creatorId))
+            .queryParamIfPresent("sortedBy", Optional.ofNullable(clientFilterOptions?.sortedBy))
+            .queryParamIfPresent("sortOrder", Optional.ofNullable(clientFilterOptions?.sortOrder))
             .build()
             .toUriString()
 
