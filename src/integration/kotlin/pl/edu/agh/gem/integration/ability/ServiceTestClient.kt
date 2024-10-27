@@ -98,4 +98,26 @@ class ServiceTestClient(applicationContext: WebApplicationContext) {
             .headers { it.withAppAcceptType() }
             .exchange()
     }
+
+    fun getInternalBalances(
+        groupId: String,
+    ): ResponseSpec {
+        return webClient.get()
+            .uri {
+                it.path("$INTERNAL/balances/groups/$groupId").build()
+            }
+            .headers { it.withAppAcceptType() }
+            .exchange()
+    }
+
+    fun getInternalSettlements(
+        groupId: String,
+    ): ResponseSpec {
+        return webClient.get()
+            .uri {
+                it.path("$INTERNAL/settlements/groups/$groupId").build()
+            }
+            .headers { it.withAppAcceptType() }
+            .exchange()
+    }
 }
