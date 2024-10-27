@@ -2,9 +2,9 @@ package pl.edu.agh.gem.external.persistence.settlements
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlement
-import pl.edu.agh.gem.internal.model.finance.settelment.SettlementStatus
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlements
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlement
+import pl.edu.agh.gem.internal.model.finance.settlement.SettlementStatus
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlements
 import java.math.BigDecimal
 
 @Document("settlements")

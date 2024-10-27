@@ -4,14 +4,15 @@ import org.springframework.stereotype.Service
 import pl.edu.agh.gem.internal.client.ExpenseManagerClient
 import pl.edu.agh.gem.internal.client.GroupManagerClient
 import pl.edu.agh.gem.internal.client.PaymentManagerClient
+import pl.edu.agh.gem.internal.model.finance.Activities
 import pl.edu.agh.gem.internal.model.finance.Activity
 import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
 import pl.edu.agh.gem.internal.model.finance.ActivityType.PAYMENT
 import pl.edu.agh.gem.internal.model.finance.balance.Balance
 import pl.edu.agh.gem.internal.model.finance.balance.Balances
 import pl.edu.agh.gem.internal.model.finance.filter.FilterOptions
-import pl.edu.agh.gem.internal.model.finance.settelment.SettlementStatus
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlements
+import pl.edu.agh.gem.internal.model.finance.settlement.SettlementStatus
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlements
 import pl.edu.agh.gem.internal.persistence.BalancesRepository
 import pl.edu.agh.gem.internal.persistence.SettlementsRepository
 import pl.edu.agh.gem.internal.sort.ActivityMerger
@@ -36,6 +37,29 @@ class FinanceService(
                 activityMerger.merge(expenseActivities, paymentActivities)
             }
         }
+    }
+
+    fun getActivities(groupId: String): List<Activities> {
+        val expenseActivities = expenseManagerClient.getActivities(groupId)
+        val paymentActivities = paymentManagerClient.getActivities(groupId)
+
+        val activitiesList = (expenseActivities + paymentActivities)
+            .groupBy { it.currency }
+            .map { (currency, activities) ->
+                Activities(
+                    currency = currency,
+                    activities = activities,
+                )
+            }
+            .toMutableList()
+
+        val groupDetails = groupManagerClient.getGroup(groupId)
+        groupDetails.currencies.forEach { currency ->
+            if (activitiesList.none { it.currency == currency.code }) {
+                activitiesList += Activities(currency.code, listOf())
+            }
+        }
+        return activitiesList
     }
 
     fun blockSettlements(groupId: String, currency: String) {

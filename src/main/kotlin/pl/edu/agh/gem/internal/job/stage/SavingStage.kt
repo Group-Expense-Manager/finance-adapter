@@ -3,8 +3,8 @@ package pl.edu.agh.gem.internal.job.stage
 import org.springframework.stereotype.Component
 import pl.edu.agh.gem.internal.job.ProcessingStage
 import pl.edu.agh.gem.internal.job.StageResult
-import pl.edu.agh.gem.internal.model.finance.settelment.SettlementStatus.SAVED
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlements
+import pl.edu.agh.gem.internal.model.finance.settlement.SettlementStatus.SAVED
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlements
 import pl.edu.agh.gem.internal.model.reconciliation.ReconciliationJob
 import pl.edu.agh.gem.internal.persistence.SettlementsRepository
 

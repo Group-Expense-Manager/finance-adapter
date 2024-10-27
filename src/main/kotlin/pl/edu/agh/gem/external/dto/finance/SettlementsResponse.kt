@@ -1,7 +1,7 @@
 package pl.edu.agh.gem.external.dto.finance
 
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlement
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlements
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlement
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlements
 import java.math.BigDecimal
 
 data class SettlementsResponse(

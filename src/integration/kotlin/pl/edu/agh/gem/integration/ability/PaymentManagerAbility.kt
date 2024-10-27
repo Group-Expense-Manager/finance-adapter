@@ -14,17 +14,17 @@ import pl.edu.agh.gem.paths.Paths.INTERNAL
 import pl.edu.agh.gem.util.DummyData.CURRENCY_1
 import java.util.Optional
 
-private fun createActivitiesUrl(groupId: String, clientFilterOptions: ClientFilterOptions) =
+private fun createActivitiesUrl(groupId: String, clientFilterOptions: ClientFilterOptions?) =
     UriComponentsBuilder.fromUriString("$INTERNAL/payments/activities/groups/$groupId")
-        .queryParamIfPresent("title", Optional.ofNullable(clientFilterOptions.title))
-        .queryParamIfPresent("status", Optional.ofNullable(clientFilterOptions.status))
-        .queryParamIfPresent("isCreator", Optional.ofNullable(clientFilterOptions.creatorId))
-        .queryParam("sortedBy", clientFilterOptions.sortedBy)
-        .queryParam("sortOrder", clientFilterOptions.sortOrder)
+        .queryParamIfPresent("title", Optional.ofNullable(clientFilterOptions?.title))
+        .queryParamIfPresent("status", Optional.ofNullable(clientFilterOptions?.status))
+        .queryParamIfPresent("isCreator", Optional.ofNullable(clientFilterOptions?.creatorId))
+        .queryParamIfPresent("sortedBy", Optional.ofNullable(clientFilterOptions?.sortedBy))
+        .queryParamIfPresent("sortOrder", Optional.ofNullable(clientFilterOptions?.sortOrder))
         .build()
         .toUriString()
 
-fun stubPaymentManagerActivities(body: Any?, groupId: String, clientFilterOptions: ClientFilterOptions, statusCode: HttpStatusCode = OK) {
+fun stubPaymentManagerActivities(body: Any?, groupId: String, clientFilterOptions: ClientFilterOptions? = null, statusCode: HttpStatusCode = OK) {
     wiremock.stubFor(
         get(createActivitiesUrl(groupId, clientFilterOptions))
             .willReturn(

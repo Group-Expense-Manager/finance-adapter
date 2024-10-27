@@ -6,8 +6,8 @@ import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.stereotype.Repository
-import pl.edu.agh.gem.internal.model.finance.settelment.SettlementStatus.PENDING
-import pl.edu.agh.gem.internal.model.finance.settelment.Settlements
+import pl.edu.agh.gem.internal.model.finance.settlement.SettlementStatus.PENDING
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlements
 import pl.edu.agh.gem.internal.persistence.SettlementsRepository
 
 @Repository
