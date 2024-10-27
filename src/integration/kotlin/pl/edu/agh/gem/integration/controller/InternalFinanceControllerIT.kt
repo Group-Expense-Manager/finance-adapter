@@ -10,6 +10,7 @@ import pl.edu.agh.gem.assertion.shouldBody
 import pl.edu.agh.gem.assertion.shouldHaveHttpStatus
 import pl.edu.agh.gem.external.dto.finance.BalancesResponse
 import pl.edu.agh.gem.external.dto.finance.InternalActivitiesResponse
+import pl.edu.agh.gem.external.dto.finance.SettlementsResponse
 import pl.edu.agh.gem.helper.group.DummyGroup.GROUP_ID
 import pl.edu.agh.gem.helper.user.DummyUser.OTHER_USER_ID
 import pl.edu.agh.gem.helper.user.DummyUser.USER_ID
@@ -20,7 +21,12 @@ import pl.edu.agh.gem.integration.ability.stubGroupManagerGroupData
 import pl.edu.agh.gem.integration.ability.stubPaymentManagerActivities
 import pl.edu.agh.gem.internal.model.finance.balance.Balance
 import pl.edu.agh.gem.internal.model.finance.balance.Balances
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlement
+import pl.edu.agh.gem.internal.model.finance.settlement.SettlementStatus.SAVED
+import pl.edu.agh.gem.internal.model.finance.settlement.Settlements
 import pl.edu.agh.gem.internal.persistence.BalancesRepository
+import pl.edu.agh.gem.internal.persistence.SettlementsRepository
+import pl.edu.agh.gem.util.DummyData.ANOTHER_USER_ID
 import pl.edu.agh.gem.util.DummyData.CURRENCY_1
 import pl.edu.agh.gem.util.DummyData.CURRENCY_2
 import pl.edu.agh.gem.util.createAmountDto
@@ -37,6 +43,7 @@ import java.math.BigDecimal.ZERO
 class InternalFinanceControllerIT(
     private val service: ServiceTestClient,
     private val balancesRepository: BalancesRepository,
+    private val settlementsRepository: SettlementsRepository,
 ) : BaseIntegrationSpec({
     should("get internal activities") {
         // given
@@ -160,6 +167,70 @@ class InternalFinanceControllerIT(
                         userBalance.userId shouldBe USER_ID
                         userBalance.value shouldBe "3".toBigDecimal()
                     }
+                }
+            }
+        }
+    }
+
+    should("return internal settlements") {
+        // given
+        stubGroupManagerGroupData(
+            createGroupResponse(
+                members = createMembersDTO(USER_ID, OTHER_USER_ID, ANOTHER_USER_ID),
+                groupCurrencies = createCurrenciesDTO(CURRENCY_1, CURRENCY_2),
+            ),
+            GROUP_ID,
+        )
+        settlementsRepository.save(
+            Settlements(
+                currency = CURRENCY_1,
+                groupId = GROUP_ID,
+                status = SAVED,
+                settlements = listOf(
+                    Settlement(
+                        fromUserId = USER_ID,
+                        toUserId = OTHER_USER_ID,
+                        value = "4".toBigDecimal(),
+                    ),
+                    Settlement(
+                        fromUserId = ANOTHER_USER_ID,
+                        toUserId = OTHER_USER_ID,
+                        value = "7".toBigDecimal(),
+                    ),
+                ),
+
+            ),
+        )
+
+        // when
+        val response = service.getInternalSettlements(GROUP_ID)
+
+        // then
+        response shouldHaveHttpStatus OK
+        response.shouldBody<SettlementsResponse> {
+            groupId shouldBe GROUP_ID
+            settlements shouldHaveSize 2
+            settlements.first().also { first ->
+                first.currency shouldBe CURRENCY_1
+                first.settlements.also { settlements ->
+                    settlements shouldHaveSize 2
+                    settlements.first().also { firstSettlement ->
+                        firstSettlement.fromUserId shouldBe USER_ID
+                        firstSettlement.toUserId shouldBe OTHER_USER_ID
+                        firstSettlement.value.toString() shouldBe "4"
+                    }
+                    settlements.last().also { lastSettlement ->
+                        lastSettlement.fromUserId shouldBe ANOTHER_USER_ID
+                        lastSettlement.toUserId shouldBe OTHER_USER_ID
+                        lastSettlement.value.toString() shouldBe "7"
+                    }
+                }
+            }
+
+            settlements.last().also { last ->
+                last.currency shouldBe CURRENCY_2
+                last.settlements.also { settlements ->
+                    settlements shouldHaveSize 0
                 }
             }
         }
