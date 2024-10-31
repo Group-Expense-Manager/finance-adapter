@@ -31,6 +31,7 @@ class SettlementsResponseTest : ShouldSpec({
 
         // then
         settlementsDto.also {
+            it.status shouldBe currencySettlement.status
             it.currency shouldBe currencySettlement.currency
             it.settlements shouldBe currencySettlement.settlements.map { settlement -> settlement.toSettlementDto() }
         }

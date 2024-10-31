@@ -212,6 +212,7 @@ class InternalFinanceControllerIT(
             settlements shouldHaveSize 2
             settlements.first().also { first ->
                 first.currency shouldBe CURRENCY_1
+                first.status shouldBe SAVED
                 first.settlements.also { settlements ->
                     settlements shouldHaveSize 2
                     settlements.first().also { firstSettlement ->
@@ -229,6 +230,7 @@ class InternalFinanceControllerIT(
 
             settlements.last().also { last ->
                 last.currency shouldBe CURRENCY_2
+                last.status shouldBe SAVED
                 last.settlements.also { settlements ->
                     settlements shouldHaveSize 0
                 }

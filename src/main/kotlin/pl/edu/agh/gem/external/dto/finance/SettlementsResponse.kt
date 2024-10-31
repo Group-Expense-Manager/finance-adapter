@@ -1,6 +1,7 @@
 package pl.edu.agh.gem.external.dto.finance
 
 import pl.edu.agh.gem.internal.model.finance.settlement.Settlement
+import pl.edu.agh.gem.internal.model.finance.settlement.SettlementStatus
 import pl.edu.agh.gem.internal.model.finance.settlement.Settlements
 import java.math.BigDecimal
 
@@ -15,11 +16,13 @@ fun List<Settlements>.toSettlementsResponse() = SettlementsResponse(
 )
 
 data class SettlementsDto(
+    val status: SettlementStatus,
     val currency: String,
     val settlements: List<SettlementDto>,
 )
 
 fun Settlements.toSettlementsDto() = SettlementsDto(
+    status = status,
     currency = currency,
     settlements = settlements.map { it.toSettlementDto() },
 )

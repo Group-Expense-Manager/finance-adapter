@@ -280,6 +280,7 @@ class ExternalFinanceControllerIT(
             groupId shouldBe GROUP_ID
             settlements shouldHaveSize 2
             settlements.first().also { first ->
+                first.status shouldBe SAVED
                 first.currency shouldBe CURRENCY_1
                 first.settlements.also { settlements ->
                     settlements shouldHaveSize 2
@@ -298,6 +299,7 @@ class ExternalFinanceControllerIT(
 
             settlements.last().also { last ->
                 last.currency shouldBe CURRENCY_2
+                last.status shouldBe SAVED
                 last.settlements.also { settlements ->
                     settlements shouldHaveSize 0
                 }
