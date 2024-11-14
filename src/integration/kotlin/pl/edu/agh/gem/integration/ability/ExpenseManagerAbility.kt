@@ -18,7 +18,7 @@ private fun createActivitiesUrl(groupId: String, clientFilterOptions: ClientFilt
     UriComponentsBuilder.fromUriString("$INTERNAL/expenses/activities/groups/$groupId")
         .queryParamIfPresent("title", Optional.ofNullable(clientFilterOptions?.title))
         .queryParamIfPresent("status", Optional.ofNullable(clientFilterOptions?.status))
-        .queryParamIfPresent("isCreator", Optional.ofNullable(clientFilterOptions?.creatorId))
+        .queryParamIfPresent("creatorId", Optional.ofNullable(clientFilterOptions?.creatorId))
         .queryParamIfPresent("sortedBy", Optional.ofNullable(clientFilterOptions?.sortedBy))
         .queryParamIfPresent("sortOrder", Optional.ofNullable(clientFilterOptions?.sortOrder))
         .build()
