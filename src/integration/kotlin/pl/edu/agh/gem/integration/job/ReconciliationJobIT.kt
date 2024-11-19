@@ -55,7 +55,7 @@ class ReconciliationJobIT(
             it.status shouldBe SAVED
             it.settlements.size shouldBe 4
             it.settlements shouldContainExactlyInAnyOrder listOf(
-                Settlement("userId6", "userId5", "-100".toBigDecimal()),
+                Settlement("userId6", "userId5", "100".toBigDecimal()),
                 Settlement("userId3", "userId1", "10".toBigDecimal()),
                 Settlement("userId3", "userId2", "20".toBigDecimal()),
                 Settlement("userId4", "userId2", "30".toBigDecimal()),
