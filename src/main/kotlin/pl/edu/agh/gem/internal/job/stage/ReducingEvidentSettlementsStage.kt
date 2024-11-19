@@ -30,7 +30,7 @@ class ReducingEvidentSettlementsStage : ProcessingStage() {
                     Settlement(
                         fromUserId = currentBalance.userId,
                         toUserId = matchingBalance.userId,
-                        value = currentBalance.value,
+                        value = matchingBalance.value,
                     ),
                 )
             } else {
