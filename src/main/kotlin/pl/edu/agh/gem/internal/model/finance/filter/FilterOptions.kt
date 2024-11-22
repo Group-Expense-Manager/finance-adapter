@@ -10,6 +10,7 @@ data class FilterOptions(
     val status: ActivityStatus?,
     val creatorId: String?,
     val type: ActivityType?,
+    val currency: String?,
     val sortedBy: SortedBy,
     val sortOrder: SortOrder,
 ) {
@@ -17,6 +18,7 @@ data class FilterOptions(
         title = title,
         status = status,
         creatorId = creatorId,
+        currency = currency,
         sortedBy = sortedBy,
         sortOrder = sortOrder,
     )
@@ -28,6 +30,7 @@ data class FilterOptions(
             status: ActivityStatus?,
             isCreator: Boolean?,
             type: ActivityType?,
+            currency: String?,
             sortedBy: SortedBy?,
             sortOrder: SortOrder?,
         ) = FilterOptions(
@@ -35,6 +38,7 @@ data class FilterOptions(
             status = status,
             creatorId = if (isCreator == true) userId else null,
             type = type,
+            currency = currency,
             sortedBy = sortedBy ?: DATE,
             sortOrder = sortOrder ?: ASCENDING,
         )

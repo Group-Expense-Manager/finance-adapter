@@ -161,6 +161,7 @@ fun createFilterOptions(
     status: ActivityStatus? = null,
     creatorId: String? = null,
     type: ActivityType? = null,
+    currency: String? = null,
     sortedBy: SortedBy = DATE,
     sortOrder: SortOrder = ASCENDING,
 ) = FilterOptions(
@@ -168,6 +169,7 @@ fun createFilterOptions(
     status = status,
     creatorId = creatorId,
     type = type,
+    currency = currency,
     sortedBy = sortedBy,
     sortOrder = sortOrder,
 )

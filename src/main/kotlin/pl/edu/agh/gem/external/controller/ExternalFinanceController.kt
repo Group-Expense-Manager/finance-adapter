@@ -41,6 +41,7 @@ class ExternalFinanceController(
         @RequestParam status: ActivityStatus?,
         @RequestParam isCreator: Boolean?,
         @RequestParam type: ActivityType?,
+        @RequestParam currency: String?,
         @RequestParam sortedBy: SortedBy?,
         @RequestParam sortOrder: SortOrder?,
     ): ExternalActivitiesResponse {
@@ -51,6 +52,7 @@ class ExternalFinanceController(
             status = status,
             isCreator = isCreator,
             type = type,
+            currency = currency,
             sortedBy = sortedBy,
             sortOrder = sortOrder,
         )
