@@ -32,6 +32,7 @@ class ServiceTestClient(applicationContext: WebApplicationContext) {
         status: ActivityStatus? = null,
         isCreator: Boolean? = null,
         type: ActivityType? = null,
+        currency: String? = null,
         sortedBy: SortedBy? = null,
         sortOrder: SortOrder? = null,
 
@@ -43,6 +44,7 @@ class ServiceTestClient(applicationContext: WebApplicationContext) {
                     .queryParamIfPresent("type", Optional.ofNullable(type))
                     .queryParamIfPresent("status", Optional.ofNullable(status))
                     .queryParamIfPresent("isCreator", Optional.ofNullable(isCreator))
+                    .queryParamIfPresent("currency", Optional.ofNullable(currency))
                     .queryParamIfPresent("sortedBy", Optional.ofNullable(sortedBy))
                     .queryParamIfPresent("sortOrder", Optional.ofNullable(sortOrder))
                     .build()

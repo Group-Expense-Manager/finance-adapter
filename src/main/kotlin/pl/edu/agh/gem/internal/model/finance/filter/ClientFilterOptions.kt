@@ -6,6 +6,7 @@ data class ClientFilterOptions(
     val title: String? = null,
     val status: ActivityStatus? = null,
     val creatorId: String? = null,
+    val currency: String? = null,
     val sortedBy: SortedBy = SortedBy.DATE,
     val sortOrder: SortOrder = SortOrder.ASCENDING,
 )

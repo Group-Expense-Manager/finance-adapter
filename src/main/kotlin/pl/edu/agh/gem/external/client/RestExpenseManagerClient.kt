@@ -77,6 +77,7 @@ class RestExpenseManagerClient(
             .queryParamIfPresent("title", Optional.ofNullable(clientFilterOptions?.title))
             .queryParamIfPresent("status", Optional.ofNullable(clientFilterOptions?.status))
             .queryParamIfPresent("creatorId", Optional.ofNullable(clientFilterOptions?.creatorId))
+            .queryParamIfPresent("currency", Optional.ofNullable(clientFilterOptions?.currency))
             .queryParamIfPresent("sortedBy", Optional.ofNullable(clientFilterOptions?.sortedBy))
             .queryParamIfPresent("sortOrder", Optional.ofNullable(clientFilterOptions?.sortOrder))
             .build()
