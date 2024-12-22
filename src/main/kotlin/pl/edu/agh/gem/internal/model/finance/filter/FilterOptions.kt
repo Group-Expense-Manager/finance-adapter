@@ -2,7 +2,7 @@ package pl.edu.agh.gem.internal.model.finance.filter
 
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus
 import pl.edu.agh.gem.internal.model.finance.ActivityType
-import pl.edu.agh.gem.internal.model.finance.filter.SortOrder.ASCENDING
+import pl.edu.agh.gem.internal.model.finance.filter.SortOrder.DESCENDING
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy.DATE
 
 data class FilterOptions(
@@ -40,7 +40,7 @@ data class FilterOptions(
             type = type,
             currency = currency,
             sortedBy = sortedBy ?: DATE,
-            sortOrder = sortOrder ?: ASCENDING,
+            sortOrder = sortOrder ?: DESCENDING,
         )
     }
 }

@@ -34,7 +34,7 @@ import pl.edu.agh.gem.internal.model.finance.balance.Balances
 import pl.edu.agh.gem.internal.model.finance.filter.ClientFilterOptions
 import pl.edu.agh.gem.internal.model.finance.filter.FilterOptions
 import pl.edu.agh.gem.internal.model.finance.filter.SortOrder
-import pl.edu.agh.gem.internal.model.finance.filter.SortOrder.ASCENDING
+import pl.edu.agh.gem.internal.model.finance.filter.SortOrder.DESCENDING
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy.DATE
 import pl.edu.agh.gem.internal.model.finance.settlement.Settlement
@@ -163,7 +163,7 @@ fun createFilterOptions(
     type: ActivityType? = null,
     currency: String? = null,
     sortedBy: SortedBy = DATE,
-    sortOrder: SortOrder = ASCENDING,
+    sortOrder: SortOrder = DESCENDING,
 ) = FilterOptions(
     title = title,
     status = status,
@@ -179,7 +179,7 @@ fun createClientFilterOptions(
     status: ActivityStatus? = null,
     creatorId: String? = null,
     sortedBy: SortedBy = DATE,
-    sortOrder: SortOrder = ASCENDING,
+    sortOrder: SortOrder = DESCENDING,
 ) = ClientFilterOptions(
     title = title,
     status = status,

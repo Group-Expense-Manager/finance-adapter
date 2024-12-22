@@ -5,7 +5,6 @@ import io.kotest.matchers.shouldBe
 import pl.edu.agh.gem.helper.user.DummyUser.USER_ID
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus.PENDING
 import pl.edu.agh.gem.internal.model.finance.ActivityType.EXPENSE
-import pl.edu.agh.gem.internal.model.finance.filter.SortOrder.ASCENDING
 import pl.edu.agh.gem.internal.model.finance.filter.SortOrder.DESCENDING
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy.DATE
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy.TITLE
@@ -78,7 +77,7 @@ class FilterOptionsTest : ShouldSpec({
             it.type shouldBe null
             it.currency shouldBe null
             it.sortedBy shouldBe DATE
-            it.sortOrder shouldBe ASCENDING
+            it.sortOrder shouldBe DESCENDING
         }
     }
 },)
