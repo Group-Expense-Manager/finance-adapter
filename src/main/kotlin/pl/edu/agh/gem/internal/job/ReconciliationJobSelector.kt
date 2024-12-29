@@ -1,16 +1,16 @@
 package pl.edu.agh.gem.internal.job
 
 import org.springframework.stereotype.Service
-import pl.edu.agh.gem.internal.job.ReconciliationJobState.APPLY_DEBT_ROUNDING_PAIRING_ALGORITHM
 import pl.edu.agh.gem.internal.job.ReconciliationJobState.APPLY_GREEDY_ALGORITHM
+import pl.edu.agh.gem.internal.job.ReconciliationJobState.APPLY_MAX_DIFFERENCE_FIRST_ALGORITHM
 import pl.edu.agh.gem.internal.job.ReconciliationJobState.APPLY_SET_PARTITION_ALGORITHM
 import pl.edu.agh.gem.internal.job.ReconciliationJobState.REDUCING_EVIDENT_SETTLEMENTS
 import pl.edu.agh.gem.internal.job.ReconciliationJobState.REDUCING_ZERO_BALANCES
 import pl.edu.agh.gem.internal.job.ReconciliationJobState.SAVING
 import pl.edu.agh.gem.internal.job.ReconciliationJobState.SELECT_ALGORITHM
 import pl.edu.agh.gem.internal.job.ReconciliationJobState.STARTING
-import pl.edu.agh.gem.internal.job.stage.ApplyDebtRoundingPairingAlgorithmStage
 import pl.edu.agh.gem.internal.job.stage.ApplyGreedyAlgorithmStage
+import pl.edu.agh.gem.internal.job.stage.ApplyMaxDifferenceFirstAlgorithmStage
 import pl.edu.agh.gem.internal.job.stage.ApplySetPartitionAlgorithmStage
 import pl.edu.agh.gem.internal.job.stage.ErrorStage
 import pl.edu.agh.gem.internal.job.stage.ReducingEvidentSettlementsStage
@@ -27,7 +27,7 @@ class ReconciliationJobSelector(
     private val selectAlgorithmStage: SelectAlgorithmStage,
     private val applyGreedyAlgorithmStage: ApplyGreedyAlgorithmStage,
     private val applySetPartitionAlgorithmStage: ApplySetPartitionAlgorithmStage,
-    private val applyDebtRoundingPairingAlgorithmStage: ApplyDebtRoundingPairingAlgorithmStage,
+    private val applyMaxDifferenceFirstAlgorithmStage: ApplyMaxDifferenceFirstAlgorithmStage,
     private val savingStage: SavingStage,
     private val errorStage: ErrorStage,
 ) {
@@ -39,7 +39,7 @@ class ReconciliationJobSelector(
             SELECT_ALGORITHM -> selectAlgorithmStage
             APPLY_GREEDY_ALGORITHM -> applyGreedyAlgorithmStage
             APPLY_SET_PARTITION_ALGORITHM -> applySetPartitionAlgorithmStage
-            APPLY_DEBT_ROUNDING_PAIRING_ALGORITHM -> applyDebtRoundingPairingAlgorithmStage
+            APPLY_MAX_DIFFERENCE_FIRST_ALGORITHM -> applyMaxDifferenceFirstAlgorithmStage
             SAVING -> savingStage
             else -> errorStage
         }
