@@ -2,7 +2,7 @@ package pl.edu.agh.gem.internal.model.finance.filter
 
 import pl.edu.agh.gem.internal.model.finance.ActivityStatus
 import pl.edu.agh.gem.internal.model.finance.ActivityType
-import pl.edu.agh.gem.internal.model.finance.filter.SortOrder.ASCENDING
+import pl.edu.agh.gem.internal.model.finance.filter.SortOrder.DESCENDING
 import pl.edu.agh.gem.internal.model.finance.filter.SortedBy.DATE
 
 data class FilterOptions(
@@ -10,6 +10,7 @@ data class FilterOptions(
     val status: ActivityStatus?,
     val creatorId: String?,
     val type: ActivityType?,
+    val currency: String?,
     val sortedBy: SortedBy,
     val sortOrder: SortOrder,
 ) {
@@ -17,6 +18,7 @@ data class FilterOptions(
         title = title,
         status = status,
         creatorId = creatorId,
+        currency = currency,
         sortedBy = sortedBy,
         sortOrder = sortOrder,
     )
@@ -28,6 +30,7 @@ data class FilterOptions(
             status: ActivityStatus?,
             isCreator: Boolean?,
             type: ActivityType?,
+            currency: String?,
             sortedBy: SortedBy?,
             sortOrder: SortOrder?,
         ) = FilterOptions(
@@ -35,8 +38,9 @@ data class FilterOptions(
             status = status,
             creatorId = if (isCreator == true) userId else null,
             type = type,
+            currency = currency,
             sortedBy = sortedBy ?: DATE,
-            sortOrder = sortOrder ?: ASCENDING,
+            sortOrder = sortOrder ?: DESCENDING,
         )
     }
 }
