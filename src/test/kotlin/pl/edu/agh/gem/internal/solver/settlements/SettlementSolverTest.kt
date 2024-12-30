@@ -3,6 +3,7 @@ package pl.edu.agh.gem.internal.solver.settlements
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.datatest.withData
+import io.kotest.matchers.shouldBe
 import pl.edu.agh.gem.internal.model.finance.balance.Balance
 import pl.edu.agh.gem.internal.model.finance.settlement.Settlement
 import pl.edu.agh.gem.util.getSolverTestData
@@ -42,19 +43,17 @@ class SettlementSolverTest : ShouldSpec({
         }
     }
 
-    context("generate settlement correctly using debt rounding pairing algorithm") {
+    context("generate settlement correctly using max difference first algorithm") {
         withData(
             nameFn = { "for balances: $it" },
             getSolverTestData(100),
 
         ) { balances ->
             // given when
-            val settlements = DebtRoundingPairingSolver.solve(balances)
+            val settlements = MaxDifferenceFirstSettlementsSolver.solve(balances)
 
             // then
-            shouldNotThrowAny {
-                checkCorrect(balances, settlements)
-            }
+            checkCorrect(balances, settlements) shouldBe true
         }
     }
 },)

@@ -6,7 +6,6 @@ import java.math.BigDecimal.ZERO
 
 object SetPartitionSolver {
 
-    private const val MIN_SET_SIZE = 2
     private const val MIN_COMPONENT_SIZE = 3
 
     fun solve(userBalances: List<Balance>): List<Settlement> {
@@ -29,47 +28,35 @@ object SetPartitionSolver {
             return fixedParts + listOf(suffixElements)
         }
 
-        val tuples = findPartitionsWithZeroSum(getTuplePartitions(suffixElements))
-        if (tuples.isEmpty()) {
+        val twoSubsetPartitions = findAllTwoSubsetPartitions(suffixElements)
+            .filter { partition -> partition.first.sumOf { it.value }.compareTo(ZERO) == 0 }
+
+        if (twoSubsetPartitions.isEmpty()) {
             return fixedParts + listOf(suffixElements)
         }
 
-        var maxLen = -1
-        var bestResult: List<List<Balance>> = mutableListOf()
-
-        for (suffixPartition in tuples) {
-            val subPartitions = getAllPartitionsRecursive(fixedParts + listOf(suffixPartition.first), suffixPartition.second)
-            if (subPartitions.size > maxLen) {
-                maxLen = subPartitions.size
-                bestResult = subPartitions
-            }
-        }
-
-        return bestResult
+        return twoSubsetPartitions
+            .map { getAllPartitionsRecursive(fixedParts + listOf(it.first), it.second) }
+            .maxBy { it.size }
     }
 
-    private fun getTuplePartitions(elements: List<Balance>): List<Pair<List<Balance>, List<Balance>>> {
+    private fun findAllTwoSubsetPartitions(balances: List<Balance>): List<Pair<List<Balance>, List<Balance>>> {
         val result = mutableListOf<Pair<List<Balance>, List<Balance>>>()
 
-        if (elements.size < MIN_SET_SIZE) {
-            return result
-        }
+        for (pattern in 1 until (1 shl (balances.size - 1))) {
+            val (first, second) = listOf(mutableListOf(balances[0]), mutableListOf())
 
-        for (pattern in 1 until (1 shl (elements.size - 1))) {
-            val resultSets = mutableListOf(mutableListOf(), mutableListOf<Balance>())
-            resultSets[0].add(elements[0])
-
-            for (index in 1 until elements.size) {
-                resultSets[(pattern shr (index - 1)) and 1].add(elements[index])
+            for (index in 1 until balances.size) {
+                if (((pattern shr (index - 1)) and 1) == 0) {
+                    first.add(balances[index])
+                } else {
+                    second.add(balances[index])
+                }
             }
 
-            result.add(Pair(resultSets[0], resultSets[1]))
+            result.add(Pair(first, second))
         }
 
         return result
-    }
-
-    private fun findPartitionsWithZeroSum(partitions: List<Pair<List<Balance>, List<Balance>>>): List<Pair<List<Balance>, List<Balance>>> {
-        return partitions.filter { partition -> partition.first.sumOf { it.value }.compareTo(ZERO) == 0 }
     }
 }

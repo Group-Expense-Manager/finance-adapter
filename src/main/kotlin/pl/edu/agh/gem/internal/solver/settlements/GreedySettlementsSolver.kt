@@ -7,7 +7,10 @@ import java.math.BigDecimal.ZERO
 object GreedySettlementsSolver {
     fun solve(userBalances: List<Balance>): List<Settlement> {
         val (debtors, creditors) = userBalances.partition { it.value < ZERO }.let {
-            Pair(it.first.map { it.copy(value = it.value.negate()) }.toMutableList(), it.second.toMutableList())
+            Pair(
+                it.first.map { debtor -> debtor.copy(value = debtor.value.negate()) }.toMutableList(),
+                it.second.toMutableList(),
+            )
         }
 
         val settlements = mutableListOf<Settlement>()
