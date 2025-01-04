@@ -9,8 +9,10 @@ import org.springframework.stereotype.Repository
 import pl.edu.agh.gem.internal.model.finance.settlement.SettlementStatus.PENDING
 import pl.edu.agh.gem.internal.model.finance.settlement.Settlements
 import pl.edu.agh.gem.internal.persistence.SettlementsRepository
+import pl.edu.agh.gem.metrics.MeteredRepository
 
 @Repository
+@MeteredRepository
 class MongoSettlementsRepository(
     private val mongoOperations: MongoOperations,
 ) : SettlementsRepository {

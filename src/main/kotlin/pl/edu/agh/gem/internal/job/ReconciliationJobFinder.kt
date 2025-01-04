@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.time.delay
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import pl.edu.agh.gem.config.ReconciliationJobProcessorProperties
 import pl.edu.agh.gem.internal.model.reconciliation.ReconciliationJob
 import pl.edu.agh.gem.internal.persistence.ReconciliationJobRepository
@@ -32,7 +32,7 @@ class ReconciliationJobFinder(
         try {
             return reconciliationJobRepository.findJobToProcessAndLock()
         } catch (e: Exception) {
-            log.error("Error while finding financial reconciliation job to process", e)
+            log.error(e) { "Error while finding financial reconciliation job to process" }
             return null
         }
     }
