@@ -26,15 +26,16 @@ data class ExpenseManagerActivityDto(
     val participantIds: List<String>,
     val expenseDate: Instant,
 ) {
-    fun toActivity() = Activity(
-        activityId = expenseId,
-        type = EXPENSE,
-        creatorId = creatorId,
-        title = title,
-        value = amount.value.multiply(fxData?.exchangeRate ?: BigDecimal.ONE).setScale(2, RoundingMode.DOWN).stripTrailingZeros(),
-        currency = fxData?.targetCurrency ?: amount.currency,
-        status = status,
-        participantIds = participantIds,
-        date = expenseDate,
-    )
+    fun toActivity() =
+        Activity(
+            activityId = expenseId,
+            type = EXPENSE,
+            creatorId = creatorId,
+            title = title,
+            value = amount.value.multiply(fxData?.exchangeRate ?: BigDecimal.ONE).setScale(2, RoundingMode.DOWN).stripTrailingZeros(),
+            currency = fxData?.targetCurrency ?: amount.currency,
+            status = status,
+            participantIds = participantIds,
+            date = expenseDate,
+        )
 }

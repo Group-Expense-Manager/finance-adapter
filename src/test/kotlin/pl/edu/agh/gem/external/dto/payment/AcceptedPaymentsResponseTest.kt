@@ -15,38 +15,43 @@ class AcceptedPaymentsResponseTest : ShouldSpec({
         val creatorIds = listOf("creatorId1", "creatorId2", "creatorId3")
         val recipientIds = listOf("creatorId1", "creatorId2", "creatorId3")
         val titles = listOf("title1", "title2", "title3")
-        val amounts = listOf(
-            AmountDto(value = BigDecimal.ONE, currency = "PLN"),
-            AmountDto(value = BigDecimal.TWO, currency = "EUR"),
-            AmountDto(value = BigDecimal.TEN, currency = "USD"),
-        )
-        val fxData = listOf(
-            FxDataDto(targetCurrency = "EUR", exchangeRate = "3.41".toBigDecimal()),
-            null,
-            FxDataDto(targetCurrency = "PLN", exchangeRate = "4.44".toBigDecimal()),
-        )
-
-        val dates = listOf(
-            Instant.ofEpochSecond(1000),
-            Instant.ofEpochSecond(2000),
-            Instant.ofEpochSecond(3000),
-        )
-
-        val payments = creatorIds.mapIndexed { index, creatorId ->
-            createAcceptedPaymentDto(
-                creatorId = creatorId,
-                recipientId = recipientIds[index],
-                title = titles[index],
-                amount = amounts[index],
-                fxData = fxData[index],
-                date = dates[index],
+        val amounts =
+            listOf(
+                AmountDto(value = BigDecimal.ONE, currency = "PLN"),
+                AmountDto(value = BigDecimal.TWO, currency = "EUR"),
+                AmountDto(value = BigDecimal.TEN, currency = "USD"),
             )
-        }
+        val fxData =
+            listOf(
+                FxDataDto(targetCurrency = "EUR", exchangeRate = "3.41".toBigDecimal()),
+                null,
+                FxDataDto(targetCurrency = "PLN", exchangeRate = "4.44".toBigDecimal()),
+            )
 
-        val acceptedPaymentsResponse = createAcceptedPaymentsResponse(
-            groupId = GROUP_ID,
-            payments = payments,
-        )
+        val dates =
+            listOf(
+                Instant.ofEpochSecond(1000),
+                Instant.ofEpochSecond(2000),
+                Instant.ofEpochSecond(3000),
+            )
+
+        val payments =
+            creatorIds.mapIndexed { index, creatorId ->
+                createAcceptedPaymentDto(
+                    creatorId = creatorId,
+                    recipientId = recipientIds[index],
+                    title = titles[index],
+                    amount = amounts[index],
+                    fxData = fxData[index],
+                    date = dates[index],
+                )
+            }
+
+        val acceptedPaymentsResponse =
+            createAcceptedPaymentsResponse(
+                groupId = GROUP_ID,
+                payments = payments,
+            )
 
         // when
         val acceptedPayments = acceptedPaymentsResponse.toDomain()
@@ -62,4 +67,4 @@ class AcceptedPaymentsResponseTest : ShouldSpec({
             it.map { payment -> payment.date } shouldContainExactly dates
         }
     }
-},)
+})

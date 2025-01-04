@@ -18,12 +18,13 @@ data class AcceptedPaymentDto(
     val fxData: FxDataDto?,
     val date: Instant,
 ) {
-    fun toDomain() = AcceptedPayment(
-        creatorId = creatorId,
-        recipientId = recipientId,
-        title = title,
-        amount = amount.toDomain(),
-        fxData = fxData?.toDomain(),
-        date = date,
-    )
+    fun toDomain() =
+        AcceptedPayment(
+            creatorId = creatorId,
+            recipientId = recipientId,
+            title = title,
+            amount = amount.toDomain(),
+            fxData = fxData?.toDomain(),
+            date = date,
+        )
 }

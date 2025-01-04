@@ -45,30 +45,33 @@ class ExternalActivitiesResponseTest : ShouldSpec({
         val values = listOf(BigDecimal.ONE, BigDecimal.TWO, BigDecimal.TEN)
         val currencies = listOf("PLN", "EUR", "USD")
         val statuses = listOf(PENDING, ACCEPTED, REJECTED)
-        val participantsIds = listOf(
-            listOf("participant1", "participant2"),
-            listOf("participant3", "participant4"),
-            listOf("participant5", "participant6"),
-        )
-        val activityDates = listOf(
-            Instant.ofEpochSecond(1000),
-            Instant.ofEpochSecond(2000),
-            Instant.ofEpochSecond(3000),
-        )
-
-        val activities = activityIds.mapIndexed { index, expenseId ->
-            createActivity(
-                activityId = expenseId,
-                type = types[index],
-                creatorId = creatorIds[index],
-                title = titles[index],
-                value = values[index],
-                currency = currencies[index],
-                status = statuses[index],
-                participantIds = participantsIds[index],
-                date = activityDates[index],
+        val participantsIds =
+            listOf(
+                listOf("participant1", "participant2"),
+                listOf("participant3", "participant4"),
+                listOf("participant5", "participant6"),
             )
-        }
+        val activityDates =
+            listOf(
+                Instant.ofEpochSecond(1000),
+                Instant.ofEpochSecond(2000),
+                Instant.ofEpochSecond(3000),
+            )
+
+        val activities =
+            activityIds.mapIndexed { index, expenseId ->
+                createActivity(
+                    activityId = expenseId,
+                    type = types[index],
+                    creatorId = creatorIds[index],
+                    title = titles[index],
+                    value = values[index],
+                    currency = currencies[index],
+                    status = statuses[index],
+                    participantIds = participantsIds[index],
+                    date = activityDates[index],
+                )
+            }
 
         // when
         val activitiesResponse = activities.toExternalActivitiesResponse(GROUP_ID)
@@ -102,4 +105,4 @@ class ExternalActivitiesResponseTest : ShouldSpec({
             it.activities shouldBe listOf()
         }
     }
-},)
+})

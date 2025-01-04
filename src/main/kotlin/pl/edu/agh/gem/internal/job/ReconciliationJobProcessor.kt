@@ -14,10 +14,11 @@ class ReconciliationJobProcessor(
         when (val nextState = reconciliationJobSelector.select(reconciliationJob.state).process(reconciliationJob)) {
             is NextStage -> handleNextStage(nextState)
             is StageSuccess -> handleStateSuccess(reconciliationJob)
-            is StageFailure -> handleStateFailure(reconciliationJob)
-                .also {
-                    log.error(nextState.exception) { "Failure occurred on job $reconciliationJob" }
-                }
+            is StageFailure ->
+                handleStateFailure(reconciliationJob)
+                    .also {
+                        log.error(nextState.exception) { "Failure occurred on job $reconciliationJob" }
+                    }
             is StageRetry -> handleStateRetry(reconciliationJob)
         }
     }

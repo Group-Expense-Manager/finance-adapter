@@ -41,10 +41,11 @@ class ExpenseManagerActivitiesResponseTest : ShouldSpec({
 
     should("map ExpenseManagerActivityDto to Activity correctly when fxData is not null") {
         // given
-        val expenseManagerActivityDto = createExpenseManagerActivityDto(
-            amount = createAmountDto(value = "1.2".toBigDecimal()),
-            fxData = createFxDataDto(exchangeRate = "3".toBigDecimal()),
-        )
+        val expenseManagerActivityDto =
+            createExpenseManagerActivityDto(
+                amount = createAmountDto(value = "1.2".toBigDecimal()),
+                fxData = createFxDataDto(exchangeRate = "3".toBigDecimal()),
+            )
 
         // when
         val activity = expenseManagerActivityDto.toActivity()
@@ -68,44 +69,50 @@ class ExpenseManagerActivitiesResponseTest : ShouldSpec({
         val expenseIds = listOf("expenseId1", "expenseId2", "expenseId3")
         val creatorIds = listOf("creatorId1", "creatorId2", "creatorId3")
         val titles = listOf("title1", "title2", "title3")
-        val amounts = listOf(
-            createAmountDto(value = BigDecimal.ONE, currency = "PLN"),
-            AmountDto(value = BigDecimal.TWO, currency = "EUR"),
-            AmountDto(value = BigDecimal.TWO, currency = "USD"),
-        )
-        val fxData = listOf(
-            FxDataDto(targetCurrency = "EUR", exchangeRate = "2".toBigDecimal()),
-            null,
-            FxDataDto(targetCurrency = "PLN", exchangeRate = "3".toBigDecimal()),
-        )
-        val statuses = listOf(PENDING, ACCEPTED, REJECTED)
-        val participantIds = listOf(
-            listOf("participant1", "participant2"),
-            listOf("participant3", "participant4"),
-            listOf("participant5", "participant6"),
-        )
-        val expenseDates = listOf(
-            Instant.ofEpochSecond(1000),
-            Instant.ofEpochSecond(2000),
-            Instant.ofEpochSecond(3000),
-        )
-        val expenses = expenseIds.mapIndexed { index, expenseId ->
-            createExpenseManagerActivityDto(
-                expenseId = expenseId,
-                creatorId = creatorIds[index],
-                title = titles[index],
-                amount = amounts[index],
-                fxData = fxData[index],
-                status = statuses[index],
-                participantIds = participantIds[index],
-                expenseDate = expenseDates[index],
+        val amounts =
+            listOf(
+                createAmountDto(value = BigDecimal.ONE, currency = "PLN"),
+                AmountDto(value = BigDecimal.TWO, currency = "EUR"),
+                AmountDto(value = BigDecimal.TWO, currency = "USD"),
             )
-        }
+        val fxData =
+            listOf(
+                FxDataDto(targetCurrency = "EUR", exchangeRate = "2".toBigDecimal()),
+                null,
+                FxDataDto(targetCurrency = "PLN", exchangeRate = "3".toBigDecimal()),
+            )
+        val statuses = listOf(PENDING, ACCEPTED, REJECTED)
+        val participantIds =
+            listOf(
+                listOf("participant1", "participant2"),
+                listOf("participant3", "participant4"),
+                listOf("participant5", "participant6"),
+            )
+        val expenseDates =
+            listOf(
+                Instant.ofEpochSecond(1000),
+                Instant.ofEpochSecond(2000),
+                Instant.ofEpochSecond(3000),
+            )
+        val expenses =
+            expenseIds.mapIndexed { index, expenseId ->
+                createExpenseManagerActivityDto(
+                    expenseId = expenseId,
+                    creatorId = creatorIds[index],
+                    title = titles[index],
+                    amount = amounts[index],
+                    fxData = fxData[index],
+                    status = statuses[index],
+                    participantIds = participantIds[index],
+                    expenseDate = expenseDates[index],
+                )
+            }
 
-        val expenseManagerActivitiesResponse = ExpenseManagerActivitiesResponse(
-            groupId = GROUP_ID,
-            expenses = expenses,
-        )
+        val expenseManagerActivitiesResponse =
+            ExpenseManagerActivitiesResponse(
+                groupId = GROUP_ID,
+                expenses = expenses,
+            )
 
         // when
         val activities = expenseManagerActivitiesResponse.toDomain()
@@ -127,10 +134,11 @@ class ExpenseManagerActivitiesResponseTest : ShouldSpec({
 
     should("return empty activities when there are no activities") {
         // given
-        val expenseManagerActivitiesResponse = ExpenseManagerActivitiesResponse(
-            groupId = GROUP_ID,
-            expenses = listOf(),
-        )
+        val expenseManagerActivitiesResponse =
+            ExpenseManagerActivitiesResponse(
+                groupId = GROUP_ID,
+                expenses = listOf(),
+            )
 
         // when
         val activities = expenseManagerActivitiesResponse.toDomain()
@@ -138,4 +146,4 @@ class ExpenseManagerActivitiesResponseTest : ShouldSpec({
         // then
         activities shouldHaveSize 0
     }
-},)
+})

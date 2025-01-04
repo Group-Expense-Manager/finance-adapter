@@ -18,29 +18,33 @@ import java.time.Instant
 
 class ActivityMergerTest : ShouldSpec({
 
-    val expense1 = createActivity(
-        activityId = EXPENSE_ID,
-        title = "JKL",
-        date = Instant.ofEpochMilli(2L),
-    )
+    val expense1 =
+        createActivity(
+            activityId = EXPENSE_ID,
+            title = "JKL",
+            date = Instant.ofEpochMilli(2L),
+        )
 
-    val expense2 = createActivity(
-        activityId = OTHER_EXPENSE_ID,
-        title = "def",
-        date = Instant.ofEpochMilli(1L),
-    )
+    val expense2 =
+        createActivity(
+            activityId = OTHER_EXPENSE_ID,
+            title = "def",
+            date = Instant.ofEpochMilli(1L),
+        )
 
-    val payment1 = createActivity(
-        activityId = PAYMENT_ID,
-        title = "Abc",
-        date = Instant.ofEpochMilli(4L),
-    )
+    val payment1 =
+        createActivity(
+            activityId = PAYMENT_ID,
+            title = "Abc",
+            date = Instant.ofEpochMilli(4L),
+        )
 
-    val payment2 = createActivity(
-        activityId = OTHER_PAYMENT_ID,
-        title = "giH",
-        date = Instant.ofEpochMilli(3L),
-    )
+    val payment2 =
+        createActivity(
+            activityId = OTHER_PAYMENT_ID,
+            title = "giH",
+            date = Instant.ofEpochMilli(3L),
+        )
 
     context("sort correctly") {
         withData(
@@ -76,4 +80,4 @@ class ActivityMergerTest : ShouldSpec({
             actualIds shouldBe expectedIds
         }
     }
-},)
+})

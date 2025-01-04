@@ -26,17 +26,19 @@ class MongoReconciliationJobRepository(
 
     override fun findJobToProcessAndLock(): ReconciliationJob? {
         val query = Query.query(Criteria.where(ReconciliationJobEntity::nextProcessAt.name).lte(clock.instant()))
-        val update = Update()
-            .set(ReconciliationJobEntity::nextProcessAt.name, clock.instant().plus(reconciliationJobProcessorProperties.lockTime))
+        val update =
+            Update()
+                .set(ReconciliationJobEntity::nextProcessAt.name, clock.instant().plus(reconciliationJobProcessorProperties.lockTime))
         val options = FindAndModifyOptions.options().returnNew(false).upsert(false)
         return mongoOperations.findAndModify(query, update, options, ReconciliationJobEntity::class.java)?.toDomain()
     }
 
     override fun updateNextProcessAtAndRetry(reconciliationJob: ReconciliationJob): ReconciliationJob {
         val query = Query.query(Criteria.where(ReconciliationJobEntity::id.name).isEqualTo(reconciliationJob.id))
-        val update = Update()
-            .set(ReconciliationJobEntity::nextProcessAt.name, clock.instant().plus(getDelay(reconciliationJob.retry)))
-            .set(ReconciliationJobEntity::retry.name, reconciliationJob.retry + 1)
+        val update =
+            Update()
+                .set(ReconciliationJobEntity::nextProcessAt.name, clock.instant().plus(getDelay(reconciliationJob.retry)))
+                .set(ReconciliationJobEntity::retry.name, reconciliationJob.retry + 1)
         val options = FindAndModifyOptions.options().returnNew(true).upsert(false)
         mongoOperations.findAll(ReconciliationJobEntity::class.java)
         return mongoOperations.findAndModify(query, update, options, ReconciliationJobEntity::class.java)?.toDomain()
@@ -52,25 +54,31 @@ class MongoReconciliationJobRepository(
         return mongoOperations.findById(id, ReconciliationJobEntity::class.java)?.toDomain()
     }
 
-    override fun cancelAllJobsForGroupWithCurrency(groupId: String, currency: String) {
-        val query = Query.query(
-            Criteria.where(ReconciliationJobEntity::groupId.name)
-                .isEqualTo(groupId)
-                .and(ReconciliationJobEntity::currency.name)
-                .isEqualTo(currency),
-        )
-        val update = Update()
-            .set(ReconciliationJobEntity::canceled.name, true)
+    override fun cancelAllJobsForGroupWithCurrency(
+        groupId: String,
+        currency: String,
+    ) {
+        val query =
+            Query.query(
+                Criteria.where(ReconciliationJobEntity::groupId.name)
+                    .isEqualTo(groupId)
+                    .and(ReconciliationJobEntity::currency.name)
+                    .isEqualTo(currency),
+            )
+        val update =
+            Update()
+                .set(ReconciliationJobEntity::canceled.name, true)
         mongoOperations.updateMulti(query, update, ReconciliationJobEntity::class.java)
     }
 
     override fun removeIfCanceled(reconciliationJobId: String): Boolean {
-        val query = Query.query(
-            Criteria.where(ReconciliationJobEntity::id.name)
-                .isEqualTo(reconciliationJobId)
-                .and(ReconciliationJobEntity::canceled.name)
-                .isEqualTo(true),
-        )
+        val query =
+            Query.query(
+                Criteria.where(ReconciliationJobEntity::id.name)
+                    .isEqualTo(reconciliationJobId)
+                    .and(ReconciliationJobEntity::canceled.name)
+                    .isEqualTo(true),
+            )
         return mongoOperations.remove(query, ReconciliationJobEntity::class.java).deletedCount > 0
     }
 

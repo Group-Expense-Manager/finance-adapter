@@ -17,10 +17,11 @@ data class InternalActivityGroupDTO(
     val activities: List<InternalActivityDTO>,
 )
 
-fun Activities.toInternalActivityGroupDTO() = InternalActivityGroupDTO(
-    currency = currency,
-    activities = activities.map { it.toInternalDTO() },
-)
+fun Activities.toInternalActivityGroupDTO() =
+    InternalActivityGroupDTO(
+        currency = currency,
+        activities = activities.map { it.toInternalDTO() },
+    )
 
 data class InternalActivityDTO(
     val id: String,

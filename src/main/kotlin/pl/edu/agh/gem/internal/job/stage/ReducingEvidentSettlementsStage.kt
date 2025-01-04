@@ -14,9 +14,10 @@ class ReducingEvidentSettlementsStage : ProcessingStage() {
     override fun process(reconciliationJob: ReconciliationJob): StageResult {
         logger.info { "Reducing evident settlements for job: $reconciliationJob" }
 
-        val (debtors, creditors) = reconciliationJob.balances.partition { it.value < ZERO }.let {
-            Pair(it.first, it.second.toMutableList())
-        }
+        val (debtors, creditors) =
+            reconciliationJob.balances.partition { it.value < ZERO }.let {
+                Pair(it.first, it.second.toMutableList())
+            }
 
         val newBalances = mutableListOf<Balance>()
         val settlements = reconciliationJob.settlements.toMutableList()
@@ -38,10 +39,11 @@ class ReducingEvidentSettlementsStage : ProcessingStage() {
             }
         }
 
-        val reducedJob = reconciliationJob.copy(
-            settlements = settlements,
-            balances = newBalances + creditors,
-        )
+        val reducedJob =
+            reconciliationJob.copy(
+                settlements = settlements,
+                balances = newBalances + creditors,
+            )
 
         return nextStage(reducedJob, REDUCING_ZERO_BALANCES)
     }

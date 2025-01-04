@@ -45,32 +45,36 @@ class InternalActivitiesResponseTest : ShouldSpec({
         val titles = listOf("title1", "title2", "title3")
         val values = listOf(BigDecimal.ONE, BigDecimal.TWO, BigDecimal.TEN)
         val statuses = listOf(PENDING, ACCEPTED, REJECTED)
-        val participantsIds = listOf(
-            listOf("participant1", "participant2"),
-            listOf("participant3", "participant4"),
-            listOf("participant5", "participant6"),
-        )
-        val activityDates = listOf(
-            Instant.ofEpochSecond(1000),
-            Instant.ofEpochSecond(2000),
-            Instant.ofEpochSecond(3000),
-        )
+        val participantsIds =
+            listOf(
+                listOf("participant1", "participant2"),
+                listOf("participant3", "participant4"),
+                listOf("participant5", "participant6"),
+            )
+        val activityDates =
+            listOf(
+                Instant.ofEpochSecond(1000),
+                Instant.ofEpochSecond(2000),
+                Instant.ofEpochSecond(3000),
+            )
 
-        val activities = Activities(
-            currency = CURRENCY_1,
-            activities = activityIds.mapIndexed { index, expenseId ->
-                createActivity(
-                    activityId = expenseId,
-                    type = types[index],
-                    creatorId = creatorIds[index],
-                    title = titles[index],
-                    value = values[index],
-                    status = statuses[index],
-                    participantIds = participantsIds[index],
-                    date = activityDates[index],
-                )
-            },
-        )
+        val activities =
+            Activities(
+                currency = CURRENCY_1,
+                activities =
+                    activityIds.mapIndexed { index, expenseId ->
+                        createActivity(
+                            activityId = expenseId,
+                            type = types[index],
+                            creatorId = creatorIds[index],
+                            title = titles[index],
+                            value = values[index],
+                            status = statuses[index],
+                            participantIds = participantsIds[index],
+                            date = activityDates[index],
+                        )
+                    },
+            )
 
         val activitiesList = listOf(activities)
 
@@ -109,4 +113,4 @@ class InternalActivitiesResponseTest : ShouldSpec({
             it.activities shouldBe listOf()
         }
     }
-},)
+})

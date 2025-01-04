@@ -23,72 +23,72 @@ class ExpenseManagerClientIT(
     private val expenseManagerClient: ExpenseManagerClient,
 ) : BaseIntegrationSpec({
 
-    should("get activities") {
-        // given
-        val expenseFilterOptions = createClientFilterOptions()
-        val expenseManagerActivitiesResponse = createExpenseManagerActivitiesResponse()
-        stubExpenseManagerActivities(expenseManagerActivitiesResponse, GROUP_ID, expenseFilterOptions)
+        should("get activities") {
+            // given
+            val expenseFilterOptions = createClientFilterOptions()
+            val expenseManagerActivitiesResponse = createExpenseManagerActivitiesResponse()
+            stubExpenseManagerActivities(expenseManagerActivitiesResponse, GROUP_ID, expenseFilterOptions)
 
-        // when
-        val result = expenseManagerClient.getActivities(GROUP_ID, expenseFilterOptions)
+            // when
+            val result = expenseManagerClient.getActivities(GROUP_ID, expenseFilterOptions)
 
-        // then
-        result.map { it.activityId } shouldContainExactly listOf(EXPENSE_ID, OTHER_EXPENSE_ID)
-    }
-
-    should("throw ExpenseManagerClientException when we send bad activities request") {
-        // given
-        val expenseFilterOptions = createClientFilterOptions()
-        stubExpenseManagerActivities(createExpenseManagerActivitiesResponse(), GROUP_ID, expenseFilterOptions, NOT_ACCEPTABLE)
-
-        // when & then
-        shouldThrow<ExpenseManagerClientException> {
-            expenseManagerClient.getActivities(GROUP_ID, expenseFilterOptions)
+            // then
+            result.map { it.activityId } shouldContainExactly listOf(EXPENSE_ID, OTHER_EXPENSE_ID)
         }
-    }
 
-    should("throw RetryableGroupManagerClientException when sending activities request and client has internal error") {
-        // given
-        val expenseFilterOptions = createClientFilterOptions()
-        stubExpenseManagerActivities(createExpenseManagerActivitiesResponse(), GROUP_ID, expenseFilterOptions, INTERNAL_SERVER_ERROR)
+        should("throw ExpenseManagerClientException when we send bad activities request") {
+            // given
+            val expenseFilterOptions = createClientFilterOptions()
+            stubExpenseManagerActivities(createExpenseManagerActivitiesResponse(), GROUP_ID, expenseFilterOptions, NOT_ACCEPTABLE)
 
-        // when & then
-        shouldThrow<RetryableExpenseManagerClientException> {
-            expenseManagerClient.getActivities(GROUP_ID, expenseFilterOptions)
+            // when & then
+            shouldThrow<ExpenseManagerClientException> {
+                expenseManagerClient.getActivities(GROUP_ID, expenseFilterOptions)
+            }
         }
-    }
 
-    should("get accepted expenses") {
-        // given
-        val acceptedExpensesResponse = createAcceptedExpensesResponse()
-        stubAcceptedExpenses(acceptedExpensesResponse, GROUP_ID)
+        should("throw RetryableGroupManagerClientException when sending activities request and client has internal error") {
+            // given
+            val expenseFilterOptions = createClientFilterOptions()
+            stubExpenseManagerActivities(createExpenseManagerActivitiesResponse(), GROUP_ID, expenseFilterOptions, INTERNAL_SERVER_ERROR)
 
-        // when
-        val result = expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_1)
-
-        // then
-        result shouldBe acceptedExpensesResponse.toDomain()
-    }
-
-    should("throw ExpenseManagerClientException when we send bad accepted expenses request") {
-        // given
-        val acceptedExpensesResponse = createAcceptedExpensesResponse()
-        stubAcceptedExpenses(acceptedExpensesResponse, GROUP_ID, CURRENCY_1, NOT_ACCEPTABLE)
-
-        // when & then
-        shouldThrow<ExpenseManagerClientException> {
-            expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_1)
+            // when & then
+            shouldThrow<RetryableExpenseManagerClientException> {
+                expenseManagerClient.getActivities(GROUP_ID, expenseFilterOptions)
+            }
         }
-    }
 
-    should("throw RetryableGroupManagerClientException when sending accepted expenses request and client has internal error") {
-        // given
-        val acceptedExpensesResponse = createAcceptedExpensesResponse()
-        stubAcceptedExpenses(acceptedExpensesResponse, GROUP_ID, CURRENCY_1, INTERNAL_SERVER_ERROR)
+        should("get accepted expenses") {
+            // given
+            val acceptedExpensesResponse = createAcceptedExpensesResponse()
+            stubAcceptedExpenses(acceptedExpensesResponse, GROUP_ID)
 
-        // when & then
-        shouldThrow<RetryableExpenseManagerClientException> {
-            expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_1)
+            // when
+            val result = expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_1)
+
+            // then
+            result shouldBe acceptedExpensesResponse.toDomain()
         }
-    }
-},)
+
+        should("throw ExpenseManagerClientException when we send bad accepted expenses request") {
+            // given
+            val acceptedExpensesResponse = createAcceptedExpensesResponse()
+            stubAcceptedExpenses(acceptedExpensesResponse, GROUP_ID, CURRENCY_1, NOT_ACCEPTABLE)
+
+            // when & then
+            shouldThrow<ExpenseManagerClientException> {
+                expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_1)
+            }
+        }
+
+        should("throw RetryableGroupManagerClientException when sending accepted expenses request and client has internal error") {
+            // given
+            val acceptedExpensesResponse = createAcceptedExpensesResponse()
+            stubAcceptedExpenses(acceptedExpensesResponse, GROUP_ID, CURRENCY_1, INTERNAL_SERVER_ERROR)
+
+            // when & then
+            shouldThrow<RetryableExpenseManagerClientException> {
+                expenseManagerClient.getAcceptedExpenses(GROUP_ID, CURRENCY_1)
+            }
+        }
+    })

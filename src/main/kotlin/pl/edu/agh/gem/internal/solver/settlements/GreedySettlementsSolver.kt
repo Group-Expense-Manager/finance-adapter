@@ -6,12 +6,13 @@ import java.math.BigDecimal.ZERO
 
 object GreedySettlementsSolver {
     fun solve(userBalances: List<Balance>): List<Settlement> {
-        val (debtors, creditors) = userBalances.partition { it.value < ZERO }.let {
-            Pair(
-                it.first.map { debtor -> debtor.copy(value = debtor.value.negate()) }.toMutableList(),
-                it.second.toMutableList(),
-            )
-        }
+        val (debtors, creditors) =
+            userBalances.partition { it.value < ZERO }.let {
+                Pair(
+                    it.first.map { debtor -> debtor.copy(value = debtor.value.negate()) }.toMutableList(),
+                    it.second.toMutableList(),
+                )
+            }
 
         val settlements = mutableListOf<Settlement>()
         var debtorIndex = 0

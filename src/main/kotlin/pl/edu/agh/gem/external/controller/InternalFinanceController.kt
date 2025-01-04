@@ -21,7 +21,6 @@ import pl.edu.agh.gem.paths.Paths.INTERNAL
 class InternalFinanceController(
     private val financeService: FinanceService,
 ) {
-
     @GetMapping("activities/groups/{groupId}", produces = [APPLICATION_JSON_INTERNAL_VER_1])
     @ResponseStatus(OK)
     fun getActivities(

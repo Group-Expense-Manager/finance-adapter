@@ -31,7 +31,6 @@ class ExternalFinanceController(
     private val financeService: FinanceService,
     private val groupManagerClient: GroupManagerClient,
 ) {
-
     @GetMapping("activities/groups/{groupId}", produces = [APPLICATION_JSON_INTERNAL_VER_1])
     @ResponseStatus(OK)
     fun getActivities(
@@ -46,16 +45,17 @@ class ExternalFinanceController(
         @RequestParam sortOrder: SortOrder?,
     ): ExternalActivitiesResponse {
         userId.checkIfUserHaveAccess(groupId)
-        val filterOptions = FilterOptions.create(
-            userId = userId,
-            title = title,
-            status = status,
-            isCreator = isCreator,
-            type = type,
-            currency = currency,
-            sortedBy = sortedBy,
-            sortOrder = sortOrder,
-        )
+        val filterOptions =
+            FilterOptions.create(
+                userId = userId,
+                title = title,
+                status = status,
+                isCreator = isCreator,
+                type = type,
+                currency = currency,
+                sortedBy = sortedBy,
+                sortOrder = sortOrder,
+            )
         return financeService.getActivities(groupId, filterOptions).toExternalActivitiesResponse(groupId)
     }
 

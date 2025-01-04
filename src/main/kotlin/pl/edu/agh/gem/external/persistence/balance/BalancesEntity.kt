@@ -28,10 +28,11 @@ fun BalancesEntity.toDomain(): Balances {
 
 fun Balances.toEntity(): BalancesEntity {
     return BalancesEntity(
-        id = BalancesCompositeKey(
-            groupId = groupId,
-            currency = currency,
-        ),
+        id =
+            BalancesCompositeKey(
+                groupId = groupId,
+                currency = currency,
+            ),
         balances = users.map { it.toEntity() },
     )
 }

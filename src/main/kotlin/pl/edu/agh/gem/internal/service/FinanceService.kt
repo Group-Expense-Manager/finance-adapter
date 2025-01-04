@@ -26,7 +26,10 @@ class FinanceService(
     private val balancesRepository: BalancesRepository,
     private val settlementsRepository: SettlementsRepository,
 ) {
-    fun getActivities(groupId: String, filterOptions: FilterOptions): List<Activity> {
+    fun getActivities(
+        groupId: String,
+        filterOptions: FilterOptions,
+    ): List<Activity> {
         return when (filterOptions.type) {
             EXPENSE -> expenseManagerClient.getActivities(groupId, filterOptions.toClientFilterOptions())
             PAYMENT -> paymentManagerClient.getActivities(groupId, filterOptions.toClientFilterOptions())
@@ -43,15 +46,16 @@ class FinanceService(
         val expenseActivities = expenseManagerClient.getActivities(groupId)
         val paymentActivities = paymentManagerClient.getActivities(groupId)
 
-        val activitiesList = (expenseActivities + paymentActivities)
-            .groupBy { it.currency }
-            .map { (currency, activities) ->
-                Activities(
-                    currency = currency,
-                    activities = activities,
-                )
-            }
-            .toMutableList()
+        val activitiesList =
+            (expenseActivities + paymentActivities)
+                .groupBy { it.currency }
+                .map { (currency, activities) ->
+                    Activities(
+                        currency = currency,
+                        activities = activities,
+                    )
+                }
+                .toMutableList()
 
         val groupDetails = groupManagerClient.getGroup(groupId)
         groupDetails.currencies.forEach { currency ->
@@ -62,7 +66,10 @@ class FinanceService(
         return activitiesList
     }
 
-    fun blockSettlements(groupId: String, currency: String) {
+    fun blockSettlements(
+        groupId: String,
+        currency: String,
+    ) {
         settlementsRepository.blockSettlements(groupId, currency)
     }
 
@@ -82,28 +89,36 @@ class FinanceService(
             if (groupDetails.members.all { member -> balance.users.any { it.userId == member.id } }) {
                 balance.copy(users = balance.users.sortedBy { it.value })
             } else {
-                val zeroBalanceList = groupDetails.members
-                    .filter { member -> !balance.users.any { it.userId == member.id } }
-                    .map { Balance(userId = it.id, value = ZERO) }
+                val zeroBalanceList =
+                    groupDetails.members
+                        .filter { member -> !balance.users.any { it.userId == member.id } }
+                        .map { Balance(userId = it.id, value = ZERO) }
                 balance.copy(users = (balance.users + zeroBalanceList).sortedBy { it.value })
             }
         }
     }
 
-    fun fetchBalances(groupId: String, currency: String): Balances {
-        val expenseBalanceList = expenseManagerClient.getAcceptedExpenses(groupId, currency)
-            .flatMap { it.toBalanceList() }
-        val paymentBalanceList = paymentManagerClient.getAcceptedPayments(groupId, currency)
-            .flatMap { it.toBalanceList() }
+    fun fetchBalances(
+        groupId: String,
+        currency: String,
+    ): Balances {
+        val expenseBalanceList =
+            expenseManagerClient.getAcceptedExpenses(groupId, currency)
+                .flatMap { it.toBalanceList() }
+        val paymentBalanceList =
+            paymentManagerClient.getAcceptedPayments(groupId, currency)
+                .flatMap { it.toBalanceList() }
 
-        val zeroBalanceList = groupManagerClient.getGroup(groupId).members
-            .filter { member -> !expenseBalanceList.any { it.userId == member.id } && !paymentBalanceList.any { it.userId == member.id } }
-            .map { Balance(userId = it.id, value = ZERO) }
+        val zeroBalanceList =
+            groupManagerClient.getGroup(groupId).members
+                .filter { member -> !expenseBalanceList.any { it.userId == member.id } && !paymentBalanceList.any { it.userId == member.id } }
+                .map { Balance(userId = it.id, value = ZERO) }
 
-        val userBalances = (expenseBalanceList + paymentBalanceList + zeroBalanceList)
-            .groupBy { it.userId }
-            .mapValues { it.value.sumOf { balance -> balance.value } }
-            .map { (userId, value) -> Balance(userId = userId, value = value) }
+        val userBalances =
+            (expenseBalanceList + paymentBalanceList + zeroBalanceList)
+                .groupBy { it.userId }
+                .mapValues { it.value.sumOf { balance -> balance.value } }
+                .map { (userId, value) -> Balance(userId = userId, value = value) }
 
         return Balances(
             groupId = groupId,
@@ -117,13 +132,13 @@ class FinanceService(
         val groupDetails = groupManagerClient.getGroup(groupId)
         groupDetails.currencies.forEach { currency ->
             if (settlements.none { it.currency == currency.code }) {
-                settlements += Settlements(
-                    settlements = listOf(),
-                    groupId = groupId,
-                    currency = currency.code,
-                    status = SettlementStatus.SAVED,
-
-                )
+                settlements +=
+                    Settlements(
+                        settlements = listOf(),
+                        groupId = groupId,
+                        currency = currency.code,
+                        status = SettlementStatus.SAVED,
+                    )
             }
         }
         return settlements

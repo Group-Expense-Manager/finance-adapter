@@ -10,20 +10,24 @@ import pl.edu.agh.gem.internal.model.finance.filter.SortedBy.TITLE
 class ActivityMerger(
     private val filterOptions: FilterOptions,
 ) {
+    private val activityComparator =
+        Comparator<Activity> { a, b ->
+            val result =
+                when (filterOptions.sortedBy) {
+                    TITLE -> a.title.lowercase().compareTo(b.title.lowercase())
+                    DATE -> a.date.compareTo(b.date)
+                }
 
-    private val activityComparator = Comparator<Activity> { a, b ->
-        val result = when (filterOptions.sortedBy) {
-            TITLE -> a.title.lowercase().compareTo(b.title.lowercase())
-            DATE -> a.date.compareTo(b.date)
+            when (filterOptions.sortOrder) {
+                ASCENDING -> result
+                DESCENDING -> -result
+            }
         }
 
-        when (filterOptions.sortOrder) {
-            ASCENDING -> result
-            DESCENDING -> -result
-        }
-    }
-
-    fun merge(activitiesA: List<Activity>, activitiesB: List<Activity>): List<Activity> {
+    fun merge(
+        activitiesA: List<Activity>,
+        activitiesB: List<Activity>,
+    ): List<Activity> {
         val result = mutableListOf<Activity>()
         var indexA = 0
         var indexB = 0

@@ -20,7 +20,6 @@ class ReconciliationController(
     private val financeService: FinanceService,
     private val reconciliationService: ReconciliationService,
 ) {
-
     @PostMapping("generate/groups/{groupId}", consumes = [APPLICATION_JSON_INTERNAL_VER_1])
     @ResponseStatus(OK)
     fun generateReconciliation(

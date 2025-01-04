@@ -17,51 +17,57 @@ class AcceptedExpensesResponseTest : ShouldSpec({
         // given
         val creatorIds = listOf("creatorId1", "creatorId2", "creatorId3")
         val titles = listOf("title1", "title2", "title3")
-        val amounts = listOf(
-            AmountDto(value = BigDecimal.ONE, currency = "PLN"),
-            AmountDto(value = BigDecimal.TWO, currency = "EUR"),
-            AmountDto(value = BigDecimal.TEN, currency = "USD"),
-        )
-        val participants = listOf(
+        val amounts =
             listOf(
-                createAcceptedExpenseParticipantDto(participantId = "participant1", participantCost = "2".toBigDecimal()),
-                createAcceptedExpenseParticipantDto(participantId = "participant2", participantCost = "3".toBigDecimal()),
-            ),
-            listOf(
-                createAcceptedExpenseParticipantDto(participantId = "participant3", participantCost = "4".toBigDecimal()),
-                createAcceptedExpenseParticipantDto(participantId = "participant4", participantCost = "5".toBigDecimal()),
-            ),
-            listOf(
-                createAcceptedExpenseParticipantDto(participantId = "participant5", participantCost = "6".toBigDecimal()),
-                createAcceptedExpenseParticipantDto(participantId = "participant6", participantCost = "7".toBigDecimal()),
-            ),
-        )
-        val fxData = listOf(
-            FxDataDto(targetCurrency = "EUR", exchangeRate = "3.41".toBigDecimal()),
-            null,
-            FxDataDto(targetCurrency = "PLN", exchangeRate = "4.44".toBigDecimal()),
-        )
-        val expenseDates = listOf(
-            Instant.ofEpochSecond(1000),
-            Instant.ofEpochSecond(2000),
-            Instant.ofEpochSecond(3000),
-        )
-
-        val expenses = creatorIds.mapIndexed { index, creatorId ->
-            createAcceptedExpenseDto(
-                creatorId = creatorId,
-                title = titles[index],
-                amount = amounts[index],
-                fxData = fxData[index],
-                participants = participants[index],
-                expenseDate = expenseDates[index],
+                AmountDto(value = BigDecimal.ONE, currency = "PLN"),
+                AmountDto(value = BigDecimal.TWO, currency = "EUR"),
+                AmountDto(value = BigDecimal.TEN, currency = "USD"),
             )
-        }
+        val participants =
+            listOf(
+                listOf(
+                    createAcceptedExpenseParticipantDto(participantId = "participant1", participantCost = "2".toBigDecimal()),
+                    createAcceptedExpenseParticipantDto(participantId = "participant2", participantCost = "3".toBigDecimal()),
+                ),
+                listOf(
+                    createAcceptedExpenseParticipantDto(participantId = "participant3", participantCost = "4".toBigDecimal()),
+                    createAcceptedExpenseParticipantDto(participantId = "participant4", participantCost = "5".toBigDecimal()),
+                ),
+                listOf(
+                    createAcceptedExpenseParticipantDto(participantId = "participant5", participantCost = "6".toBigDecimal()),
+                    createAcceptedExpenseParticipantDto(participantId = "participant6", participantCost = "7".toBigDecimal()),
+                ),
+            )
+        val fxData =
+            listOf(
+                FxDataDto(targetCurrency = "EUR", exchangeRate = "3.41".toBigDecimal()),
+                null,
+                FxDataDto(targetCurrency = "PLN", exchangeRate = "4.44".toBigDecimal()),
+            )
+        val expenseDates =
+            listOf(
+                Instant.ofEpochSecond(1000),
+                Instant.ofEpochSecond(2000),
+                Instant.ofEpochSecond(3000),
+            )
 
-        val acceptedExpensesResponse = createAcceptedExpensesResponse(
-            groupId = GROUP_ID,
-            expenses = expenses,
-        )
+        val expenses =
+            creatorIds.mapIndexed { index, creatorId ->
+                createAcceptedExpenseDto(
+                    creatorId = creatorId,
+                    title = titles[index],
+                    amount = amounts[index],
+                    fxData = fxData[index],
+                    participants = participants[index],
+                    expenseDate = expenseDates[index],
+                )
+            }
+
+        val acceptedExpensesResponse =
+            createAcceptedExpensesResponse(
+                groupId = GROUP_ID,
+                expenses = expenses,
+            )
 
         // when
         val acceptedExpenses = acceptedExpensesResponse.toDomain()
@@ -77,4 +83,4 @@ class AcceptedExpensesResponseTest : ShouldSpec({
             it.map { expense -> expense.expenseDate } shouldContainExactly expenseDates
         }
     }
-},)
+})

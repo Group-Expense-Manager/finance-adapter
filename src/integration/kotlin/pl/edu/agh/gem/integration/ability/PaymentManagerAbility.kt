@@ -14,18 +14,25 @@ import pl.edu.agh.gem.paths.Paths.INTERNAL
 import pl.edu.agh.gem.util.DummyData.CURRENCY_1
 import java.util.Optional
 
-private fun createActivitiesUrl(groupId: String, clientFilterOptions: ClientFilterOptions?) =
-    UriComponentsBuilder.fromUriString("$INTERNAL/payments/activities/groups/$groupId")
-        .queryParamIfPresent("title", Optional.ofNullable(clientFilterOptions?.title))
-        .queryParamIfPresent("status", Optional.ofNullable(clientFilterOptions?.status))
-        .queryParamIfPresent("creatorId", Optional.ofNullable(clientFilterOptions?.creatorId))
-        .queryParamIfPresent("currency", Optional.ofNullable(clientFilterOptions?.currency))
-        .queryParamIfPresent("sortedBy", Optional.ofNullable(clientFilterOptions?.sortedBy))
-        .queryParamIfPresent("sortOrder", Optional.ofNullable(clientFilterOptions?.sortOrder))
-        .build()
-        .toUriString()
+private fun createActivitiesUrl(
+    groupId: String,
+    clientFilterOptions: ClientFilterOptions?,
+) = UriComponentsBuilder.fromUriString("$INTERNAL/payments/activities/groups/$groupId")
+    .queryParamIfPresent("title", Optional.ofNullable(clientFilterOptions?.title))
+    .queryParamIfPresent("status", Optional.ofNullable(clientFilterOptions?.status))
+    .queryParamIfPresent("creatorId", Optional.ofNullable(clientFilterOptions?.creatorId))
+    .queryParamIfPresent("currency", Optional.ofNullable(clientFilterOptions?.currency))
+    .queryParamIfPresent("sortedBy", Optional.ofNullable(clientFilterOptions?.sortedBy))
+    .queryParamIfPresent("sortOrder", Optional.ofNullable(clientFilterOptions?.sortOrder))
+    .build()
+    .toUriString()
 
-fun stubPaymentManagerActivities(body: Any?, groupId: String, clientFilterOptions: ClientFilterOptions? = null, statusCode: HttpStatusCode = OK) {
+fun stubPaymentManagerActivities(
+    body: Any?,
+    groupId: String,
+    clientFilterOptions: ClientFilterOptions? = null,
+    statusCode: HttpStatusCode = OK,
+) {
     wiremock.stubFor(
         get(createActivitiesUrl(groupId, clientFilterOptions))
             .willReturn(
@@ -39,9 +46,17 @@ fun stubPaymentManagerActivities(body: Any?, groupId: String, clientFilterOption
     )
 }
 
-private fun createAcceptedPaymentsUrl(groupId: String, currency: String) = "$INTERNAL/payments/accepted/groups/$groupId?currency=$currency"
+private fun createAcceptedPaymentsUrl(
+    groupId: String,
+    currency: String,
+) = "$INTERNAL/payments/accepted/groups/$groupId?currency=$currency"
 
-fun stubAcceptedPayments(body: Any?, groupId: String, currency: String = CURRENCY_1, statusCode: HttpStatusCode = OK) {
+fun stubAcceptedPayments(
+    body: Any?,
+    groupId: String,
+    currency: String = CURRENCY_1,
+    statusCode: HttpStatusCode = OK,
+) {
     wiremock.stubFor(
         get(createAcceptedPaymentsUrl(groupId, currency))
             .willReturn(

@@ -1,12 +1,12 @@
 package pl.edu.agh.gem.internal.job
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.time.delay
-import io.github.oshai.kotlinlogging.KotlinLogging
 import pl.edu.agh.gem.config.ReconciliationJobProcessorProperties
 import pl.edu.agh.gem.internal.model.reconciliation.ReconciliationJob
 import pl.edu.agh.gem.internal.persistence.ReconciliationJobRepository
@@ -17,16 +17,17 @@ class ReconciliationJobFinder(
     private val reconciliationJobRepository: ReconciliationJobRepository,
     private val reconciliationJobProcessorProperties: ReconciliationJobProcessorProperties,
 ) {
-    fun findJobToProcess() = flow {
-        while (currentCoroutineContext().isActive) {
-            val financialReconciliationJob = findFinancialReconciliationJob()
-            financialReconciliationJob?.let {
-                emit(it)
-                log.info { "Emitted financial reconciliation Job : $it" }
+    fun findJobToProcess() =
+        flow {
+            while (currentCoroutineContext().isActive) {
+                val financialReconciliationJob = findFinancialReconciliationJob()
+                financialReconciliationJob?.let {
+                    emit(it)
+                    log.info { "Emitted financial reconciliation Job : $it" }
+                }
+                waitOnEmpty(financialReconciliationJob)
             }
-            waitOnEmpty(financialReconciliationJob)
-        }
-    }.flowOn(producerExecutor.asCoroutineDispatcher())
+        }.flowOn(producerExecutor.asCoroutineDispatcher())
 
     private fun findFinancialReconciliationJob(): ReconciliationJob? {
         try {

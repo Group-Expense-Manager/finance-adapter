@@ -1,7 +1,7 @@
 package pl.edu.agh.gem.external.client
 
-import io.github.resilience4j.retry.annotation.Retry
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.resilience4j.retry.annotation.Retry
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -21,8 +21,8 @@ import pl.edu.agh.gem.internal.client.RetryablePaymentManagerClientException
 import pl.edu.agh.gem.internal.model.finance.Activity
 import pl.edu.agh.gem.internal.model.finance.filter.ClientFilterOptions
 import pl.edu.agh.gem.internal.model.payment.AcceptedPayment
-import pl.edu.agh.gem.paths.Paths.INTERNAL
 import pl.edu.agh.gem.metrics.MeteredClient
+import pl.edu.agh.gem.paths.Paths.INTERNAL
 import java.util.Optional
 
 @Component
@@ -31,9 +31,11 @@ class RestPaymentManagerClient(
     @Qualifier("PaymentManagerRestTemplate") val restTemplate: RestTemplate,
     val paymentManagerProperties: PaymentManagerProperties,
 ) : PaymentManagerClient {
-
     @Retry(name = "paymentManager")
-    override fun getActivities(groupId: String, clientFilterOptions: ClientFilterOptions?): List<Activity> {
+    override fun getActivities(
+        groupId: String,
+        clientFilterOptions: ClientFilterOptions?,
+    ): List<Activity> {
         return try {
             restTemplate.exchange(
                 resolveActivitiesAddress(groupId, clientFilterOptions),
@@ -54,7 +56,10 @@ class RestPaymentManagerClient(
     }
 
     @Retry(name = "paymentManager")
-    override fun getAcceptedPayments(groupId: String, currency: String): List<AcceptedPayment> {
+    override fun getAcceptedPayments(
+        groupId: String,
+        currency: String,
+    ): List<AcceptedPayment> {
         return try {
             restTemplate.exchange(
                 resolveAcceptedPaymentsAddress(groupId, currency),
@@ -74,19 +79,23 @@ class RestPaymentManagerClient(
         }
     }
 
-    private fun resolveActivitiesAddress(groupId: String, clientFilterOptions: ClientFilterOptions?) =
-        UriComponentsBuilder.fromUriString("${paymentManagerProperties.url}$INTERNAL/payments/activities/groups/$groupId")
-            .queryParamIfPresent("title", Optional.ofNullable(clientFilterOptions?.title))
-            .queryParamIfPresent("status", Optional.ofNullable(clientFilterOptions?.status))
-            .queryParamIfPresent("creatorId", Optional.ofNullable(clientFilterOptions?.creatorId))
-            .queryParamIfPresent("currency", Optional.ofNullable(clientFilterOptions?.currency))
-            .queryParamIfPresent("sortedBy", Optional.ofNullable(clientFilterOptions?.sortedBy))
-            .queryParamIfPresent("sortOrder", Optional.ofNullable(clientFilterOptions?.sortOrder))
-            .build()
-            .toUriString()
+    private fun resolveActivitiesAddress(
+        groupId: String,
+        clientFilterOptions: ClientFilterOptions?,
+    ) = UriComponentsBuilder.fromUriString("${paymentManagerProperties.url}$INTERNAL/payments/activities/groups/$groupId")
+        .queryParamIfPresent("title", Optional.ofNullable(clientFilterOptions?.title))
+        .queryParamIfPresent("status", Optional.ofNullable(clientFilterOptions?.status))
+        .queryParamIfPresent("creatorId", Optional.ofNullable(clientFilterOptions?.creatorId))
+        .queryParamIfPresent("currency", Optional.ofNullable(clientFilterOptions?.currency))
+        .queryParamIfPresent("sortedBy", Optional.ofNullable(clientFilterOptions?.sortedBy))
+        .queryParamIfPresent("sortOrder", Optional.ofNullable(clientFilterOptions?.sortOrder))
+        .build()
+        .toUriString()
 
-    private fun resolveAcceptedPaymentsAddress(groupId: String, currency: String) =
-        "${paymentManagerProperties.url}$INTERNAL/payments/accepted/groups/$groupId?currency=$currency"
+    private fun resolveAcceptedPaymentsAddress(
+        groupId: String,
+        currency: String,
+    ) = "${paymentManagerProperties.url}$INTERNAL/payments/accepted/groups/$groupId?currency=$currency"
 
     companion object {
         private val logger = KotlinLogging.logger {}

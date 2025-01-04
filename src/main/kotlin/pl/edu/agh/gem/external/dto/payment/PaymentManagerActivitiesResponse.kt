@@ -26,34 +26,38 @@ data class PaymentManagerActivityDto(
     val status: ActivityStatus,
     val date: Instant,
 ) {
-    fun toActivity() = Activity(
-        activityId = paymentId,
-        type = PAYMENT,
-        creatorId = creatorId,
-        title = title,
-        value = amount.value.multiply(fxData?.exchangeRate ?: BigDecimal.ONE).setScale(2, RoundingMode.DOWN).stripTrailingZeros(),
-        currency = fxData?.targetCurrency ?: amount.currency,
-        status = status,
-        participantIds = listOf(recipientId),
-        date = date,
-    )
+    fun toActivity() =
+        Activity(
+            activityId = paymentId,
+            type = PAYMENT,
+            creatorId = creatorId,
+            title = title,
+            value = amount.value.multiply(fxData?.exchangeRate ?: BigDecimal.ONE).setScale(2, RoundingMode.DOWN).stripTrailingZeros(),
+            currency = fxData?.targetCurrency ?: amount.currency,
+            status = status,
+            participantIds = listOf(recipientId),
+            date = date,
+        )
 }
+
 data class AmountDto(
     val value: BigDecimal,
     val currency: String,
 ) {
-    fun toDomain() = Amount(
-        value = value,
-        currency = currency,
-    )
+    fun toDomain() =
+        Amount(
+            value = value,
+            currency = currency,
+        )
 }
 
 data class FxDataDto(
     val targetCurrency: String,
     val exchangeRate: BigDecimal,
 ) {
-    fun toDomain() = FxData(
-        targetCurrency = targetCurrency,
-        exchangeRate = exchangeRate,
-    )
+    fun toDomain() =
+        FxData(
+            targetCurrency = targetCurrency,
+            exchangeRate = exchangeRate,
+        )
 }

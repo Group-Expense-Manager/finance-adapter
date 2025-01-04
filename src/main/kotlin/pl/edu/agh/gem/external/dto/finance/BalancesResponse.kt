@@ -19,17 +19,20 @@ data class UserBalanceDto(
     val value: BigDecimal,
 )
 
-fun List<Balances>.toBalancesResponse() = BalancesResponse(
-    groupId = first().groupId,
-    balances = this.map { it.toBalancesDto() },
-)
+fun List<Balances>.toBalancesResponse() =
+    BalancesResponse(
+        groupId = first().groupId,
+        balances = this.map { it.toBalancesDto() },
+    )
 
-fun Balances.toBalancesDto() = BalancesDto(
-    currency = currency,
-    userBalances = users.map { it.toUserBalanceDto() },
-)
+fun Balances.toBalancesDto() =
+    BalancesDto(
+        currency = currency,
+        userBalances = users.map { it.toUserBalanceDto() },
+    )
 
-fun Balance.toUserBalanceDto() = UserBalanceDto(
-    userId = userId,
-    value = value,
-)
+fun Balance.toUserBalanceDto() =
+    UserBalanceDto(
+        userId = userId,
+        value = value,
+    )

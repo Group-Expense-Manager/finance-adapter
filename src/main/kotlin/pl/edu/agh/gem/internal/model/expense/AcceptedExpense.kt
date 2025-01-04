@@ -18,12 +18,13 @@ data class AcceptedExpense(
     fun toBalanceList(): List<Balance> {
         val multiplier = fxData?.exchangeRate ?: BigDecimal.ONE
 
-        val participantsBalanceElements = participants.map {
-            Balance(
-                it.participantId,
-                it.participantCost.multiply(multiplier).setScale(2, RoundingMode.DOWN).stripTrailingZeros().negate(),
-            )
-        }
+        val participantsBalanceElements =
+            participants.map {
+                Balance(
+                    it.participantId,
+                    it.participantCost.multiply(multiplier).setScale(2, RoundingMode.DOWN).stripTrailingZeros().negate(),
+                )
+            }
         val creatorCost = participantsBalanceElements.sumOf { it.value }.negate().stripTrailingZeros()
         val creatorBalanceElement = Balance(creatorId, creatorCost)
         return participantsBalanceElements + creatorBalanceElement

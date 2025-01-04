@@ -13,39 +13,39 @@ class SettlementsRepositoryIT(
     private val settlementsRepository: SettlementsRepository,
 ) : BaseIntegrationSpec({
 
-    should("save and retrieve settlements by groupId") {
-        // given
-        val settlements = createSettlements(groupId = GROUP_ID)
+        should("save and retrieve settlements by groupId") {
+            // given
+            val settlements = createSettlements(groupId = GROUP_ID)
 
-        // when
-        val savedSettlements = settlementsRepository.save(settlements)
+            // when
+            val savedSettlements = settlementsRepository.save(settlements)
 
-        // then
-        savedSettlements.groupId shouldBe settlements.groupId
-        savedSettlements.currency shouldBe settlements.currency
-        savedSettlements.settlements.size shouldBe 3
+            // then
+            savedSettlements.groupId shouldBe settlements.groupId
+            savedSettlements.currency shouldBe settlements.currency
+            savedSettlements.settlements.size shouldBe 3
 
-        // when
-        val retrievedSettlements = settlementsRepository.getSettlements(GROUP_ID)
+            // when
+            val retrievedSettlements = settlementsRepository.getSettlements(GROUP_ID)
 
-        // then
-        retrievedSettlements.shouldNotBeEmpty()
-        retrievedSettlements.first().also {
-            it.groupId shouldBe GROUP_ID
-            it.currency shouldBe settlements.currency
-            it.settlements.size shouldBe 3
-            it.settlements.map { it.value } shouldContainExactlyInAnyOrder listOf("100", "200", "-300").map { it.toBigDecimal() }
+            // then
+            retrievedSettlements.shouldNotBeEmpty()
+            retrievedSettlements.first().also {
+                it.groupId shouldBe GROUP_ID
+                it.currency shouldBe settlements.currency
+                it.settlements.size shouldBe 3
+                it.settlements.map { it.value } shouldContainExactlyInAnyOrder listOf("100", "200", "-300").map { it.toBigDecimal() }
+            }
         }
-    }
 
-    should("return empty list when no settlements found for groupId") {
-        // given
-        val nonExistingGroupId = "non-existing-group"
+        should("return empty list when no settlements found for groupId") {
+            // given
+            val nonExistingGroupId = "non-existing-group"
 
-        // when
-        val retrievedSettlements = settlementsRepository.getSettlements(nonExistingGroupId)
+            // when
+            val retrievedSettlements = settlementsRepository.getSettlements(nonExistingGroupId)
 
-        // then
-        retrievedSettlements.shouldBeEmpty()
-    }
-},)
+            // then
+            retrievedSettlements.shouldBeEmpty()
+        }
+    })
