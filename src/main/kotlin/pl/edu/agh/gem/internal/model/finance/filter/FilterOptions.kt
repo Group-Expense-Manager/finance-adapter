@@ -14,14 +14,15 @@ data class FilterOptions(
     val sortedBy: SortedBy,
     val sortOrder: SortOrder,
 ) {
-    fun toClientFilterOptions() = ClientFilterOptions(
-        title = title,
-        status = status,
-        creatorId = creatorId,
-        currency = currency,
-        sortedBy = sortedBy,
-        sortOrder = sortOrder,
-    )
+    fun toClientFilterOptions() =
+        ClientFilterOptions(
+            title = title,
+            status = status,
+            creatorId = creatorId,
+            currency = currency,
+            sortedBy = sortedBy,
+            sortOrder = sortOrder,
+        )
 
     companion object {
         fun create(

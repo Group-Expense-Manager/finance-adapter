@@ -15,7 +15,6 @@ class SettlementSolverTest : ShouldSpec({
         withData(
             nameFn = { "for balances: $it" },
             getSolverTestData(100),
-
         ) { balances ->
             // given when
             val settlements = GreedySettlementsSolver.solve(balances)
@@ -31,7 +30,6 @@ class SettlementSolverTest : ShouldSpec({
         withData(
             nameFn = { "for balances: $it" },
             getSolverTestData(20),
-
         ) { balances ->
             // given when
             val settlements = SetPartitionSolver.solve(balances)
@@ -47,7 +45,6 @@ class SettlementSolverTest : ShouldSpec({
         withData(
             nameFn = { "for balances: $it" },
             getSolverTestData(100),
-
         ) { balances ->
             // given when
             val settlements = MaxDifferenceFirstSettlementsSolver.solve(balances)
@@ -56,9 +53,12 @@ class SettlementSolverTest : ShouldSpec({
             checkCorrect(balances, settlements) shouldBe true
         }
     }
-},)
+})
 
-private fun checkCorrect(balances: List<Balance>, result: List<Settlement>): Boolean {
+private fun checkCorrect(
+    balances: List<Balance>,
+    result: List<Settlement>,
+): Boolean {
     val userMap = balances.associate { it.userId to it.value }
     val userMap2 = balances.associate { it.userId to ZERO }.toMutableMap()
     result.forEach {

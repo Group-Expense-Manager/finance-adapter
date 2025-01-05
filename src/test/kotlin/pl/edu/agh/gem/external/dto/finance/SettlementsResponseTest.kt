@@ -49,4 +49,4 @@ class SettlementsResponseTest : ShouldSpec({
             it.settlements shouldBe settlementsList.map { settlements -> settlements.toSettlementsDto() }
         }
     }
-},)
+})

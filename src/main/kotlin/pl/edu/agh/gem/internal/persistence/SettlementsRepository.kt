@@ -4,6 +4,11 @@ import pl.edu.agh.gem.internal.model.finance.settlement.Settlements
 
 interface SettlementsRepository {
     fun save(settlements: Settlements): Settlements
+
     fun getSettlements(groupId: String): List<Settlements>
-    fun blockSettlements(groupId: String, currency: String)
+
+    fun blockSettlements(
+        groupId: String,
+        currency: String,
+    )
 }

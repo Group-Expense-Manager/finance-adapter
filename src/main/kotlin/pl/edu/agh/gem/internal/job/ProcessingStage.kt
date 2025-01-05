@@ -1,13 +1,15 @@
 package pl.edu.agh.gem.internal.job
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import pl.edu.agh.gem.internal.model.reconciliation.ReconciliationJob
 
 abstract class ProcessingStage {
-
     abstract fun process(reconciliationJob: ReconciliationJob): StageResult
 
-    fun nextStage(reconciliationJob: ReconciliationJob, nextState: ReconciliationJobState): StageResult {
+    fun nextStage(
+        reconciliationJob: ReconciliationJob,
+        nextState: ReconciliationJobState,
+    ): StageResult {
         return NextStage(reconciliationJob, nextState)
     }
 

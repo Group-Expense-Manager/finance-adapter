@@ -39,10 +39,11 @@ class PaymentManagerActivitiesResponseTest : ShouldSpec({
 
     should("map PaymentManagerActivityDto to Activity correctly when fxData is not null") {
         // given
-        val paymentManagerActivityDto = createPaymentManagerActivityDto(
-            amount = createAmountDto(value = "1.2".toBigDecimal()),
-            fxData = createFxDataDto(exchangeRate = "3".toBigDecimal()),
-        )
+        val paymentManagerActivityDto =
+            createPaymentManagerActivityDto(
+                amount = createAmountDto(value = "1.2".toBigDecimal()),
+                fxData = createFxDataDto(exchangeRate = "3".toBigDecimal()),
+            )
 
         // when
         val activity = paymentManagerActivityDto.toActivity()
@@ -67,39 +68,44 @@ class PaymentManagerActivitiesResponseTest : ShouldSpec({
         val recipientIds = listOf("recipientId1", "recipientId2", "recipientId3")
         val creatorIds = listOf("creatorId1", "creatorId2", "creatorId3")
         val titles = listOf("title1", "title2", "title3")
-        val amounts = listOf(
-            createAmountDto(value = BigDecimal.ONE, currency = "PLN"),
-            AmountDto(value = BigDecimal.TWO, currency = "EUR"),
-            AmountDto(value = BigDecimal.TWO, currency = "USD"),
-        )
-        val fxData = listOf(
-            FxDataDto(targetCurrency = "EUR", exchangeRate = "2".toBigDecimal()),
-            null,
-            FxDataDto(targetCurrency = "PLN", exchangeRate = "3".toBigDecimal()),
-        )
-        val statuses = listOf(PENDING, ACCEPTED, REJECTED)
-        val dates = listOf(
-            Instant.ofEpochSecond(1000),
-            Instant.ofEpochSecond(2000),
-            Instant.ofEpochSecond(3000),
-        )
-        val payments = paymentIds.mapIndexed { index, paymentId ->
-            createPaymentManagerActivityDto(
-                paymentId = paymentId,
-                recipientId = recipientIds[index],
-                creatorId = creatorIds[index],
-                title = titles[index],
-                amount = amounts[index],
-                fxData = fxData[index],
-                status = statuses[index],
-                date = dates[index],
+        val amounts =
+            listOf(
+                createAmountDto(value = BigDecimal.ONE, currency = "PLN"),
+                AmountDto(value = BigDecimal.TWO, currency = "EUR"),
+                AmountDto(value = BigDecimal.TWO, currency = "USD"),
             )
-        }
+        val fxData =
+            listOf(
+                FxDataDto(targetCurrency = "EUR", exchangeRate = "2".toBigDecimal()),
+                null,
+                FxDataDto(targetCurrency = "PLN", exchangeRate = "3".toBigDecimal()),
+            )
+        val statuses = listOf(PENDING, ACCEPTED, REJECTED)
+        val dates =
+            listOf(
+                Instant.ofEpochSecond(1000),
+                Instant.ofEpochSecond(2000),
+                Instant.ofEpochSecond(3000),
+            )
+        val payments =
+            paymentIds.mapIndexed { index, paymentId ->
+                createPaymentManagerActivityDto(
+                    paymentId = paymentId,
+                    recipientId = recipientIds[index],
+                    creatorId = creatorIds[index],
+                    title = titles[index],
+                    amount = amounts[index],
+                    fxData = fxData[index],
+                    status = statuses[index],
+                    date = dates[index],
+                )
+            }
 
-        val paymentManagerActivitiesResponse = PaymentManagerActivitiesResponse(
-            groupId = GROUP_ID,
-            payments = payments,
-        )
+        val paymentManagerActivitiesResponse =
+            PaymentManagerActivitiesResponse(
+                groupId = GROUP_ID,
+                payments = payments,
+            )
 
         // when
         val activities = paymentManagerActivitiesResponse.toDomain()
@@ -114,18 +120,20 @@ class PaymentManagerActivitiesResponseTest : ShouldSpec({
             it.map { activity -> activity.value } shouldContainExactly listOf("2".toBigDecimal(), "2".toBigDecimal(), "6".toBigDecimal())
             it.map { activity -> activity.currency } shouldContainExactly listOf("EUR", "EUR", "PLN")
             it.map { activity -> activity.status } shouldContainExactly statuses
-            it.map { activity -> activity.participantIds } shouldContainExactly recipientIds
-                .map { recipientId -> listOf(recipientId) }
+            it.map { activity -> activity.participantIds } shouldContainExactly
+                recipientIds
+                    .map { recipientId -> listOf(recipientId) }
             it.map { activity -> activity.date } shouldContainExactly dates
         }
     }
 
     should("return empty activities when there are no activities") {
         // given
-        val paymentManagerActivitiesResponse = PaymentManagerActivitiesResponse(
-            groupId = GROUP_ID,
-            payments = listOf(),
-        )
+        val paymentManagerActivitiesResponse =
+            PaymentManagerActivitiesResponse(
+                groupId = GROUP_ID,
+                payments = listOf(),
+            )
 
         // when
         val activities = paymentManagerActivitiesResponse.toDomain()
@@ -133,4 +141,4 @@ class PaymentManagerActivitiesResponseTest : ShouldSpec({
         // then
         activities shouldHaveSize 0
     }
-},)
+})

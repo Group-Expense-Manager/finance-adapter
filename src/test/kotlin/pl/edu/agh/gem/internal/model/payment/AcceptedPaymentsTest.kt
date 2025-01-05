@@ -15,47 +15,54 @@ class AcceptedPaymentsTest : ShouldSpec({
 
     should("map to BalanceElements when fxData is null") {
         // given
-        val payment = createAcceptedPayment(
-            creatorId = USER_ID,
-            recipientId = OTHER_USER_ID,
-            amount = createAmount(
-                value = "2".toBigDecimal(),
-                currency = CURRENCY_1,
-            ),
-            fxData = null,
-        )
+        val payment =
+            createAcceptedPayment(
+                creatorId = USER_ID,
+                recipientId = OTHER_USER_ID,
+                amount =
+                    createAmount(
+                        value = "2".toBigDecimal(),
+                        currency = CURRENCY_1,
+                    ),
+                fxData = null,
+            )
 
         // when
         val balanceElements = payment.toBalanceList()
 
         // then
-        balanceElements shouldContainExactlyInAnyOrder listOf(
-            Balance(USER_ID, "2".toBigDecimal()),
-            Balance(OTHER_USER_ID, "-2".toBigDecimal()),
-        )
+        balanceElements shouldContainExactlyInAnyOrder
+            listOf(
+                Balance(USER_ID, "2".toBigDecimal()),
+                Balance(OTHER_USER_ID, "-2".toBigDecimal()),
+            )
     }
     should("map to BalanceElements when fxData is not null") {
         // given
-        val payment = createAcceptedPayment(
-            creatorId = USER_ID,
-            recipientId = OTHER_USER_ID,
-            amount = createAmount(
-                value = "2".toBigDecimal(),
-                currency = CURRENCY_1,
-            ),
-            fxData = createFxData(
-                targetCurrency = CURRENCY_2,
-                exchangeRate = "4".toBigDecimal(),
-            ),
-        )
+        val payment =
+            createAcceptedPayment(
+                creatorId = USER_ID,
+                recipientId = OTHER_USER_ID,
+                amount =
+                    createAmount(
+                        value = "2".toBigDecimal(),
+                        currency = CURRENCY_1,
+                    ),
+                fxData =
+                    createFxData(
+                        targetCurrency = CURRENCY_2,
+                        exchangeRate = "4".toBigDecimal(),
+                    ),
+            )
 
         // when
         val balanceElements = payment.toBalanceList()
 
         // then
-        balanceElements shouldContainExactlyInAnyOrder listOf(
-            Balance(USER_ID, "8".toBigDecimal()),
-            Balance(OTHER_USER_ID, "-8".toBigDecimal()),
-        )
+        balanceElements shouldContainExactlyInAnyOrder
+            listOf(
+                Balance(USER_ID, "8".toBigDecimal()),
+                Balance(OTHER_USER_ID, "-8".toBigDecimal()),
+            )
     }
-},)
+})

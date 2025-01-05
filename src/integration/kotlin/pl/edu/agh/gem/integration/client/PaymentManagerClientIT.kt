@@ -23,72 +23,72 @@ class PaymentManagerClientIT(
     private val paymentManagerClient: PaymentManagerClient,
 ) : BaseIntegrationSpec({
 
-    should("get activities") {
-        // given
-        val paymentFilterOptions = createClientFilterOptions()
-        val paymentManagerActivitiesResponse = createPaymentManagerActivitiesResponse()
-        stubPaymentManagerActivities(paymentManagerActivitiesResponse, GROUP_ID, paymentFilterOptions)
+        should("get activities") {
+            // given
+            val paymentFilterOptions = createClientFilterOptions()
+            val paymentManagerActivitiesResponse = createPaymentManagerActivitiesResponse()
+            stubPaymentManagerActivities(paymentManagerActivitiesResponse, GROUP_ID, paymentFilterOptions)
 
-        // when
-        val result = paymentManagerClient.getActivities(GROUP_ID, paymentFilterOptions)
+            // when
+            val result = paymentManagerClient.getActivities(GROUP_ID, paymentFilterOptions)
 
-        // then
-        result.map { it.activityId } shouldContainExactly listOf(PAYMENT_ID, OTHER_PAYMENT_ID)
-    }
-
-    should("throw PaymentManagerClientException when we send bad activities request") {
-        // given
-        val paymentFilterOptions = createClientFilterOptions()
-        stubPaymentManagerActivities(createPaymentManagerActivitiesResponse(), GROUP_ID, paymentFilterOptions, NOT_ACCEPTABLE)
-
-        // when & then
-        shouldThrow<PaymentManagerClientException> {
-            paymentManagerClient.getActivities(GROUP_ID, paymentFilterOptions)
+            // then
+            result.map { it.activityId } shouldContainExactly listOf(PAYMENT_ID, OTHER_PAYMENT_ID)
         }
-    }
 
-    should("throw RetryableGroupManagerClientException when sending activities request and client has internal error") {
-        // given
-        val paymentFilterOptions = createClientFilterOptions()
-        stubPaymentManagerActivities(createPaymentManagerActivitiesResponse(), GROUP_ID, paymentFilterOptions, INTERNAL_SERVER_ERROR)
+        should("throw PaymentManagerClientException when we send bad activities request") {
+            // given
+            val paymentFilterOptions = createClientFilterOptions()
+            stubPaymentManagerActivities(createPaymentManagerActivitiesResponse(), GROUP_ID, paymentFilterOptions, NOT_ACCEPTABLE)
 
-        // when & then
-        shouldThrow<RetryablePaymentManagerClientException> {
-            paymentManagerClient.getActivities(GROUP_ID, paymentFilterOptions)
+            // when & then
+            shouldThrow<PaymentManagerClientException> {
+                paymentManagerClient.getActivities(GROUP_ID, paymentFilterOptions)
+            }
         }
-    }
 
-    should("get accepted payments") {
-        // given
-        val acceptedPaymentsResponse = createAcceptedPaymentsResponse()
-        stubAcceptedPayments(acceptedPaymentsResponse, GROUP_ID)
+        should("throw RetryableGroupManagerClientException when sending activities request and client has internal error") {
+            // given
+            val paymentFilterOptions = createClientFilterOptions()
+            stubPaymentManagerActivities(createPaymentManagerActivitiesResponse(), GROUP_ID, paymentFilterOptions, INTERNAL_SERVER_ERROR)
 
-        // when
-        val result = paymentManagerClient.getAcceptedPayments(GROUP_ID, CURRENCY_1)
-
-        // then
-        result shouldBe acceptedPaymentsResponse.toDomain()
-    }
-
-    should("throw PaymentManagerClientException when we send bad accepted payments request") {
-        // given
-        val acceptedPaymentsResponse = createAcceptedPaymentsResponse()
-        stubAcceptedPayments(acceptedPaymentsResponse, GROUP_ID, CURRENCY_1, NOT_ACCEPTABLE)
-
-        // when & then
-        shouldThrow<PaymentManagerClientException> {
-            paymentManagerClient.getAcceptedPayments(GROUP_ID, CURRENCY_1)
+            // when & then
+            shouldThrow<RetryablePaymentManagerClientException> {
+                paymentManagerClient.getActivities(GROUP_ID, paymentFilterOptions)
+            }
         }
-    }
 
-    should("throw RetryableGroupManagerClientException when sending accepted payments request and client has internal error") {
-        // given
-        val acceptedPaymentsResponse = createAcceptedPaymentsResponse()
-        stubAcceptedPayments(acceptedPaymentsResponse, GROUP_ID, CURRENCY_1, INTERNAL_SERVER_ERROR)
+        should("get accepted payments") {
+            // given
+            val acceptedPaymentsResponse = createAcceptedPaymentsResponse()
+            stubAcceptedPayments(acceptedPaymentsResponse, GROUP_ID)
 
-        // when & then
-        shouldThrow<RetryablePaymentManagerClientException> {
-            paymentManagerClient.getAcceptedPayments(GROUP_ID, CURRENCY_1)
+            // when
+            val result = paymentManagerClient.getAcceptedPayments(GROUP_ID, CURRENCY_1)
+
+            // then
+            result shouldBe acceptedPaymentsResponse.toDomain()
         }
-    }
-},)
+
+        should("throw PaymentManagerClientException when we send bad accepted payments request") {
+            // given
+            val acceptedPaymentsResponse = createAcceptedPaymentsResponse()
+            stubAcceptedPayments(acceptedPaymentsResponse, GROUP_ID, CURRENCY_1, NOT_ACCEPTABLE)
+
+            // when & then
+            shouldThrow<PaymentManagerClientException> {
+                paymentManagerClient.getAcceptedPayments(GROUP_ID, CURRENCY_1)
+            }
+        }
+
+        should("throw RetryableGroupManagerClientException when sending accepted payments request and client has internal error") {
+            // given
+            val acceptedPaymentsResponse = createAcceptedPaymentsResponse()
+            stubAcceptedPayments(acceptedPaymentsResponse, GROUP_ID, CURRENCY_1, INTERNAL_SERVER_ERROR)
+
+            // when & then
+            shouldThrow<RetryablePaymentManagerClientException> {
+                paymentManagerClient.getAcceptedPayments(GROUP_ID, CURRENCY_1)
+            }
+        }
+    })

@@ -8,6 +8,7 @@ data class Settlements(
     val currency: String,
     val status: SettlementStatus,
 )
+
 data class Settlement(
     val fromUserId: String,
     val toUserId: String,

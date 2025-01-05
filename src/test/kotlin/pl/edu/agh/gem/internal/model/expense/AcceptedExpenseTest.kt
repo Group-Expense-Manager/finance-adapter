@@ -19,52 +19,59 @@ class AcceptedExpenseTest : ShouldSpec({
         // given
         val firstParticipant = createAcceptedExpenseParticipant(participantId = OTHER_USER_ID, participantCost = "3".toBigDecimal())
         val secondParticipant = createAcceptedExpenseParticipant(participantId = ANOTHER_USER_ID, participantCost = "5".toBigDecimal())
-        val expense = createAcceptedExpense(
-            creatorId = USER_ID,
-            participants = listOf(firstParticipant, secondParticipant),
-            amount = createAmount(
-                value = "9".toBigDecimal(),
-                currency = CURRENCY_1,
-            ),
-            fxData = null,
-        )
+        val expense =
+            createAcceptedExpense(
+                creatorId = USER_ID,
+                participants = listOf(firstParticipant, secondParticipant),
+                amount =
+                    createAmount(
+                        value = "9".toBigDecimal(),
+                        currency = CURRENCY_1,
+                    ),
+                fxData = null,
+            )
 
         // when
         val balanceElements = expense.toBalanceList()
 
         // then
-        balanceElements shouldContainExactlyInAnyOrder listOf(
-            Balance(USER_ID, "8".toBigDecimal()),
-            Balance(OTHER_USER_ID, "-3".toBigDecimal()),
-            Balance(ANOTHER_USER_ID, "-5".toBigDecimal()),
-        )
+        balanceElements shouldContainExactlyInAnyOrder
+            listOf(
+                Balance(USER_ID, "8".toBigDecimal()),
+                Balance(OTHER_USER_ID, "-3".toBigDecimal()),
+                Balance(ANOTHER_USER_ID, "-5".toBigDecimal()),
+            )
     }
 
     should("map to BalanceList when fxData is not null") {
         // given
         val firstParticipant = createAcceptedExpenseParticipant(participantId = OTHER_USER_ID, participantCost = "3".toBigDecimal())
         val secondParticipant = createAcceptedExpenseParticipant(participantId = ANOTHER_USER_ID, participantCost = "5".toBigDecimal())
-        val expense = createAcceptedExpense(
-            creatorId = USER_ID,
-            participants = listOf(firstParticipant, secondParticipant),
-            amount = createAmount(
-                value = "9".toBigDecimal(),
-                currency = CURRENCY_1,
-            ),
-            fxData = createFxData(
-                targetCurrency = CURRENCY_2,
-                exchangeRate = "0.5".toBigDecimal(),
-            ),
-        )
+        val expense =
+            createAcceptedExpense(
+                creatorId = USER_ID,
+                participants = listOf(firstParticipant, secondParticipant),
+                amount =
+                    createAmount(
+                        value = "9".toBigDecimal(),
+                        currency = CURRENCY_1,
+                    ),
+                fxData =
+                    createFxData(
+                        targetCurrency = CURRENCY_2,
+                        exchangeRate = "0.5".toBigDecimal(),
+                    ),
+            )
 
         // when
         val balanceElements = expense.toBalanceList()
 
         // then
-        balanceElements shouldContainExactlyInAnyOrder listOf(
-            Balance(USER_ID, "4".toBigDecimal()),
-            Balance(OTHER_USER_ID, "-1.5".toBigDecimal()),
-            Balance(ANOTHER_USER_ID, "-2.5".toBigDecimal()),
-        )
+        balanceElements shouldContainExactlyInAnyOrder
+            listOf(
+                Balance(USER_ID, "4".toBigDecimal()),
+                Balance(OTHER_USER_ID, "-1.5".toBigDecimal()),
+                Balance(ANOTHER_USER_ID, "-2.5".toBigDecimal()),
+            )
     }
-},)
+})

@@ -21,9 +21,10 @@ import java.util.Optional
 @Component
 @Lazy
 class ServiceTestClient(applicationContext: WebApplicationContext) {
-    private val webClient = bindToApplicationContext(applicationContext)
-        .configureClient()
-        .build()
+    private val webClient =
+        bindToApplicationContext(applicationContext)
+            .configureClient()
+            .build()
 
     fun getActivities(
         gemUser: GemUser,
@@ -35,7 +36,6 @@ class ServiceTestClient(applicationContext: WebApplicationContext) {
         currency: String? = null,
         sortedBy: SortedBy? = null,
         sortOrder: SortOrder? = null,
-
     ): ResponseSpec {
         return webClient.get()
             .uri {
@@ -90,9 +90,7 @@ class ServiceTestClient(applicationContext: WebApplicationContext) {
             .exchange()
     }
 
-    fun getInternalActivities(
-        groupId: String,
-    ): ResponseSpec {
+    fun getInternalActivities(groupId: String): ResponseSpec {
         return webClient.get()
             .uri {
                 it.path("$INTERNAL/activities/groups/$groupId").build()
@@ -101,9 +99,7 @@ class ServiceTestClient(applicationContext: WebApplicationContext) {
             .exchange()
     }
 
-    fun getInternalBalances(
-        groupId: String,
-    ): ResponseSpec {
+    fun getInternalBalances(groupId: String): ResponseSpec {
         return webClient.get()
             .uri {
                 it.path("$INTERNAL/balances/groups/$groupId").build()
@@ -112,9 +108,7 @@ class ServiceTestClient(applicationContext: WebApplicationContext) {
             .exchange()
     }
 
-    fun getInternalSettlements(
-        groupId: String,
-    ): ResponseSpec {
+    fun getInternalSettlements(groupId: String): ResponseSpec {
         return webClient.get()
             .uri {
                 it.path("$INTERNAL/settlements/groups/$groupId").build()

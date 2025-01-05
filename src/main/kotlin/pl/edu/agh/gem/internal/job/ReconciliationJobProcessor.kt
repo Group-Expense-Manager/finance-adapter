@@ -1,6 +1,6 @@
 package pl.edu.agh.gem.internal.job
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import pl.edu.agh.gem.internal.model.reconciliation.ReconciliationJob
 import pl.edu.agh.gem.internal.persistence.ReconciliationJobRepository
@@ -14,10 +14,11 @@ class ReconciliationJobProcessor(
         when (val nextState = reconciliationJobSelector.select(reconciliationJob.state).process(reconciliationJob)) {
             is NextStage -> handleNextStage(nextState)
             is StageSuccess -> handleStateSuccess(reconciliationJob)
-            is StageFailure -> handleStateFailure(reconciliationJob)
-                .also {
-                    log.error(nextState.exception) { "Failure occurred on job $reconciliationJob" }
-                }
+            is StageFailure ->
+                handleStateFailure(reconciliationJob)
+                    .also {
+                        log.error(nextState.exception) { "Failure occurred on job $reconciliationJob" }
+                    }
             is StageRetry -> handleStateRetry(reconciliationJob)
         }
     }

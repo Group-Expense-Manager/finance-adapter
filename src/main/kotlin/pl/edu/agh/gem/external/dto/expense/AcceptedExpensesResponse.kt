@@ -22,21 +22,24 @@ data class AcceptedExpenseDto(
     val participants: List<AcceptedExpenseParticipantDto>,
     val expenseDate: Instant,
 ) {
-    fun toDomain() = AcceptedExpense(
-        creatorId = creatorId,
-        title = title,
-        amount = amount.toDomain(),
-        fxData = fxData?.toDomain(),
-        participants = participants.map { it.toDomain() },
-        expenseDate = expenseDate,
-    )
+    fun toDomain() =
+        AcceptedExpense(
+            creatorId = creatorId,
+            title = title,
+            amount = amount.toDomain(),
+            fxData = fxData?.toDomain(),
+            participants = participants.map { it.toDomain() },
+            expenseDate = expenseDate,
+        )
 }
+
 data class AcceptedExpenseParticipantDto(
     val participantId: String,
     val participantCost: BigDecimal,
 ) {
-    fun toDomain() = AcceptedExpenseParticipant(
-        participantId = participantId,
-        participantCost = participantCost,
-    )
+    fun toDomain() =
+        AcceptedExpenseParticipant(
+            participantId = participantId,
+            participantCost = participantCost,
+        )
 }

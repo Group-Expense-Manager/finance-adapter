@@ -5,7 +5,6 @@ import pl.edu.agh.gem.internal.model.finance.settlement.Settlement
 import java.math.BigDecimal.ZERO
 
 object SetPartitionSolver {
-
     private const val MIN_COMPONENT_SIZE = 3
 
     fun solve(userBalances: List<Balance>): List<Settlement> {
@@ -23,13 +22,17 @@ object SetPartitionSolver {
         return getAllPartitionsRecursive(listOf(), elements)
     }
 
-    private fun getAllPartitionsRecursive(fixedParts: List<List<Balance>>, suffixElements: List<Balance>): List<List<Balance>> {
+    private fun getAllPartitionsRecursive(
+        fixedParts: List<List<Balance>>,
+        suffixElements: List<Balance>,
+    ): List<List<Balance>> {
         if (suffixElements.size <= MIN_COMPONENT_SIZE) {
             return fixedParts + listOf(suffixElements)
         }
 
-        val twoSubsetPartitions = findAllTwoSubsetPartitions(suffixElements)
-            .filter { partition -> partition.first.sumOf { it.value }.compareTo(ZERO) == 0 }
+        val twoSubsetPartitions =
+            findAllTwoSubsetPartitions(suffixElements)
+                .filter { partition -> partition.first.sumOf { it.value }.compareTo(ZERO) == 0 }
 
         if (twoSubsetPartitions.isEmpty()) {
             return fixedParts + listOf(suffixElements)

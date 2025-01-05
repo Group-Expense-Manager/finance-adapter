@@ -44,13 +44,14 @@ class FinanceServiceTest : ShouldSpec({
     val balancesRepository = mock<BalancesRepository>()
     val settlementsRepository = mock<SettlementsRepository>()
 
-    val financeService = FinanceService(
-        expenseManagerClient,
-        paymentManagerClient,
-        groupManagerClient,
-        balancesRepository,
-        settlementsRepository,
-    )
+    val financeService =
+        FinanceService(
+            expenseManagerClient,
+            paymentManagerClient,
+            groupManagerClient,
+            balancesRepository,
+            settlementsRepository,
+        )
 
     should("get all activities when type is not specified") {
         // given
@@ -172,18 +173,20 @@ class FinanceServiceTest : ShouldSpec({
                 createBalances(
                     currency = CURRENCY_1,
                     groupId = GROUP_ID,
-                    balances = listOf(
-                        createBalance(USER_ID, BigDecimal("5")),
-                        createBalance(OTHER_USER_ID, BigDecimal("0")),
-                        createBalance(ANOTHER_USER_ID, BigDecimal("-5")),
-                    ),
+                    balances =
+                        listOf(
+                            createBalance(USER_ID, BigDecimal("5")),
+                            createBalance(OTHER_USER_ID, BigDecimal("0")),
+                            createBalance(ANOTHER_USER_ID, BigDecimal("-5")),
+                        ),
                 ),
                 createBalances(
                     currency = CURRENCY_2,
                     groupId = GROUP_ID,
-                    balances = listOf(
-                        createBalance(OTHER_USER_ID, BigDecimal("0")),
-                    ),
+                    balances =
+                        listOf(
+                            createBalance(OTHER_USER_ID, BigDecimal("0")),
+                        ),
                 ),
             ),
         )
@@ -267,4 +270,4 @@ class FinanceServiceTest : ShouldSpec({
             last.status shouldBe SettlementStatus.SAVED
         }
     }
-},)
+})

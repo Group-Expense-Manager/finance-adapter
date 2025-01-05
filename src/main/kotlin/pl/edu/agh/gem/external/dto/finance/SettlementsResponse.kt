@@ -10,10 +10,11 @@ data class SettlementsResponse(
     val settlements: List<SettlementsDto>,
 )
 
-fun List<Settlements>.toSettlementsResponse() = SettlementsResponse(
-    groupId = first().groupId,
-    settlements = this.map { it.toSettlementsDto() },
-)
+fun List<Settlements>.toSettlementsResponse() =
+    SettlementsResponse(
+        groupId = first().groupId,
+        settlements = this.map { it.toSettlementsDto() },
+    )
 
 data class SettlementsDto(
     val status: SettlementStatus,
@@ -21,11 +22,12 @@ data class SettlementsDto(
     val settlements: List<SettlementDto>,
 )
 
-fun Settlements.toSettlementsDto() = SettlementsDto(
-    status = status,
-    currency = currency,
-    settlements = settlements.map { it.toSettlementDto() },
-)
+fun Settlements.toSettlementsDto() =
+    SettlementsDto(
+        status = status,
+        currency = currency,
+        settlements = settlements.map { it.toSettlementDto() },
+    )
 
 data class SettlementDto(
     val fromUserId: String,
@@ -33,8 +35,9 @@ data class SettlementDto(
     val value: BigDecimal,
 )
 
-fun Settlement.toSettlementDto() = SettlementDto(
-    fromUserId = fromUserId,
-    toUserId = toUserId,
-    value = value,
-)
+fun Settlement.toSettlementDto() =
+    SettlementDto(
+        fromUserId = fromUserId,
+        toUserId = toUserId,
+        value = value,
+    )

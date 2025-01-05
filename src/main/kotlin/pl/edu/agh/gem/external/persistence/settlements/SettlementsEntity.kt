@@ -31,10 +31,11 @@ fun SettlementsEntity.toDomain(): Settlements {
 
 fun Settlements.toEntity(): SettlementsEntity {
     return SettlementsEntity(
-        id = SettlementsCompositeKey(
-            groupId = groupId,
-            currency = currency,
-        ),
+        id =
+            SettlementsCompositeKey(
+                groupId = groupId,
+                currency = currency,
+            ),
         status = status,
         settlements = settlements.map { it.toEntity() },
     )

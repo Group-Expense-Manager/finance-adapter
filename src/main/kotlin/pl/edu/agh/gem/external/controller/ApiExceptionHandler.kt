@@ -20,11 +20,8 @@ import pl.edu.agh.gem.internal.client.RetryablePaymentManagerClientException
 @ControllerAdvice
 @Order(LOWEST_PRECEDENCE)
 class ApiExceptionHandler {
-
     @ExceptionHandler(UserWithoutGroupAccessException::class)
-    fun handleUserWithoutGroupAccessException(
-        exception: UserWithoutGroupAccessException,
-    ): ResponseEntity<SimpleErrorsHolder> {
+    fun handleUserWithoutGroupAccessException(exception: UserWithoutGroupAccessException): ResponseEntity<SimpleErrorsHolder> {
         return ResponseEntity(handleError(exception), FORBIDDEN)
     }
 
@@ -34,9 +31,7 @@ class ApiExceptionHandler {
     }
 
     @ExceptionHandler(RetryableGroupManagerClientException::class)
-    fun handleRetryableGroupManagerClientException(
-        exception: RetryableGroupManagerClientException,
-    ): ResponseEntity<SimpleErrorsHolder> {
+    fun handleRetryableGroupManagerClientException(exception: RetryableGroupManagerClientException): ResponseEntity<SimpleErrorsHolder> {
         return ResponseEntity(handleError(exception), INTERNAL_SERVER_ERROR)
     }
 
@@ -46,9 +41,7 @@ class ApiExceptionHandler {
     }
 
     @ExceptionHandler(RetryableExpenseManagerClientException::class)
-    fun handleRetryableExpenseManagerClientException(
-        exception: RetryableExpenseManagerClientException,
-    ): ResponseEntity<SimpleErrorsHolder> {
+    fun handleRetryableExpenseManagerClientException(exception: RetryableExpenseManagerClientException): ResponseEntity<SimpleErrorsHolder> {
         return ResponseEntity(handleError(exception), INTERNAL_SERVER_ERROR)
     }
 
@@ -58,9 +51,7 @@ class ApiExceptionHandler {
     }
 
     @ExceptionHandler(RetryablePaymentManagerClientException::class)
-    fun handleRetryablePaymentManagerClientException(
-        exception: RetryablePaymentManagerClientException,
-    ): ResponseEntity<SimpleErrorsHolder> {
+    fun handleRetryablePaymentManagerClientException(exception: RetryablePaymentManagerClientException): ResponseEntity<SimpleErrorsHolder> {
         return ResponseEntity(handleError(exception), INTERNAL_SERVER_ERROR)
     }
 }

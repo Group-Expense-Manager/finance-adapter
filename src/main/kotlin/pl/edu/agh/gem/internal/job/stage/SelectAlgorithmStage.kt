@@ -10,7 +10,6 @@ import pl.edu.agh.gem.internal.model.reconciliation.ReconciliationJob
 
 @Component
 class SelectAlgorithmStage : ProcessingStage() {
-
     override fun process(reconciliationJob: ReconciliationJob): StageResult {
         logger.info { "Selecting algorithm for job: $reconciliationJob" }
         return if (reconciliationJob.balances.size <= BOTTOM_THRESHOLD) {

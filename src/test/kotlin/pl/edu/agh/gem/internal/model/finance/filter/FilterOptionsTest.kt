@@ -33,16 +33,17 @@ class FilterOptionsTest : ShouldSpec({
 
     should("create FilterOptions with all fields set") {
         // given & when
-        val filterOptions = FilterOptions.create(
-            userId = USER_ID,
-            title = ACTIVITY_TITLE,
-            status = PENDING,
-            isCreator = true,
-            type = EXPENSE,
-            currency = CURRENCY_1,
-            sortedBy = TITLE,
-            sortOrder = DESCENDING,
-        )
+        val filterOptions =
+            FilterOptions.create(
+                userId = USER_ID,
+                title = ACTIVITY_TITLE,
+                status = PENDING,
+                isCreator = true,
+                type = EXPENSE,
+                currency = CURRENCY_1,
+                sortedBy = TITLE,
+                sortOrder = DESCENDING,
+            )
 
         // then
         filterOptions.also {
@@ -58,16 +59,17 @@ class FilterOptionsTest : ShouldSpec({
 
     should("create FilterOptions when no fields set") {
         // given & when
-        val filterOptions = FilterOptions.create(
-            userId = USER_ID,
-            title = null,
-            status = null,
-            isCreator = null,
-            type = null,
-            currency = null,
-            sortedBy = null,
-            sortOrder = null,
-        )
+        val filterOptions =
+            FilterOptions.create(
+                userId = USER_ID,
+                title = null,
+                status = null,
+                isCreator = null,
+                type = null,
+                currency = null,
+                sortedBy = null,
+                sortOrder = null,
+            )
 
         // then
         filterOptions.also {
@@ -80,4 +82,4 @@ class FilterOptionsTest : ShouldSpec({
             it.sortOrder shouldBe DESCENDING
         }
     }
-},)
+})

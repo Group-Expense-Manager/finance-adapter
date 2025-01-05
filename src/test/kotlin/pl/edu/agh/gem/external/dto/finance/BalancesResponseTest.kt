@@ -52,4 +52,4 @@ class BalancesResponseTest : ShouldSpec({
             it.balances shouldBe balances.map { currencyBalances -> currencyBalances.toBalancesDto() }
         }
     }
-},)
+})

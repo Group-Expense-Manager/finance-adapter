@@ -11,11 +11,13 @@ import java.math.BigDecimal.ZERO
 class ReducingZeroBalancesStage : ProcessingStage() {
     override fun process(reconciliationJob: ReconciliationJob): StageResult {
         logger.info { "Reducing zero balances for financial reconciliation job: $reconciliationJob" }
-        val reducedJob = reconciliationJob.copy(
-            balances = reconciliationJob.balances.filterNot {
-                it.value.compareTo(ZERO) == 0
-            },
-        )
+        val reducedJob =
+            reconciliationJob.copy(
+                balances =
+                    reconciliationJob.balances.filterNot {
+                        it.value.compareTo(ZERO) == 0
+                    },
+            )
         return nextStage(reducedJob, SELECT_ALGORITHM)
     }
 }
