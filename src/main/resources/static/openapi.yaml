@@ -1,0 +1,559 @@
+openapi: 3.0.1
+info:
+  title: Finance API
+  version: v1
+  description: API for retrieving finance data.
+
+paths:
+  /external/activities/groups/{groupId}:
+    get:
+      tags:
+        - External Group
+      summary: "Get activities"
+      description: "Get group activities with filters applied"
+      operationId: "getActivities"
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/Title'
+        - $ref: '#/components/parameters/Status'
+        - $ref: '#/components/parameters/IsCreator'
+        - $ref: '#/components/parameters/Type'
+        - $ref: '#/components/parameters/Currency'
+        - $ref: '#/components/parameters/SortedBy'
+        - $ref: '#/components/parameters/SortOrder'
+      responses:
+        "200":
+          $ref: "#/components/responses/ExternalActivitiesResponse"
+        "403":
+          $ref: "#/components/responses/UserWithoutGroupAccessException"
+
+  /external/balances/groups/{groupId}:
+    get:
+      tags:
+        - External Group
+      summary: "Get balances"
+      description: "Get group balances"
+      operationId: "getBalances"
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      responses:
+        "200":
+          $ref: "#/components/responses/BalancesResponse"
+        "403":
+          $ref: "#/components/responses/UserWithoutGroupAccessException"
+
+  /external/settlements/groups/{groupId}:
+    get:
+      tags:
+        - External Group
+      summary: "Get settlements"
+      description: "Get group settlements"
+      operationId: "getSettlements"
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      responses:
+        "200":
+          $ref: "#/components/responses/SettlementsResponse"
+        "403":
+          $ref: "#/components/responses/UserWithoutGroupAccessException"
+
+  /internal/activities/groups/{groupId}:
+    get:
+      tags:
+        - Internal Group
+      summary: Get activities
+      description: Get activities of group
+      operationId: "getActivities"
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      responses:
+        "200":
+          $ref: "#/components/responses/InternalActivitiesResponse"
+
+  /internal/balances/groups/{groupId}:
+    get:
+      tags:
+        - Internal Group
+      summary: "Get balances"
+      description: "Get group balances"
+      operationId: "getBalances"
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      responses:
+        "200":
+          $ref: "#/components/responses/BalancesResponse"
+
+  /internal/settlements/groups/{groupId}:
+    get:
+      tags:
+        - Internal Group
+      summary: "Get settlements"
+      description: "Get group settlements"
+      operationId: "getSettlements"
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      responses:
+        "200":
+          $ref: "#/components/responses/SettlementsResponse"
+
+
+  /internal/generate/groups/{groupId}:
+    post:
+      tags:
+        - Internal Group
+      summary: "Generate settlements"
+      description: "Generate settlements for given group and currency"
+      operationId: "generateSettlements"
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      requestBody:
+        $ref: "#/components/requestBodies/GenerateReconciliationRequest"
+      responses:
+        "200":
+          description: "OK"
+
+components:
+  requestBodies:
+    GenerateReconciliationRequest:
+      description: Settlements generation request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenerateReconciliationRequest'
+          examples:
+            exampleGenerateReconciliationRequest:
+              value:
+                currency: "PLN"
+
+  responses:
+    ExternalActivitiesResponse:
+      description: List of group activities with filters applied
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExternalActivitiesResponse'
+          examples:
+            exampleExternalActivitiesResponse:
+              value:
+                groupId: "53f34d91-0172-4674-af73-813a666de1a9"
+                activities:
+                  - activityId: "53f34d91-0172-4674-af73-813a666de1a9"
+                    type: "EXPENSE"
+                    creatorId: "0ddfc155-ad49-47af-a787-af03b0be9a12"
+                    title: "My activity"
+                    value: 50.5
+                    currency: "PLN"
+                    status: "ACCEPTED"
+                    participantIds:
+                      - "0ddfc155-ad49-47af-a787-af03b0be9a12"
+                      - "53f34d91-0172-4674-af73-813a666de1a9"
+                    date: "2023-10-26T10:00:00Z"
+    BalancesResponse:
+      description: List of group balances
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BalancesResponse'
+          examples:
+            exampleBalancesResponse:
+              value:
+                groupId: "53f34d91-0172-4674-af73-813a666de1a9"
+                balances:
+                  - currency: "PLN"
+                    userBalances:
+                      - userId: "0ddfc155-ad49-47af-a787-af03b0be9a12"
+                        value: 13.5
+                      - userId: "53f34d91-0172-4674-af73-813a666de1a9"
+                        value: -13.5
+                  - currency: "EUR"
+                    userBalances:
+                      - userId: "0ddfc155-ad49-47af-a787-af03b0be9a12"
+                        value: 0
+                      - userId: "53f34d91-0172-4674-af73-813a666de1a9"
+                        value: 0
+    SettlementsResponse:
+      description: List of group settlements
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SettlementsResponse'
+          examples:
+            exampleSettlementsResponse:
+              value:
+                groupId: "53f34d91-0172-4674-af73-813a666de1a9"
+                settlements:
+                  - currency: "PLN"
+                    status: "SAVED"
+                    settlements:
+                      - fromUserId: "0ddfc155-ad49-47af-a787-af03b0be9a12"
+                        toUserId: "53f34d91-0172-4674-af73-813a666de1a9"
+                        value: 13.5
+                  - currency: "EUR"
+                    status: "SAVED"
+                    settlements: []
+    InternalActivitiesResponse:
+      description: List of group activities
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InternalActivitiesResponse'
+          examples:
+            exampleInternalActivitiesResponse:
+              value:
+                groupId: "53f34d91-0172-4674-af73-813a666de1a9"
+                groupActivities:
+                  - currency: "PLN"
+                    activities:
+                    - id: "53f34d91-0172-4674-af73-813a666de1a9"
+                      type: "EXPENSE"
+                      creatorId: "0ddfc155-ad49-47af-a787-af03b0be9a12"
+                      title: "My activity"
+                      value: 50.5
+                      status: "ACCEPTED"
+                      participantIds:
+                        - "0ddfc155-ad49-47af-a787-af03b0be9a12"
+                        - "53f34d91-0172-4674-af73-813a666de1a9"
+                      date: "2023-10-26T10:00:00Z"
+
+    UserWithoutGroupAccessException:
+      description: User is not a member of the group
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SimpleErrorsHolder'
+          examples:
+            exampleUserWithoutGroupAccessException:
+              value:
+                errors:
+                  - code: "UserWithoutGroupAccessException"
+                    details: "UserWithoutGroupAccessException"
+                    message: "User with id:$userId is not a member of the group"
+                    userMessage: "User with id:$userId is not a member of the group"
+
+  schemas:
+     ExternalActivitiesResponse:
+       type: object
+       properties:
+         groupId:
+           type: string
+           description: The ID of the group.
+           example: "53f34d91-0172-4674-af73-813a666de1a9"
+         activities:
+           type: array
+           items:
+             $ref: '#/components/schemas/ExternalActivityDTO'
+     ExternalActivityDTO:
+       type: object
+       properties:
+         activityId:
+           type: string
+           description: The ID of the activity.
+           example: "0ddfc155-ad49-47af-a787-af03b0be9a12"
+         type:
+           type: string
+           enum:
+             - "EXPENSE"
+             - "PAYMENT"
+           description: Type of the activity.
+           example: "EXPENSE"
+         creatorId:
+           type: string
+           description: The ID of the creator.
+           example: "0ddfc155-ad49-47af-a787-af03b0be9a12"
+         title:
+           type: string
+           description: Title of the activity.
+           example: "My Activity"
+         value:
+           type: number
+           format: double
+           description: Value of the activity.
+           example: 50.5
+         currency:
+           type: string
+           description: Currency of the activity.
+           example: "PLN"
+         status:
+           type: string
+           enum:
+             - "ACCEPTED"
+             - "REJECTED"
+             - "PENDING"
+           description: Status of the activity.
+           example: "ACCEPTED"
+         participantIds:
+           type: array
+           items:
+             type: string
+         date:
+           type: string
+           format: date-time
+           description: The date of the activity.
+           example: "2023-10-26T10:00:00Z"
+     BalancesResponse:
+       type: object
+       properties:
+         groupId:
+           type: string
+           description: The ID of the group.
+           example: "53f34d91-0172-4674-af73-813a666de1a9"
+         balances:
+           type: array
+           items:
+             $ref: '#/components/schemas/BalancesDto'
+     BalancesDto:
+       type: object
+       properties:
+         currency:
+           type: string
+           description: Balance currency.
+           example: "PLN"
+         balances:
+           type: array
+           items:
+             $ref: '#/components/schemas/UserBalanceDto'
+     UserBalanceDto:
+       type: object
+       properties:
+         userId:
+           type: string
+           description: The ID of the user.
+           example: "0ddfc155-ad49-47af-a787-af03b0be9a12"
+         value:
+           type: number
+           format: double
+           description: Value of the activity.
+           example: 12.1
+     SettlementsResponse:
+       type: object
+       properties:
+         groupId:
+           type: string
+           description: The ID of the group.
+           example: "53f34d91-0172-4674-af73-813a666de1a9"
+         settlements:
+           type: array
+           items:
+             $ref: '#/components/schemas/SettlementsDto'
+     SettlementsDto:
+       type: object
+       properties:
+         status:
+           type: string
+           enum:
+             - "PENDING"
+             - "SAVED"
+           description: Status of settlement generation.
+           example: "SAVED"
+         currency:
+           type: string
+           description: Balance currency.
+           example: "PLN"
+         settlements:
+           type: array
+           items:
+             $ref: '#/components/schemas/SettlementDto'
+     SettlementDto:
+       type: object
+       properties:
+         fromUserId:
+           type: string
+           description: The ID of the debtor.
+           example: "0ddfc155-ad49-47af-a787-af03b0be9a12"
+         toUserId:
+           type: string
+           description: The ID of the creditor.
+           example: "0ddfc155-ad49-47af-a787-af03b0be9a12"
+         value:
+           type: number
+           format: double
+           description: Value of the activity.
+           example: 12.1
+     InternalActivitiesResponse:
+       type: object
+       properties:
+         groupId:
+           type: string
+           description: The ID of the group.
+           example: "53f34d91-0172-4674-af73-813a666de1a9"
+         groupActivities:
+           type: array
+           items:
+             $ref: '#/components/schemas/InternalActivityGroupDTO'
+     InternalActivityGroupDTO:
+      type: object
+      properties:
+        currency:
+          type: string
+          description: Balance currency.
+          example: "PLN"
+        activities:
+          type: array
+          items:
+            $ref: '#/components/schemas/InternalActivityDTO'
+     InternalActivityDTO:
+       type: object
+       properties:
+         id:
+           type: string
+           description: The ID of the activity.
+           example: "0ddfc155-ad49-47af-a787-af03b0be9a12"
+         type:
+           type: string
+           enum:
+             - "EXPENSE"
+             - "PAYMENT"
+           description: Type of the activity.
+           example: "EXPENSE"
+         creatorId:
+           type: string
+           description: The ID of the creator.
+           example: "0ddfc155-ad49-47af-a787-af03b0be9a12"
+         title:
+           type: string
+           description: Title of the activity.
+           example: "My Activity"
+         value:
+           type: number
+           format: double
+           description: Value of the activity.
+           example: 50.5
+         status:
+           type: string
+           enum:
+             - "ACCEPTED"
+             - "REJECTED"
+             - "PENDING"
+           description: Status of the activity.
+           example: "ACCEPTED"
+         participantIds:
+           type: array
+           items:
+             type: string
+         date:
+           type: string
+           format: date-time
+           description: The date of the activity.
+           example: "2023-10-26T10:00:00Z"
+
+     GenerateReconciliationRequest:
+       type: object
+       properties:
+         currency:
+           type: string
+           description: Balance currency.
+           example: "PLN"
+
+     SimpleErrorsHolder:
+       type: object
+       properties:
+         errors:
+           type: array
+           items:
+             type: object
+             properties:
+               code:
+                 type: string
+                 nullable: true
+                 description: Error code.
+                 example: "INVALID_VALUE"
+               message:
+                 type: string
+                 nullable: true
+                 description: Error message.
+                 example: "The provided value is invalid."
+               details:
+                 type: string
+                 nullable: true
+                 description: Additional error details.
+                 example: "The field 'email' must contain a valid email address."
+               path:
+                 type: string
+                 nullable: true
+                 description: The API path related to the error.
+                 example: "/external/activities/groups/{groupId}"
+               userMessage:
+                 type: string
+                 nullable: true
+                 description: A user-friendly error message.
+                 example: "Please provide a valid email address."
+
+
+  parameters:
+    GroupId:
+      name: groupId
+      in: path
+      required: true
+      schema:
+        type: string
+        example: "53f34d91-0172-4674-af73-813a666de1a9"
+      description: The ID of the group.
+    Title:
+      name: title
+      in: query
+      required: false
+      schema:
+        type: string
+        example: "Burger"
+      description: Activity title filter.
+    Status:
+      name: status
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - "ACCEPTED"
+          - "REJECTED"
+          - "PENDING"
+        example: "ACCEPTED"
+      description: Activity status filter.
+    IsCreator:
+      name: isCreator
+      in: query
+      required: false
+      schema:
+        type: boolean
+        example: "true"
+      description: Is Creator filter.
+    Type:
+      name: type
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - "EXPENSE"
+          - "PAYMENT"
+        example: "EXPENSE"
+      description: Activity type filter.
+    Currency:
+      name: currency
+      in: query
+      required: false
+      schema:
+        type: string
+        example: "PLN"
+      description: Currency filter.
+    SortedBy:
+      name: sortedBy
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - "TITLE"
+          - "DATE"
+        example: "TITLE"
+      description: By which field activities are sorted.
+    SortOrder:
+      name: sortOrder
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - "ASCENDING"
+          - "DESCENDING"
+        example: "ASCENDING"
+      description: Order of sorting.
